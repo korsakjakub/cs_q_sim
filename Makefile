@@ -5,6 +5,7 @@ internal_path=internal/quantum_simulator
 package=quantum_simulator
 
 build: ${binary_dir}${package}/main.go
+	go mod download
 	go build -o ${binary_path} ${binary_dir}${package}/main.go
 
 test:
