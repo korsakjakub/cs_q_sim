@@ -7,14 +7,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+type PhysicsConfig struct {
+	MoleculeMass string `mapstructure:"moleculemass"`
+	AtomMass     string `mapstructure:"atommass"`
+	BathCount    string `mapstructure:"bathcount"`
+}
+
+type FilesConfig struct {
+	OutputDir string `mapstructure:"outputdir"`
+}
+
 type Config struct {
-	Physics struct {
-		MoleculeMass string `mapstructure:"moleculemass"`
-		AtomMass     string `mapstructure:"atommass"`
-	} `mapstructure:"physics"`
-	Files struct {
-		OutputDir string `mapstructure:"outputdir"`
-	} `mapstructure:"files"`
+	Physics PhysicsConfig `mapstructure:"physics"`
+	Files   FilesConfig   `mapstructure:"files"`
 }
 
 var vp *viper.Viper

@@ -1,5 +1,6 @@
 physics:
   moleculemass: 1.0
   atommass: 1.0
+  bathcount: 10
 files:
   outputdir: output/

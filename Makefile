@@ -9,7 +9,7 @@ build: ${binary_dir}${package}/main.go
 	go build -o ${binary_path} ${binary_dir}${package}/main.go
 
 test:
-	go test -v ${internal_path}
+	go test -v ${internal_path}/*
 
 run: ${binary_path}
 	${binary_path}
