@@ -14,7 +14,7 @@ type Config struct {
 	} `mapstructure:"physics"`
 	Files struct {
 		OutputDir string `mapstructure:"outputdir"`
-	} `mapstructure:"files`
+	} `mapstructure:"files"`
 }
 
 var vp *viper.Viper
