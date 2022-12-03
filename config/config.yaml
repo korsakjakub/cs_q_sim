@@ -1,0 +1,5 @@
+physics:
+  moleculemass: 1.0
+  atommass: 1.0
+files:
+  outputdir: output/
