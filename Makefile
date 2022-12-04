@@ -7,6 +7,7 @@ package=quantum_simulator
 export CONFIG_PATH=config/
 
 .DEFAULT_GOAL := all
+.PHONY: all build
 
 all: build test run
 
