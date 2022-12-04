@@ -25,6 +25,15 @@ func elSm(row, col, spin float64) float64 {
 	return delta(row+1, col) * math.Sqrt(spin*(spin+1.0)-col*row)
 }
 
+func Id(spin float64) *mat.Dense {
+	dim := int(2.0*spin + 1.0)
+	data := mat.NewDense(dim, dim, nil)
+	for i := 0; i < dim; i++ {
+		data.Set(i, i, 1)
+	}
+	return data
+}
+
 func Sm(spin float64) *mat.Dense {
 	dim := int(2.0*spin + 1.0)
 	data := make([]float64, dim*dim)

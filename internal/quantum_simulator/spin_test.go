@@ -100,3 +100,27 @@ func TestSm(t *testing.T) {
 		})
 	}
 }
+
+func TestId(t *testing.T) {
+	type args struct {
+		spin float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want *mat.Dense
+	}{
+		{
+			name: "spin-half identity",
+			args: args{spin: 0.5},
+			want: mat.NewDense(2, 2, []float64{1.0, 0.0, 0.0, 1.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Id(tt.args.spin); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Id() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
