@@ -14,11 +14,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: configure
-      run: . ./config/export_envs.sh
-
-    - name: Build
-      run: make build
-
-    - name: Test
-      run: make test
+    - name: Build and test
+      run: make
