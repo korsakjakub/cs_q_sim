@@ -1,7 +1,8 @@
 # Usage
 
-First, source env variables with 
-`. ./config/export_envs.sh`, then build and run with
+Just run make
 ```
 make (build|run|test|clean)
 ```
+
+Or build and run in Docker with [Dockerfile](build/Dockerfile)
