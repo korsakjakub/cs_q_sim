@@ -29,3 +29,10 @@ $$H_B = B^{(0)} S_Z^{(0)} + B \sum_{j = 1}^{N_b} S_Z^{(j)} = (B^{(0)} - B)S_Z^{(
 $$ C_j = \frac{\mu_{\text{mol}} \mu_{\text{atom}}}{4 \pi \varepsilon_0 |\mathbf{R}_j|^3} \cdot \frac{1 - 3 \cos^2 \theta_j}{2}$$
 
 Here $\theta_j$ is an angle between $\mathbf{R}_j$ and $Z$ axis
+
+
+### notes on anticipated Go's speed:
+- [spzala19/Multiprocessing-with-golang](https://github.com/spzala19/Multiprocessing-with-golang)
+- [comparison for web-like tasks](https://djangostars.com/blog/my-story-with-golang/)
+- [general overview](https://www.stxnext.com/blog/go-go-python-rangers-comparing-python-and-golang/)
+- [tips on optimizing diagonalization speed to match numpy](https://github.com/gonum/gonum/issues/511)
