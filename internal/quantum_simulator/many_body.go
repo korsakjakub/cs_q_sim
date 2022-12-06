@@ -4,12 +4,12 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-// Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'position' <= 'dim'
+// Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'particle' <= 'dim'
 func many_body(operator *mat.Dense, particle int, dim int) *mat.Dense {
-	if position > dim {
-                return operator
-        }
-        var m mat.Dense
+	if particle > dim {
+        return operator
+    }
+    var m mat.Dense
 	var n mat.Dense
 	if particle > 1 {
 		m = *Id(0.5)
