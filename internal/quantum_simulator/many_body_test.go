@@ -57,6 +57,33 @@ func Test_many_body(t *testing.T) {
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5,
 			}),
 		},
+		{
+			name: "second conditional check 2",
+			args: args{
+				operator: Id(0.5),
+				particle: 2,
+				dim:      4,
+			},
+			want: Id(7.5),
+		},
+		{
+			name: "first conditional check 2",
+			args: args{
+				operator: Id(0.5),
+				particle: 3,
+				dim:      4,
+			},
+			want: Id(7.5),
+		},
+		{
+			name: "strain test",
+			args: args{
+				operator: Id(0.5),
+				particle: 1,
+				dim:      13,
+			},
+			want: Id(4095.5),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
