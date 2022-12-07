@@ -1,5 +1,7 @@
 # Central spin hamiltonian quantum simulator
 
+[![codecov](https://codecov.io/gh/korsakjakub/cs_q_sim/branch/main/graph/badge.svg?token=ARL78PQTW9)](https://codecov.io/gh/korsakjakub/cs_q_sim)
+
 The system is governed by the $H_{XX}$ hamiltonian:
 
 $$H_{XX} = \sum_{j=1}^{N_b} H_S(0, j) + H_B$$
