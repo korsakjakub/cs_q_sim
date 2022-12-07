@@ -2,5 +2,6 @@ physics:
   moleculemass: 1.0
   atommass: 1.0
   bathcount: 10
+  spin: 0.5
 files:
   outputdir: output/

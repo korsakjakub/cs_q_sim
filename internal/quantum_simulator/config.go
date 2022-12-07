@@ -11,6 +11,7 @@ type PhysicsConfig struct {
 	MoleculeMass string `mapstructure:"moleculemass"`
 	AtomMass     string `mapstructure:"atommass"`
 	BathCount    string `mapstructure:"bathcount"`
+	Spin         string `mapstructure:"spin"`
 }
 
 type FilesConfig struct {
