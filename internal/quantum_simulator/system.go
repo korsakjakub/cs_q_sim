@@ -20,6 +20,7 @@ type State struct {
 	Distance float64
 }
 
+// Given an index j, return force between the j-th bath molecule and the central spin
 func (s *System) forceAt(j int) float64 {
 	if j == 0 {
 		return 0.0
@@ -34,11 +35,14 @@ func (s *System) forceAt(j int) float64 {
 		parse(err)
 	}
 
+	// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
+	// Therefore we pick Bath[j-1] instead of Bath[j]
 	c := (muMol * muAtom) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
 		0.5 * (1.0 - 3.0*math.Pow(math.Cos(s.Bath[j-1].Angle), 2))
 	return c
 }
 
+// Given an index j, return the Heisenberg term (0, j - interaction) of the hamiltonian
 func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	bc, err := strconv.Atoi(s.PhysicsConfig.BathCount)
 	if err != nil {
@@ -49,18 +53,19 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 		parse(err)
 	}
 
-	dim := bc + 1
+	dim := bc + 1 // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	f := s.forceAt(j)
 	h := manyBody(Sp(spin), 0, dim)
 	h.Mul(h, manyBody(Sm(spin), j, dim))
 	h2 := manyBody(Sm(spin), 0, dim)
 	h2.Mul(h2, manyBody(Sp(spin), j, dim))
 	h.Add(h, h2)
-	h.Apply(func(i, j int, v float64) float64 { return v * f }, h)
+	h.Apply(func(i, j int, v float64) float64 { return v * f }, h) // Multiplication by a scalar f
 
 	return h
 }
 
+// Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
 func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 	bc, err := strconv.Atoi(s.PhysicsConfig.BathCount)
 	if err != nil {
@@ -71,11 +76,12 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 		parse(err)
 	}
 
-	h := manyBody(Sz(spin), 0, bc+1)
+	h := manyBody(Sz(spin), 0, bc+1) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	h.Apply(func(i, j int, v float64) float64 { return v * (b0 - b) }, h)
 	return h
 }
 
+// Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
 func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 	spin, err := strconv.ParseFloat(s.PhysicsConfig.Spin, 64)
 	if err != nil {
@@ -86,8 +92,9 @@ func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 	if err != nil {
 		parse(err)
 	}
-	dim := int(math.Pow(float64(spin_dim), float64(bc)+1.0))
+	dim := int(math.Pow(float64(spin_dim), float64(bc)+1.0)) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	h := mat.NewDense(dim, dim, nil)
+	
 	for j := 0; j <= bc; j += 1 {
 		h.Add(h, s.hamiltonianHeisenbergTermAt(j))
 	}
