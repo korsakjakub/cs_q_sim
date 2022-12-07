@@ -5,4 +5,7 @@ Just run make
 make (build|run|test|clean)
 ```
 
-Or build and run in Docker with [Dockerfile](build/Dockerfile)
+Or also run make, but with Docker
+```
+make (docker-build|docker-run|docker-clearn)
+```
