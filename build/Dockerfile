@@ -1,15 +1,12 @@
 FROM golang:1.19 as build
 
-WORKDIR /go/src/cs_q_sim
-
+WORKDIR /cs_q_sim
 COPY . .
-RUN go mod download; make build
+RUN CGO_ENABLED=0 make build
 
 FROM gcr.io/distroless/static-debian11
 
-ENV CONFIG_PATH=config/
-ENV CONFIG_NAME="config"
-ENV CONFIG_TYPE="yaml"
+ENV CONFIG_PATH=/go/
 
-COPY --from=build /go/bin/app /
-CMD ["/qsim.out"]
+COPY --from=build /cs_q_sim/cmd/qsim.out /cs_q_sim/config/config.yaml /go/
+CMD ["/go/qsim.out"]
