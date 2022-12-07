@@ -5,15 +5,15 @@ import (
 )
 
 // Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'particle' <= 'dim'
-func many_body(operator *mat.Dense, particle int, dim int) *mat.Dense {
+func manyBody(operator *mat.Dense, particle int, dim int) *mat.Dense {
 	if particle > dim {
-        return operator
-    }
-    var m mat.Dense
+		return operator
+	}
+	var m mat.Dense
 	var n mat.Dense
-	if particle > 1 {
+	if particle > 0 {
 		m = *Id(0.5)
-		for i := 1; i < particle-1; i += 1 {
+		for i := 0; i < particle-1; i += 1 {
 			var temp mat.Dense
 			temp.Kronecker(&m, Id(0.5))
 			m = temp
@@ -22,8 +22,8 @@ func many_body(operator *mat.Dense, particle int, dim int) *mat.Dense {
 	} else {
 		n = *operator
 	}
-	if particle < dim {
-		for i := particle + 1; i <= dim; i += 1 {
+	if particle < dim-1 {
+		for i := particle + 1; i < dim; i += 1 {
 			var temp mat.Dense
 			temp.Kronecker(&n, Id(0.5))
 			n = temp
