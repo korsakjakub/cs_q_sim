@@ -94,11 +94,32 @@ func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 	}
 	dim := int(math.Pow(float64(spin_dim), float64(bc)+1.0)) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	h := mat.NewDense(dim, dim, nil)
-	
+
 	for j := 0; j <= bc; j += 1 {
 		h.Add(h, s.hamiltonianHeisenbergTermAt(j))
 	}
 	h.Add(h, s.hamiltonianMagneticTerm(b0, b))
 
 	return h
+}
+
+// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
+func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDense, eigenValues chan []complex128) { // (*mat.CDense, []complex128) {
+	var eig mat.Eigen
+	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
+		panic("cannot diagonalize")
+	}
+	eigenValues <- eig.Values(nil)
+	evec := mat.NewCDense(4, 4, nil)
+	eig.VectorsTo(evec)
+	eigenVectors <- evec
+
+	/*
+	   eval := eig.Values(nil)
+	   evec := mat.NewCDense(4, 4, nil)
+	   eig.VectorsTo(evec)
+
+	   eigenValues <- eval
+	   eigenVectors <- evec
+	*/
 }
