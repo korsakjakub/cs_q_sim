@@ -104,22 +104,18 @@ func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 }
 
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDense, eigenValues chan []complex128) { // (*mat.CDense, []complex128) {
+func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDense, eigenValues chan complex128) {
 	var eig mat.Eigen
 	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
 	}
-	eigenValues <- eig.Values(nil)
 	evec := mat.NewCDense(4, 4, nil)
 	eig.VectorsTo(evec)
 	eigenVectors <- evec
 
-	/*
-	   eval := eig.Values(nil)
-	   evec := mat.NewCDense(4, 4, nil)
-	   eig.VectorsTo(evec)
-
-	   eigenValues <- eval
-	   eigenVectors <- evec
-	*/
+	for _, val := range eig.Values(nil) {
+		eigenValues <- val
+	}
+	close(eigenValues)
+	close(eigenVectors)
 }

@@ -248,7 +248,7 @@ func TestSystem_diagonalize(t *testing.T) {
 
 func TestSystem_diagonalize(t *testing.T) {
 	eigenVec := make(chan *mat.CDense)
-	eigenVal := make(chan []complex128)
+	eigenVal := make(chan complex128)
 	type fields struct {
 		CentralSpin   State
 		Bath          []State
@@ -257,7 +257,7 @@ func TestSystem_diagonalize(t *testing.T) {
 	type args struct {
 		hamiltonian  *mat.Dense
 		eigenVectors chan *mat.CDense
-		eigenValues  chan []complex128
+		eigenValues  chan complex128
 	}
 	tests := []struct {
 		name   string
@@ -296,23 +296,24 @@ func TestSystem_diagonalize(t *testing.T) {
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
 			go s.diagonalize(tt.args.hamiltonian, tt.args.eigenVectors, tt.args.eigenValues)
-			/*
-				fmt.Println(<-tt.args.eigenVectors)
-				fmt.Println(<-tt.args.eigenValues)
 
-				evec := <-tt.args.eigenVectors
-				eval := <-tt.args.eigenValues
+			evec := <-tt.args.eigenVectors
 
-				fmt.Println(evec)
-				fmt.Println(eval)
-
-				if !mat.CEqualApprox(evec, tt.want, 1e-4) {
-					t.Errorf("System.diagonalize() got = %v, want %v", evec, tt.want)
+			var eval []complex128
+			for {
+				v, ok := <-tt.args.eigenValues
+				if !ok {
+					break
 				}
-				if !mat.CEqualApprox(mat.NewCDense(1, 4, eval), mat.NewCDense(1, 4, tt.want1), 1e-4) {
-					t.Errorf("System.diagonalize() got1 = %v, want %v", eval, tt.want1)
-				}
-			*/
+				eval = append(eval, v)
+			}
+
+			if !mat.CEqualApprox(evec, tt.want, 1e-4) {
+				t.Errorf("System.diagonalize() got = %v, want %v", evec, tt.want)
+			}
+			if !mat.CEqualApprox(mat.NewCDense(1, 4, eval), mat.NewCDense(1, 4, tt.want1), 1e-4) {
+				t.Errorf("System.diagonalize() got1 = %v, want %v", eval, tt.want1)
+			}
 		})
 	}
 }
