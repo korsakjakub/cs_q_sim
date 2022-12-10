@@ -1,0 +1,69 @@
+package quantum_simulator
+
+import (
+	"os"
+	"reflect"
+	"testing"
+)
+
+func TestLoadConfig(t *testing.T) {
+	type args struct {
+		additionalPath []string
+		args           []string
+		filename       string
+	}
+	tests := []struct {
+		name string
+		args args
+		want Config
+	}{
+		{
+			name: "tmp file",
+			args: args{
+				additionalPath: []string{"/tmp"},
+				args:           []string{"config123217318973", "yaml"},
+				filename:       "/tmp/config123217318973.yaml",
+			},
+			want: Config{PhysicsConfig{
+				MoleculeMass: "1",
+				AtomMass:     "1",
+				BathCount:    "10",
+				Spin:         "1",
+			}, FilesConfig{
+				OutputDir: "test/",
+			}},
+		},
+	}
+	for _, tt := range tests {
+		var lines = []string{
+			"physics:",
+			"  moleculemass: 1.0",
+			"  atommass: 1.0",
+			"  bathcount: 10",
+			"  spin: 1.0",
+			"files:",
+			"  outputdir: test/",
+		}
+		f, err := os.Create(tt.args.filename)
+		if err != nil {
+			t.Error(err)
+		}
+		defer f.Close()
+
+		for _, line := range lines {
+			_, err := f.WriteString(line + "\n")
+			if err != nil {
+				t.Error(err)
+			}
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LoadConfig(tt.args.additionalPath, tt.args.args...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("LoadConfig() = %v, want %v", got, tt.want)
+			}
+		})
+		err = os.Remove(tt.args.filename)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
