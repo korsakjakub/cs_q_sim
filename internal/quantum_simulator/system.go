@@ -82,7 +82,7 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 }
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
-func (s *System) hamiltonian(b0, b float64) *mat.Dense {
+func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
 	spin, err := strconv.ParseFloat(s.PhysicsConfig.Spin, 64)
 	if err != nil {
 		parse(err)
@@ -104,12 +104,12 @@ func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 }
 
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDense, eigenValues chan complex128) {
+func (s *System) Diagonalize(hamiltonian *mat.Dense, eigenVectors chan<- *mat.CDense, eigenValues chan<- complex128) {
 	var eig mat.Eigen
 	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
 	}
-	dim := int(math.Sqrt(float64(len(hamiltonian.RawMatrix().Data))))
+	dim, _ := hamiltonian.Caps()
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 	eigenVectors <- evec

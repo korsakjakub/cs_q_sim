@@ -184,7 +184,7 @@ func TestSystem_hamiltonian(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			if got := s.hamiltonian(tt.args.b0, tt.args.b); !mat.EqualApprox(got, tt.want, 1e-4) {
+			if got := s.Hamiltonian(tt.args.b0, tt.args.b); !mat.EqualApprox(got, tt.want, 1e-4) {
 				t.Errorf("System.hamiltonian() = \n%v, want \n%v", mat.Formatted(got, mat.Prefix("   "), mat.Squeeze()), mat.Formatted(tt.want))
 			}
 		})
@@ -267,7 +267,7 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			go s.diagonalize(tt.args.hamiltonian, tt.args.eigenVectors, tt.args.eigenValues)
+			go s.Diagonalize(tt.args.hamiltonian, tt.args.eigenVectors, tt.args.eigenValues)
 
 			evec := <-tt.args.eigenVectors
 
@@ -339,7 +339,7 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			go s.diagonalize(s.hamiltonian(tt.args.b0, tt.args.b), tt.args.eigenVectors, tt.args.eigenValues)
+			go s.Diagonalize(s.Hamiltonian(tt.args.b0, tt.args.b), tt.args.eigenVectors, tt.args.eigenValues)
 
 			evec := <-tt.args.eigenVectors
 			_, vecs_count := evec.Dims()
