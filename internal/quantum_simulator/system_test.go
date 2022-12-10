@@ -184,7 +184,7 @@ func TestSystem_hamiltonian(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			if got := s.hamiltonian(tt.args.b0, tt.args.b); !mat.EqualApprox(got, tt.want, 1e-4) {
+			if got := s.Hamiltonian(tt.args.b0, tt.args.b); !mat.EqualApprox(got, tt.want, 1e-4) {
 				t.Errorf("System.hamiltonian() = \n%v, want \n%v", mat.Formatted(got, mat.Prefix("   "), mat.Squeeze()), mat.Formatted(tt.want))
 			}
 		})
@@ -198,9 +198,7 @@ func TestSystem_diagonalize(t *testing.T) {
 		PhysicsConfig PhysicsConfig
 	}
 	type args struct {
-		hamiltonian  *mat.Dense
-		eigenVectors chan *mat.CDense
-		eigenValues  chan complex128
+		hamiltonian *mat.Dense
 	}
 	tests := []struct {
 		name   string
@@ -219,8 +217,6 @@ func TestSystem_diagonalize(t *testing.T) {
 					0.0, -0.98865, 1.0, 0.0,
 					0.0, 0.0, 0.0, 1.0,
 				}),
-				eigenVectors: make(chan *mat.CDense),
-				eigenValues:  make(chan complex128),
 			},
 			want: mat.NewCDense(4, 4, []complex128{
 				0.0, 0.0, 1.0, 0.0,
@@ -244,8 +240,6 @@ func TestSystem_diagonalize(t *testing.T) {
 					0.0, 0.0, 0.0, -0.1235, 0.0, 0.0, 1.0, 0.0,
 					0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
 				}),
-				eigenVectors: make(chan *mat.CDense),
-				eigenValues:  make(chan complex128),
 			},
 			want: mat.NewCDense(8, 8, []complex128{
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
@@ -267,35 +261,31 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			go s.diagonalize(tt.args.hamiltonian, tt.args.eigenVectors, tt.args.eigenValues)
+			input := make(chan Input)
+			results := make(chan Results)
+			go s.Diagonalize(input, results)
 
-			evec := <-tt.args.eigenVectors
+			input <- Input{Hamiltonian: tt.args.hamiltonian, B: 0.0}
 
-			var eval []complex128
-			for {
-				v, ok := <-tt.args.eigenValues
-				if !ok {
-					break
-				}
-				eval = append(eval, v)
+			res := <-results
+
+			if res.EigenVectors.RawCMatrix().Cols != tt.want.RawCMatrix().Cols || res.EigenVectors.RawCMatrix().Rows != tt.want.RawCMatrix().Rows {
+				t.Errorf("Dims got = %v, %v, Dims want %v, %v", res.EigenVectors.RawCMatrix().Cols, res.EigenVectors.RawCMatrix().Rows, tt.want.RawCMatrix().Cols, tt.want.RawCMatrix().Rows)
 			}
-			if evec.RawCMatrix().Cols != tt.want.RawCMatrix().Cols || evec.RawCMatrix().Rows != tt.want.RawCMatrix().Rows {
-				t.Errorf("Dims got = %v, %v, Dims want %v, %v", evec.RawCMatrix().Cols, evec.RawCMatrix().Rows, tt.want.RawCMatrix().Cols, tt.want.RawCMatrix().Rows)
+			if !mat.CEqualApprox(res.EigenVectors, tt.want, 1e-4) {
+				t.Errorf("System.diagonalize() got = %v, want %v", res.EigenVectors, tt.want)
 			}
-			if !mat.CEqualApprox(evec, tt.want, 1e-4) {
-				t.Errorf("System.diagonalize() got = %v, want %v", evec, tt.want)
+			if len(res.EigenValues) != len(tt.want1) {
+				t.Errorf("Dims got = %v, Dims want %v", len(res.EigenValues), len(tt.want1))
 			}
-			if len(eval) != len(tt.want1) {
-				t.Errorf("Dims got = %v, Dims want %v", len(eval), len(tt.want1))
-			}
-			sort.Slice(eval, func(i, j int) bool {
-				return real(eval[i]) < real(eval[j])
+			sort.Slice(res.EigenValues, func(i, j int) bool {
+				return real(res.EigenValues[i]) < real(res.EigenValues[j])
 			})
 			sort.Slice(tt.want1, func(i, j int) bool {
 				return real(tt.want1[i]) < real(tt.want1[j])
 			})
-			if !mat.CEqualApprox(mat.NewCDense(1, len(eval), eval), mat.NewCDense(1, len(tt.want1), tt.want1), 1e-4) {
-				t.Errorf("System.diagonalize() got1 = %v, want %v", eval, tt.want1)
+			if !mat.CEqualApprox(mat.NewCDense(1, len(res.EigenValues), res.EigenValues), mat.NewCDense(1, len(tt.want1), tt.want1), 1e-4) {
+				t.Errorf("System.diagonalize() got1 = %v, want %v", res.EigenValues, tt.want1)
 			}
 		})
 	}
@@ -308,10 +298,8 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 		PhysicsConfig PhysicsConfig
 	}
 	type args struct {
-		b0           float64
-		b            float64
-		eigenVectors chan *mat.CDense
-		eigenValues  chan complex128
+		b0 float64
+		b  float64
 	}
 	tests := []struct {
 		name   string
@@ -325,10 +313,8 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				{0.0, 1.4}, {0.0, 1.5}, {0.0, 1.6}, {0.0, 1.7}, {0.0, 1.8},
 			}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "8", Spin: "0.5"}},
 			args: args{
-				b0:           1.0,
-				b:            3.0,
-				eigenVectors: make(chan *mat.CDense),
-				eigenValues:  make(chan complex128),
+				b0: 1.0,
+				b:  3.0,
 			},
 		},
 	}
@@ -339,19 +325,21 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			go s.diagonalize(s.hamiltonian(tt.args.b0, tt.args.b), tt.args.eigenVectors, tt.args.eigenValues)
+			input := make(chan Input)
+			results := make(chan Results)
+			go s.Diagonalize(input, results)
 
-			evec := <-tt.args.eigenVectors
+			input <- Input{
+				Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b),
+				B:           0.0,
+			}
+			close(input)
+			res := <-results
+			evec := res.EigenVectors
 			_, vecs_count := evec.Dims()
 
-			var eval []complex128
-			for {
-				v, ok := <-tt.args.eigenValues
-				if !ok {
-					break
-				}
-				eval = append(eval, v)
-			}
+			eval := res.EigenValues
+
 			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eval), vecs_count)
 		})
 	}

@@ -29,6 +29,7 @@ func TestLoadConfig(t *testing.T) {
 				AtomMass:     "1",
 				BathCount:    "10",
 				Spin:         "1",
+				FieldRange:   "1",
 			}, FilesConfig{
 				OutputDir: "test/",
 			}},
@@ -41,6 +42,7 @@ func TestLoadConfig(t *testing.T) {
 			"  atommass: 1.0",
 			"  bathcount: 10",
 			"  spin: 1.0",
+			"  fieldrange: 1",
 			"files:",
 			"  outputdir: test/",
 		}

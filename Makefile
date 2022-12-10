@@ -11,7 +11,7 @@ export CONFIG_PATH=config/
 .DEFAULT_GOAL := all
 .PHONY: all build
 
-all: build test run
+all: build run
 
 build: ${binary_dir}${package}/main.go
 	go mod download
