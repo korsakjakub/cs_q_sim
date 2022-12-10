@@ -109,7 +109,8 @@ func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDen
 	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
 	}
-	evec := mat.NewCDense(4, 4, nil)
+	dim := int(math.Sqrt(float64(len(hamiltonian.RawMatrix().Data))))
+	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 	eigenVectors <- evec
 

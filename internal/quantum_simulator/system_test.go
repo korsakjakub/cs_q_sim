@@ -3,6 +3,7 @@ package quantum_simulator
 import (
 	"math"
 	"reflect"
+	"sort"
 	"testing"
 
 	"gonum.org/v1/gonum/mat"
@@ -190,65 +191,7 @@ func TestSystem_hamiltonian(t *testing.T) {
 	}
 }
 
-/*
 func TestSystem_diagonalize(t *testing.T) {
-	type fields struct {
-		CentralSpin   State
-		Bath          []State
-		PhysicsConfig PhysicsConfig
-	}
-	type args struct {
-		hamiltonian *mat.Dense
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *mat.CDense
-		want1  []complex128
-	}{
-		{
-			name:   "2-body",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1", Spin: "0.5"}},
-			args: args{mat.NewDense(4, 4, []float64{
-				-1.0, 0.0, 0.0, 0.0,
-				0.0, -1.0, -0.98865, 0.0,
-				0.0, -0.98865, 1.0, 0.0,
-				0.0, 0.0, 0.0, 1.0,
-			}),
-			},
-			want: mat.NewCDense(4, 4, []complex128{
-				0.0, 0.0, 1.0, 0.0,
-				-0.38, 0.924967, 0.0, 0.0,
-				0.924967, 0.38, 0.0, 0.0,
-				0.0, 0.0, 0.0, 1.0},
-			),
-			want1: []complex128{1.40621, -1.40621, -1.0, 1.0},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &System{
-				CentralSpin:   tt.fields.CentralSpin,
-				Bath:          tt.fields.Bath,
-				PhysicsConfig: tt.fields.PhysicsConfig,
-			}
-			got, got1 := s.diagonalize(tt.args.hamiltonian)
-			if !mat.CEqualApprox(got, tt.want, 1e-4) {
-				t.Errorf("System.diagonalize() got = %v, want %v", got, tt.want)
-			}
-			if !mat.CEqualApprox(mat.NewCDense(1, 4, got1), mat.NewCDense(1, 4, tt.want1), 1e-4) {
-				t.Errorf("System.diagonalize() got1 = %v, want %v", got1, tt.want1)
-			}
-		})
-	}
-}
-*/
-
-func TestSystem_diagonalize(t *testing.T) {
-	eigenVec := make(chan *mat.CDense)
-	eigenVal := make(chan complex128)
 	type fields struct {
 		CentralSpin   State
 		Bath          []State
@@ -276,8 +219,8 @@ func TestSystem_diagonalize(t *testing.T) {
 					0.0, -0.98865, 1.0, 0.0,
 					0.0, 0.0, 0.0, 1.0,
 				}),
-				eigenVectors: eigenVec,
-				eigenValues:  eigenVal,
+				eigenVectors: make(chan *mat.CDense),
+				eigenValues:  make(chan complex128),
 			},
 			want: mat.NewCDense(4, 4, []complex128{
 				0.0, 0.0, 1.0, 0.0,
@@ -286,6 +229,35 @@ func TestSystem_diagonalize(t *testing.T) {
 				0.0, 0.0, 0.0, 1.0},
 			),
 			want1: []complex128{1.40621, -1.40621, -1.0, 1.0},
+		},
+		{
+			name:   "3-body",
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}, {0.0, 2.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "2", Spin: "0.5"}},
+			args: args{
+				hamiltonian: mat.NewDense(8, 8, []float64{
+					-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+					0.0, -1.0, 0.0, 0.0, -0.12358, 0.0, 0.0, 0.0,
+					0.0, 0.0, -1.0, 0.0, -0.98865, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -1.0, 0.0, -0.98865, -0.12358, 0.0,
+					0.0, -0.12358, -0.98865, 0.0, 1.0, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -0.98865, 0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -0.1235, 0.0, 0.0, 1.0, 0.0,
+					0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+				}),
+				eigenVectors: make(chan *mat.CDense),
+				eigenValues:  make(chan complex128),
+			},
+			want: mat.NewCDense(8, 8, []complex128{
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, 0.047360608952921095, 0.9922780311236191, 0.11463542937958777, 0.0, 0.0,
+				0.0, 0.0, 0.0, 0.3788887040079745, -0.12403349930334975, 0.9170927112488266, 0.0, 0.0,
+				-0.9242307292434829, 0.0, -0.38183771185436777, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, -0.9242295833258997, 0.0, 0.38183723928558116, 0.0, 0.0,
+				-0.3788897239387569, -0.12403349930335, 0.9171016481084843, 0.0, 0.0, 0.0, 0.0, 0.0,
+				-0.047330077283605464, 0.9922780311236191, 0.11456233605562893, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+			}),
+			want1: []complex128{-1.41163, 1.41163, 1.41163, -1.41163, -1.0, 1.0, -1.0, 1.0},
 		},
 	}
 	for _, tt := range tests {
@@ -307,11 +279,22 @@ func TestSystem_diagonalize(t *testing.T) {
 				}
 				eval = append(eval, v)
 			}
-
+			if evec.RawCMatrix().Cols != tt.want.RawCMatrix().Cols || evec.RawCMatrix().Rows != tt.want.RawCMatrix().Rows {
+				t.Errorf("Dims got = %v, %v, Dims want %v, %v", evec.RawCMatrix().Cols, evec.RawCMatrix().Rows, tt.want.RawCMatrix().Cols, tt.want.RawCMatrix().Rows)
+			}
 			if !mat.CEqualApprox(evec, tt.want, 1e-4) {
 				t.Errorf("System.diagonalize() got = %v, want %v", evec, tt.want)
 			}
-			if !mat.CEqualApprox(mat.NewCDense(1, 4, eval), mat.NewCDense(1, 4, tt.want1), 1e-4) {
+			if len(eval) != len(tt.want1) {
+				t.Errorf("Dims got = %v, Dims want %v", len(eval), len(tt.want1))
+			}
+			sort.Slice(eval, func(i, j int) bool {
+				return real(eval[i]) < real(eval[j])
+			})
+			sort.Slice(tt.want1, func(i, j int) bool {
+				return real(tt.want1[i]) < real(tt.want1[j])
+			})
+			if !mat.CEqualApprox(mat.NewCDense(1, len(eval), eval), mat.NewCDense(1, len(tt.want1), tt.want1), 1e-4) {
 				t.Errorf("System.diagonalize() got1 = %v, want %v", eval, tt.want1)
 			}
 		})
