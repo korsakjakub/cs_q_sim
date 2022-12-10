@@ -300,3 +300,59 @@ func TestSystem_diagonalize(t *testing.T) {
 		})
 	}
 }
+
+func TestSystem_diagonalize_benchmark(t *testing.T) {
+	type fields struct {
+		CentralSpin   State
+		Bath          []State
+		PhysicsConfig PhysicsConfig
+	}
+	type args struct {
+		b0           float64
+		b            float64
+		eigenVectors chan *mat.CDense
+		eigenValues  chan complex128
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "strain test",
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{
+				{0.0, 1.0}, {0.0, 2.0}, {0.0, 1.1}, {0.0, 1.2}, {0.0, 1.3},
+				{0.0, 1.4}, {0.0, 1.5}, {0.0, 1.6}, {0.0, 1.7}, {0.0, 1.8},
+			}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "8", Spin: "0.5"}},
+			args: args{
+				b0:           1.0,
+				b:            3.0,
+				eigenVectors: make(chan *mat.CDense),
+				eigenValues:  make(chan complex128),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &System{
+				CentralSpin:   tt.fields.CentralSpin,
+				Bath:          tt.fields.Bath,
+				PhysicsConfig: tt.fields.PhysicsConfig,
+			}
+			go s.diagonalize(s.hamiltonian(tt.args.b0, tt.args.b), tt.args.eigenVectors, tt.args.eigenValues)
+
+			evec := <-tt.args.eigenVectors
+			_, vecs_count := evec.Dims()
+
+			var eval []complex128
+			for {
+				v, ok := <-tt.args.eigenValues
+				if !ok {
+					break
+				}
+				eval = append(eval, v)
+			}
+			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eval), vecs_count)
+		})
+	}
+}
