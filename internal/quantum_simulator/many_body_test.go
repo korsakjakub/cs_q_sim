@@ -84,6 +84,15 @@ func Test_many_body(t *testing.T) {
 			},
 			want: Id(4095.5),
 		},
+		{
+			name: "bad edge case",
+			args: args{
+				operator: Id(0.5),
+				particle: 2,
+				dim:      1,
+			},
+			want: Id(0.5),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
