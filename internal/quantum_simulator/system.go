@@ -82,7 +82,7 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 }
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
-func (s *System) hamiltonian(b0, b float64) *mat.Dense {
+func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
 	spin, err := strconv.ParseFloat(s.PhysicsConfig.Spin, 64)
 	if err != nil {
 		parse(err)
@@ -103,20 +103,32 @@ func (s *System) hamiltonian(b0, b float64) *mat.Dense {
 	return h
 }
 
-// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) diagonalize(hamiltonian *mat.Dense, eigenVectors chan *mat.CDense, eigenValues chan complex128) {
-	var eig mat.Eigen
-	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
-		panic("cannot diagonalize")
-	}
-	dim := int(math.Sqrt(float64(len(hamiltonian.RawMatrix().Data))))
-	evec := mat.NewCDense(dim, dim, nil)
-	eig.VectorsTo(evec)
-	eigenVectors <- evec
+type Results struct {
+	EigenVectors *mat.CDense
+	EigenValues  []complex128
+	B            float64
+}
 
-	for _, val := range eig.Values(nil) {
-		eigenValues <- val
+type Input struct {
+	Hamiltonian *mat.Dense
+	B           float64
+}
+
+// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
+func (s *System) Diagonalize(input <-chan Input, results chan<- Results) {
+	var eig mat.Eigen
+	for n := range input {
+		if err := eig.Factorize(n.Hamiltonian, mat.EigenRight); !err {
+			panic("cannot diagonalize")
+		}
+		dim, _ := n.Hamiltonian.Caps()
+		evec := mat.NewCDense(dim, dim, nil)
+		eig.VectorsTo(evec)
+
+		results <- Results{
+			EigenVectors: evec,
+			EigenValues:  eig.Values(nil),
+			B:            n.B,
+		}
 	}
-	close(eigenValues)
-	close(eigenVectors)
 }
