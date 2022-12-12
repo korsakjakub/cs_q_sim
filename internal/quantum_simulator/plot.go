@@ -19,7 +19,7 @@ func Plot_spectrum_mag_field(xys plotter.XYs, filename string, conf FilesConfig)
 	if err != nil {
 		parse(err)
 	}
-	f, err := os.Create(conf.OutputDir + filename)
+	f, err := os.Create(conf.FigDir + filename)
 	if err != nil {
 		parse(err)
 	}

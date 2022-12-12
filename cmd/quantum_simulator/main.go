@@ -53,8 +53,8 @@ func spectrum_vs_b(conf qs.Config) {
 			xys = append(xys, plotter.XY{X: v.B, Y: cmplx.Abs(ev)})
 		}
 	}
-	qs.Plot_spectrum_mag_field(xys, "first_plot.png", conf.Files)
 	close(results)
+	qs.Plot_spectrum_mag_field(xys, "first_plot.png", conf.Files)
 }
 
 func main() {

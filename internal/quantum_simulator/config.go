@@ -16,7 +16,8 @@ type PhysicsConfig struct {
 }
 
 type FilesConfig struct {
-	OutputDir string `mapstructure:"outputdir"`
+	FigDir     string `mapstructure:"figdir"`
+	OutputsDir string `mapstructure:"outputsdir"`
 }
 
 type Config struct {

@@ -5,4 +5,5 @@ physics:
   spin: 0.5
   fieldrange: 1000
 files:
-  outputdir: figures/
+  figdir: figures/
+  outputsdir: outputs/
