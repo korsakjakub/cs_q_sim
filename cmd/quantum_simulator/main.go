@@ -5,6 +5,7 @@ import (
 	"math/cmplx"
 	"os"
 	"strconv"
+	"time"
 
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/plot/plotter"
@@ -23,6 +24,7 @@ func spectrum_vs_b(conf qs.Config) {
 	if err != nil {
 		panic(err)
 	}
+	start := time.Now()
 	for i := 0; i < bc; i += 1 {
 		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
 	}
@@ -55,6 +57,21 @@ func spectrum_vs_b(conf qs.Config) {
 	}
 	close(results)
 	qs.Plot_spectrum_mag_field(xys, "first_plot.png", conf.Files)
+	elapsed_time := time.Since(start)
+	start_time := start.Format(time.RFC3339)
+
+	r := qs.ResultsIO{
+		Filename: start_time,
+		Metadata: qs.Metadata{
+			Date:           start_time,
+			Simulation:     "spectrum vs. mag. field",
+			Cpu:            "bsf",
+			Ram:            "32GB",
+			CompletionTime: elapsed_time.String(),
+		},
+		XYs: xys,
+	}
+	r.Write(conf.Files)
 }
 
 func main() {
