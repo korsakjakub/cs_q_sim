@@ -65,11 +65,12 @@ func spectrum_vs_b(conf qs.Config) {
 		Metadata: qs.Metadata{
 			Date:           start_time,
 			Simulation:     "spectrum vs. mag. field",
-			Cpu:            "bsf",
+			Cpu:            "i7-1185G7",
 			Ram:            "32GB",
 			CompletionTime: elapsed_time.String(),
 		},
-		XYs: xys,
+		Config: conf.Physics,
+		XYs:    xys,
 	}
 	r.Write(conf.Files)
 }

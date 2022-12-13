@@ -13,6 +13,7 @@ func TestResultsIO_Write(t *testing.T) {
 	type fields struct {
 		Filename string
 		Metadata Metadata
+		Config   PhysicsConfig
 		XYs      plotter.XYs
 	}
 	type args struct {
@@ -29,6 +30,7 @@ func TestResultsIO_Write(t *testing.T) {
 			fields: fields{
 				Filename: "test_output_file",
 				Metadata: Metadata{"1", "2", "3", "4", "5"},
+				Config:   PhysicsConfig{"6", "7", "8", "9", "10"},
 				XYs:      plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}},
 			},
 			args: args{
@@ -37,7 +39,7 @@ func TestResultsIO_Write(t *testing.T) {
 					OutputsDir: "/tmp/",
 				},
 			},
-			want: [][]string{{"1", "2", "3", "4", "5"}, {"0.000000", "42.000000"}},
+			want: [][]string{{"1", "2", "3", "4", "5"}, {"6", "7", "8", "9", "10"}, {"0.000000", "42.000000"}},
 		},
 	}
 	for _, tt := range tests {
@@ -45,6 +47,7 @@ func TestResultsIO_Write(t *testing.T) {
 			r := &ResultsIO{
 				Filename: tt.fields.Filename,
 				Metadata: tt.fields.Metadata,
+				Config:   tt.fields.Config,
 				XYs:      tt.fields.XYs,
 			}
 			r.Write(tt.args.conf)
@@ -97,6 +100,13 @@ func TestRead(t *testing.T) {
 					Ram:            "4",
 					CompletionTime: "5",
 				},
+				Config: PhysicsConfig{
+					MoleculeMass: "6",
+					AtomMass:     "7",
+					BathCount:    "8",
+					Spin:         "9",
+					FieldRange:   "10",
+				},
 				XYs: plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}},
 			},
 		},
@@ -104,6 +114,7 @@ func TestRead(t *testing.T) {
 	for _, tt := range tests {
 		var lines = []string{
 			"1,2,3,4,5",
+			"6,7,8,9,10",
 			"0.000000,42.000000",
 		}
 		f, err := os.Create(tt.args.conf.OutputsDir + tt.args.fileName)
