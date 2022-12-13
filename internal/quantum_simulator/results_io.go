@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"strconv"
 
 	"gonum.org/v1/plot/plotter"
 )
@@ -34,7 +35,7 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	w := csv.NewWriter(file)
 	defer w.Flush()
 
-	meta := []string{r.Metadata.Date, r.Metadata.Cpu, r.Metadata.Ram, r.Metadata.Simulation, r.Metadata.CompletionTime}
+	meta := []string{r.Metadata.Date, r.Metadata.Simulation, r.Metadata.Cpu, r.Metadata.Ram, r.Metadata.CompletionTime}
 	if err := w.Write(meta); err != nil {
 		parse(err)
 	}
@@ -45,4 +46,37 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 		data = append(data, row)
 	}
 	w.WriteAll(data)
+}
+
+func Read(conf FilesConfig, fileName string) ResultsIO {
+	file, err := os.Open(conf.OutputsDir + fileName)
+	if err != nil {
+		parse(err)
+	}
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = -1
+	records, err := reader.ReadAll()
+	if err != nil {
+		parse(err)
+	}
+
+	r := ResultsIO{
+		Filename: fileName,
+		Metadata: Metadata{
+			Date:           records[0][0],
+			Simulation:     records[0][1],
+			Cpu:            records[0][2],
+			Ram:            records[0][3],
+			CompletionTime: records[0][4],
+		},
+	}
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		x, _ := strconv.ParseFloat(record[0], 64)
+		y, _ := strconv.ParseFloat(record[1], 64)
+		r.XYs = append(r.XYs, plotter.XY{X: x, Y: y})
+	}
+	return r
 }

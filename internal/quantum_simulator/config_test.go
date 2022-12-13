@@ -32,7 +32,7 @@ func TestLoadConfig(t *testing.T) {
 				FieldRange:   "1",
 			}, FilesConfig{
 				OutputsDir: "test/",
-                                FigDir: "figtest/",
+				FigDir:     "figtest/",
 			}},
 		},
 	}
@@ -46,7 +46,7 @@ func TestLoadConfig(t *testing.T) {
 			"  fieldrange: 1",
 			"files:",
 			"  outputsdir: test/",
-                        "  figdir: figtest/",
+			"  figdir: figtest/",
 		}
 		f, err := os.Create(tt.args.filename)
 		if err != nil {

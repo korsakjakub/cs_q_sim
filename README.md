@@ -32,6 +32,10 @@ $$ C_j = \frac{\mu_{\text{mol}} \mu_{\text{atom}}}{4 \pi \varepsilon_0 |\mathbf{
 
 Here $\theta_j$ is an angle between $\mathbf{R}_j$ and $Z$ axis
 
+### Units
+- $[\mu] = \text{Debye}$
+- $[R] = \mu m$
+- $[C] = h \cdot \text{Hz}$
 
 ### notes on anticipated Go's speed:
 - [spzala19/Multiprocessing-with-golang](https://github.com/spzala19/Multiprocessing-with-golang)
