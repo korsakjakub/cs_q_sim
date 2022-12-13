@@ -61,6 +61,10 @@ func TestResultsIO_Write(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("got: %v, want: %v", got, tt.want)
 			}
+			err = os.Remove(tt.args.conf.OutputsDir + tt.fields.Filename)
+			if err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -117,6 +121,10 @@ func TestRead(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Read(tt.args.conf, tt.args.fileName); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Read() = %v, want %v", got, tt.want)
+			}
+			err = os.Remove(tt.args.conf.OutputsDir + tt.args.fileName)
+			if err != nil {
+				t.Error(err)
 			}
 		})
 	}
