@@ -6,6 +6,7 @@
     * usage like: `eig, eigv := sys.diagonalize(params)` - done
     * procedure shall be concurrent - channel - done
 - `*_plot.go`
-  * functions for plotting interesting quantities
+  * functions for plotting interesting quantities - 1 plot scheme so far
 - `cmd/quantum_simulator/*.go`
   * in different files sweeps over different parameters so that calculations can be put in parallel 
+    - 1 simulation so far (could be more efficient for sure)
