@@ -31,7 +31,8 @@ func TestLoadConfig(t *testing.T) {
 				Spin:         "1",
 				FieldRange:   "1",
 			}, FilesConfig{
-				OutputDir: "test/",
+				OutputsDir: "test/",
+                                FigDir: "figtest/",
 			}},
 		},
 	}
@@ -44,7 +45,8 @@ func TestLoadConfig(t *testing.T) {
 			"  spin: 1.0",
 			"  fieldrange: 1",
 			"files:",
-			"  outputdir: test/",
+			"  outputsdir: test/",
+                        "  figdir: figtest/",
 		}
 		f, err := os.Create(tt.args.filename)
 		if err != nil {
