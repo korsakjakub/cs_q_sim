@@ -42,3 +42,4 @@ Here $\theta_j$ is an angle between $\mathbf{R}_j$ and $Z$ axis
 - [comparison for web-like tasks](https://djangostars.com/blog/my-story-with-golang/)
 - [general overview](https://www.stxnext.com/blog/go-go-python-rangers-comparing-python-and-golang/)
 - [tips on optimizing diagonalization speed to match numpy](https://github.com/gonum/gonum/issues/511)
+- [different strategies on utilizing CPU with Go](https://liamhieuvu.com/utilize-cpu-with-golang)
