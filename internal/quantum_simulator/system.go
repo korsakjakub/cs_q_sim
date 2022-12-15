@@ -132,3 +132,21 @@ func (s *System) Diagonalize(input <-chan Input, results chan<- Results) {
 		}
 	}
 }
+
+// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
+func (s *System) DiagonalizeBurst(input Input, results chan<- Results) {
+	n := input
+	var eig mat.Eigen
+	if err := eig.Factorize(n.Hamiltonian, mat.EigenRight); !err {
+		panic("cannot diagonalize")
+	}
+	dim, _ := n.Hamiltonian.Caps()
+	evec := mat.NewCDense(dim, dim, nil)
+	eig.VectorsTo(evec)
+
+	results <- Results{
+		EigenVectors: evec,
+		EigenValues:  eig.Values(nil),
+		B:            n.B,
+	}
+}
