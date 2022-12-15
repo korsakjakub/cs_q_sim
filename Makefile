@@ -15,7 +15,7 @@ all: build run
 
 build: ${binary_dir}${package}/main.go
 	go mod download
-	go build -o ${binary_path} ${binary_dir}${package}/main.go
+	go build -o ${binary_path} ${binary_dir}${package}/*.go
 
 test:
 	go test -v ${internal_path}/*.go

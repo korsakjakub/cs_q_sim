@@ -33,6 +33,10 @@ func TestLoadConfig(t *testing.T) {
 			}, FilesConfig{
 				OutputsDir: "test/",
 				FigDir:     "figtest/",
+				ResultsConfig: ResultsConfig{
+					Cpu: "2",
+					Ram: "3",
+				},
 			}},
 		},
 	}
@@ -47,6 +51,9 @@ func TestLoadConfig(t *testing.T) {
 			"files:",
 			"  outputsdir: test/",
 			"  figdir: figtest/",
+			"  results:",
+			"    cpu: 2",
+			"    ram: 3",
 		}
 		f, err := os.Create(tt.args.filename)
 		if err != nil {

@@ -16,8 +16,14 @@ type PhysicsConfig struct {
 }
 
 type FilesConfig struct {
-	FigDir     string `mapstructure:"figdir"`
-	OutputsDir string `mapstructure:"outputsdir"`
+	FigDir        string        `mapstructure:"figdir"`
+	OutputsDir    string        `mapstructure:"outputsdir"`
+	ResultsConfig ResultsConfig `mapstructure:"results"`
+}
+
+type ResultsConfig struct {
+	Cpu string `mapstructure:"cpu"`
+	Ram string `mapstructure:"ram"`
 }
 
 type Config struct {

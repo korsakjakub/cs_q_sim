@@ -53,7 +53,6 @@ func burstSpectrum(conf qs.Config) {
 		}(job)
 	}
 
-	// close(jobs)
 	wg.Wait()
 
 	for i := 0; i < fieldRange; i += 1 {
@@ -63,17 +62,17 @@ func burstSpectrum(conf qs.Config) {
 		}
 	}
 	close(results)
-	qs.Plot_spectrum_mag_field(xys, "first_plot.png", conf.Files)
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
+	qs.Plot_spectrum_mag_field(xys, start_time+".png", conf.Files)
 	r := qs.ResultsIO{
 		Filename: start_time,
 		Metadata: qs.Metadata{
 			Date:           start_time,
-			Simulation:     "spectrum vs. mag. field",
-			Cpu:            "i7-1185G7",
-			Ram:            "32GB",
+			Simulation:     "burst spectrum vs. mag. field",
+			Cpu:            conf.Files.ResultsConfig.Cpu,
+			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
 		},
 		Config: conf.Physics,
