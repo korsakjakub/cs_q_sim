@@ -34,7 +34,6 @@ func burstSpectrum(conf qs.Config) {
 	}
 
 	var xys plotter.XYs
-	// jobs := make(chan qs.Input, fieldRange)
 	results := make(chan qs.Results, fieldRange)
 	var jobs []qs.Input
 
@@ -73,8 +72,8 @@ func burstSpectrum(conf qs.Config) {
 		Metadata: qs.Metadata{
 			Date:           start_time,
 			Simulation:     "spectrum vs. mag. field",
-			Cpu:            "Xeon E5-2673 v4@2.30GHz",
-			Ram:            "8GB",
+			Cpu:            "i7-1185G7",
+			Ram:            "32GB",
 			CompletionTime: elapsed_time.String(),
 		},
 		Config: conf.Physics,
