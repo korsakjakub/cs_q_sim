@@ -4,13 +4,15 @@ import (
 	"math"
 	"math/cmplx"
 	"strconv"
+	"sync"
 	"time"
 
+	au "github.com/korsakjakub/cs_q_sim/internal/analysis_utilities"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/plot/plotter"
 )
 
-func balancedSpectrum(conf qs.Config) {
+func spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc, err := strconv.Atoi(conf.Physics.BathCount)
@@ -33,18 +35,26 @@ func balancedSpectrum(conf qs.Config) {
 	}
 
 	var xys plotter.XYs
-	jobs := make(chan qs.Input, fieldRange)
 	results := make(chan qs.Results, fieldRange)
-
-	go s.Diagonalize(jobs, results)
+	var jobs []qs.Input
 
 	for i := 0.0; i < float64(fieldRange); i += 1.0 {
 		b := i * 1e3
 		b0 := 1.0002 * b
-		jobs <- qs.Input{Hamiltonian: s.Hamiltonian(b0, b), B: b}
+		jobs = append(jobs, qs.Input{Hamiltonian: s.Hamiltonian(b0, b), B: b})
 	}
 
-	close(jobs)
+	var wg sync.WaitGroup
+	wg.Add(len(jobs))
+
+	for _, job := range jobs {
+		go func(j qs.Input) {
+			defer wg.Done()
+			s.Diagonalize(j, results)
+		}(job)
+	}
+
+	wg.Wait()
 
 	for i := 0; i < fieldRange; i += 1 {
 		v := <-results
@@ -56,12 +66,12 @@ func balancedSpectrum(conf qs.Config) {
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
-	qs.Plot_spectrum_mag_field(xys, start_time+".png", conf.Files)
+	au.PlotSpectrumMagField(xys, start_time+".png", conf.Files)
 	r := qs.ResultsIO{
 		Filename: start_time,
 		Metadata: qs.Metadata{
 			Date:           start_time,
-			Simulation:     "balanced spectrum vs. mag. field",
+			Simulation:     "burst spectrum vs. mag. field",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),

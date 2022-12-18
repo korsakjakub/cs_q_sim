@@ -10,7 +10,6 @@ var conf qs.Config
 
 func main() {
 	conf = qs.LoadConfig([]string{os.Getenv("CONFIG_PATH")}, os.Getenv("CONFIG_NAME"), os.Getenv("CONFIG_TYPE"))
-	// conf = qs.LoadConfig([]string{"config"})
-	burstSpectrum(conf)
-	balancedSpectrum(conf)
+	// conf = qs.LoadConfig([]string{"../../config/"})
+	spectrum(conf)
 }
