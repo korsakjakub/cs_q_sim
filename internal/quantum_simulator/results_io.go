@@ -54,8 +54,8 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	w.WriteAll(data)
 }
 
-func Read(conf FilesConfig, fileName string) ResultsIO {
-	file, err := os.Open(conf.OutputsDir + fileName)
+func Read(conf FilesConfig, filename string) ResultsIO {
+	file, err := os.Open(conf.OutputsDir + filename)
 	if err != nil {
 		parse(err)
 	}
@@ -67,7 +67,7 @@ func Read(conf FilesConfig, fileName string) ResultsIO {
 	}
 
 	r := ResultsIO{
-		Filename: fileName,
+		Filename: filename,
 		Metadata: Metadata{
 			Date:           records[0][0],
 			Simulation:     records[0][1],
