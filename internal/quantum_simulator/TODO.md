@@ -13,5 +13,6 @@
     - **1 simulation so far** (could be more efficient for sure)
 ## 13.12.2022
 - `results_io.go`
-  * save calculations outputs to csv files 
-  * read from csv into ResultsIO struct for easy plotting
+  * save calculations outputs to csv files **done**
+  * read from csv into ResultsIO struct for easy plotting **done**
+## 15-18.12.2022
