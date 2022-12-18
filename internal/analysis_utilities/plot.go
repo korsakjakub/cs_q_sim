@@ -1,13 +1,20 @@
-package quantum_simulator
+package analysis_utilities
 
 import (
+	"fmt"
 	"os"
 
+	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 )
 
-func Plot_spectrum_mag_field(xys plotter.XYs, filename string, conf FilesConfig) {
+func parse(err error) {
+	fmt.Println(err)
+	os.Exit(2)
+}
+
+func PlotSpectrumMagField(xys plotter.XYs, filename string, conf qs.FilesConfig) {
 	p := plot.New()
 	s, err := plotter.NewScatter(xys)
 	s.Radius = 1
@@ -30,4 +37,9 @@ func Plot_spectrum_mag_field(xys plotter.XYs, filename string, conf FilesConfig)
 	if err = f.Close(); err != nil {
 		parse(err)
 	}
+}
+
+func PlotSpectrumMagFieldFrom(filename string, conf qs.FilesConfig) {
+	r := qs.Read(conf, filename)
+	PlotSpectrumMagField(r.XYs, filename, conf)
 }
