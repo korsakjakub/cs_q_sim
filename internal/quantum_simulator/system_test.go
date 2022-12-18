@@ -261,11 +261,8 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			input := make(chan Input)
-			results := make(chan Results)
-			go s.Diagonalize(input, results)
-
-			input <- Input{Hamiltonian: tt.args.hamiltonian, B: 0.0}
+			results := make(chan Results, 10)
+			s.Diagonalize(Input{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
 
 			res := <-results
 
@@ -311,7 +308,7 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{
 				{0.0, 1.0}, {0.0, 2.0}, {0.0, 1.1}, {0.0, 1.2}, {0.0, 1.3},
 				{0.0, 1.4}, {0.0, 1.5}, {0.0, 1.6}, {0.0, 1.7}, {0.0, 1.8},
-			}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "8", Spin: "0.5"}},
+			}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "3", Spin: "0.5"}},
 			args: args{
 				b0: 1.0,
 				b:  3.0,
@@ -325,15 +322,8 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			input := make(chan Input)
-			results := make(chan Results)
-			go s.Diagonalize(input, results)
-
-			input <- Input{
-				Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b),
-				B:           0.0,
-			}
-			close(input)
+			results := make(chan Results, 10)
+			s.Diagonalize(Input{Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b), B: 0.0}, results)
 			res := <-results
 			evec := res.EigenVectors
 			_, vecs_count := evec.Dims()

@@ -76,9 +76,11 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 		parse(err)
 	}
 
-	h := manyBody(Sz(spin), 0, bc+1) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
-	h.Apply(func(i, j int, v float64) float64 { return v * (b0 - b) }, h)
-	return h
+	// h := manyBody(Sz(spin), 0, bc+1) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
+	var h mat.Dense
+	// h.Apply(func(i, j int, v float64) float64 { return v * (b0 - b) }, h)
+	h.Scale(b0-b, manyBody(Sz(spin), 0, bc+1))
+	return &h
 }
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
@@ -115,38 +117,18 @@ type Input struct {
 }
 
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) Diagonalize(input <-chan Input, results chan<- Results) {
+func (s *System) Diagonalize(input Input, results chan<- Results) {
 	var eig mat.Eigen
-	for n := range input {
-		if err := eig.Factorize(n.Hamiltonian, mat.EigenRight); !err {
-			panic("cannot diagonalize")
-		}
-		dim, _ := n.Hamiltonian.Caps()
-		evec := mat.NewCDense(dim, dim, nil)
-		eig.VectorsTo(evec)
-
-		results <- Results{
-			EigenVectors: evec,
-			EigenValues:  eig.Values(nil),
-			B:            n.B,
-		}
-	}
-}
-
-// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) DiagonalizeBurst(input Input, results chan<- Results) {
-	n := input
-	var eig mat.Eigen
-	if err := eig.Factorize(n.Hamiltonian, mat.EigenRight); !err {
+	if err := eig.Factorize(input.Hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
 	}
-	dim, _ := n.Hamiltonian.Caps()
+	dim, _ := input.Hamiltonian.Caps()
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 
 	results <- Results{
 		EigenVectors: evec,
 		EigenValues:  eig.Values(nil),
-		B:            n.B,
+		B:            input.B,
 	}
 }
