@@ -15,4 +15,8 @@
 - `results_io.go`
   * save calculations outputs to csv files **done**
   * read from csv into ResultsIO struct for easy plotting **done**
-## 15-18.12.2022
+## 19.12.2022
+- expected value of central spin with respect to time (and bath spins as well)
+- evolution of entanglement between certain pairs of bath spins (entropy)
+- dark states, bright states
+- classify eigenstates of H as bright or dark
