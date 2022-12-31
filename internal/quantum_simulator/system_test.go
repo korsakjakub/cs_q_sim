@@ -26,13 +26,13 @@ func TestSystem_forceAt(t *testing.T) {
 	}{
 		{
 			name:   "central",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1}},
 			args:   args{0},
 			want:   0.0,
 		},
 		{
 			name:   "test",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1}},
 			args:   args{1},
 			want:   -0.98865,
 		},
@@ -68,7 +68,7 @@ func TestSystem_hamiltonianHeisenbergTermAt(t *testing.T) {
 	}{
 		{
 			name:   "first",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1, Spin: 0.5}},
 			args:   args{1},
 			want: mat.NewDense(4, 4, []float64{
 				0.0, 0.0, 0.0, 0.0,
@@ -110,7 +110,7 @@ func TestSystem_hamiltonianMagneticTerm(t *testing.T) {
 	}{
 		{
 			name:   "test",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1, Spin: 0.5}},
 			args:   args{b0: 1.0, b: 3.0},
 			want: mat.NewDense(4, 4, []float64{
 				-1.0, 0.0, 0.0, 0.0,
@@ -152,7 +152,7 @@ func TestSystem_hamiltonian(t *testing.T) {
 	}{
 		{
 			name:   "test",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1, Spin: 0.5}},
 			args:   args{b0: 1.0, b: 3.0},
 			want: mat.NewDense(4, 4, []float64{
 				-1.0, 0.0, 0.0, 0.0,
@@ -163,7 +163,7 @@ func TestSystem_hamiltonian(t *testing.T) {
 		},
 		{
 			name:   "bigger_system",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}, {0.0, 2.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "2", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}, {0.0, 2.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 2, Spin: 0.5}},
 			args:   args{b0: 1.0, b: 3.0},
 			want: mat.NewDense(8, 8, []float64{
 				-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -209,7 +209,7 @@ func TestSystem_diagonalize(t *testing.T) {
 	}{
 		{
 			name:   "2-body",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "1", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 1, Spin: 0.5}},
 			args: args{
 				hamiltonian: mat.NewDense(4, 4, []float64{
 					-1.0, 0.0, 0.0, 0.0,
@@ -228,7 +228,7 @@ func TestSystem_diagonalize(t *testing.T) {
 		},
 		{
 			name:   "3-body",
-			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}, {0.0, 2.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "2", Spin: "0.5"}},
+			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{{0.0, 1.0}, {0.0, 2.0}}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 2, Spin: 0.5}},
 			args: args{
 				hamiltonian: mat.NewDense(8, 8, []float64{
 					-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -308,7 +308,7 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{
 				{0.0, 1.0}, {0.0, 2.0}, {0.0, 1.1}, {0.0, 1.2}, {0.0, 1.3},
 				{0.0, 1.4}, {0.0, 1.5}, {0.0, 1.6}, {0.0, 1.7}, {0.0, 1.8},
-			}, PhysicsConfig: PhysicsConfig{MoleculeMass: "1.1e-10", AtomMass: "1.0", BathCount: "3", Spin: "0.5"}},
+			}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, BathCount: 3, Spin: 0.5}},
 			args: args{
 				b0: 1.0,
 				b:  3.0,

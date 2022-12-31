@@ -25,11 +25,11 @@ func TestLoadConfig(t *testing.T) {
 				filename:       "/tmp/config123217318973.yaml",
 			},
 			want: Config{PhysicsConfig{
-				MoleculeMass: "1",
-				AtomMass:     "1",
-				BathCount:    "10",
-				Spin:         "1",
-				FieldRange:   "1",
+				MoleculeMass: 1.0,
+				AtomMass:     1.0,
+				BathCount:    10,
+				Spin:         1,
+				FieldRange:   1,
 			}, FilesConfig{
 				OutputsDir: "test/",
 				FigDir:     "figtest/",

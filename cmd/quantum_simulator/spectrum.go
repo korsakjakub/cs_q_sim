@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"math/cmplx"
-	"strconv"
 	"sync"
 	"time"
 
@@ -15,14 +14,8 @@ import (
 func spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
-	bc, err := strconv.Atoi(conf.Physics.BathCount)
-	if err != nil {
-		panic(err)
-	}
-	fieldRange, err := strconv.Atoi(conf.Physics.FieldRange)
-	if err != nil {
-		panic(err)
-	}
+	bc := conf.Physics.BathCount
+	fieldRange := conf.Physics.FieldRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
 		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
