@@ -58,9 +58,9 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
 func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
-	spin_dim := int(2.0*s.PhysicsConfig.Spin + 1.0)
+	spinDim := int(2.0*s.PhysicsConfig.Spin + 1.0)
 	bc := s.PhysicsConfig.BathCount
-	dim := int(math.Pow(float64(spin_dim), float64(bc)+1.0)) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
+	dim := int(math.Pow(float64(spinDim), float64(bc)+1.0)) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	h := mat.NewDense(dim, dim, nil)
 
 	for j := 0; j <= bc; j += 1 {
