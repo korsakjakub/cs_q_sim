@@ -20,7 +20,7 @@ func (u *StateVec) Norm() float64 {
 	return cblas128.Nrm2(cblas128.Vector(*u))
 }
 
-func (u *StateVec) At(time float64, energies []float64, eigenBasis []StateVec) *StateVec {
+func (u *StateVec) Evolve(time float64, energies []float64, eigenBasis []StateVec) *StateVec {
 	out := make([]complex128, len(eigenBasis))
 
 	for i, basisVector := range eigenBasis {

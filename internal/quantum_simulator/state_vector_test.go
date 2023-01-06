@@ -103,7 +103,7 @@ func TestStateVec_Norm(t *testing.T) {
 	}
 }
 
-func TestStateVec_At(t *testing.T) {
+func TestStateVec_Evolve(t *testing.T) {
 	type args struct {
 		time       float64
 		energies   []float64
@@ -138,7 +138,7 @@ func TestStateVec_At(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.u.At(tt.args.time, tt.args.energies, tt.args.eigenBasis); cmplx.Abs(got.Dot(tt.want))-1.0 > 1e-6 {
+			if got := tt.u.Evolve(tt.args.time, tt.args.energies, tt.args.eigenBasis); cmplx.Abs(got.Dot(tt.want))-1.0 > 1e-6 {
 				t.Errorf("StateVec.At() = %v, want %v", got, tt.want)
 			}
 		})
