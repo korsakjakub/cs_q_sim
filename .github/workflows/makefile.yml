@@ -5,10 +5,14 @@ on:
     branches: [ "main" ]
     paths-ignore:
       - '**.md'
+      - '**.yml'
+      - '**.yalm'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - '**.md'
+      - '**.yml'
+      - '**.yalm'
 
 jobs:
   build:
