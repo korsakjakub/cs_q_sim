@@ -30,7 +30,7 @@ func TestResultsIO_Write(t *testing.T) {
 			fields: fields{
 				Filename: "test_output_file",
 				Metadata: Metadata{"1", "2", "3", "4", "5"},
-				Config:   PhysicsConfig{"6", "7", "8", "9", "10"},
+				Config:   PhysicsConfig{6, 7, 8, 9, 10},
 				XYs:      plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}},
 			},
 			args: args{
@@ -101,11 +101,11 @@ func TestRead(t *testing.T) {
 					CompletionTime: "5",
 				},
 				Config: PhysicsConfig{
-					MoleculeMass: "6",
-					AtomMass:     "7",
-					BathCount:    "8",
-					Spin:         "9",
-					FieldRange:   "10",
+					MoleculeMass: 6,
+					AtomMass:     7,
+					BathCount:    8,
+					Spin:         9,
+					FieldRange:   10,
 				},
 				XYs: plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}},
 			},

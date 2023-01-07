@@ -8,11 +8,11 @@ import (
 )
 
 type PhysicsConfig struct {
-	MoleculeMass string `mapstructure:"moleculemass"`
-	AtomMass     string `mapstructure:"atommass"`
-	BathCount    string `mapstructure:"bathcount"`
-	Spin         string `mapstructure:"spin"`
-	FieldRange   string `mapstructure:"fieldrange"`
+	MoleculeMass float64
+	AtomMass     float64
+	BathCount    int
+	Spin         float64
+	FieldRange   int
 }
 
 type FilesConfig struct {

@@ -40,7 +40,7 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	if err := w.Write(meta); err != nil {
 		parse(err)
 	}
-	config := []string{r.Config.MoleculeMass, r.Config.AtomMass, r.Config.BathCount, r.Config.Spin, r.Config.FieldRange}
+	config := []string{fmt.Sprint(r.Config.MoleculeMass), fmt.Sprint(r.Config.AtomMass), fmt.Sprint(r.Config.BathCount), fmt.Sprint(r.Config.Spin), fmt.Sprint(r.Config.FieldRange)}
 	if err := w.Write(config); err != nil {
 		parse(err)
 	}
@@ -66,6 +66,27 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 		parse(err)
 	}
 
+	moleculeMass, err := strconv.ParseFloat(records[1][0], 64)
+	if err != nil {
+		parse(err)
+	}
+	atomMass, err := strconv.ParseFloat(records[1][1], 64)
+	if err != nil {
+		parse(err)
+	}
+	bathCount, err := strconv.Atoi(records[1][2])
+	if err != nil {
+		parse(err)
+	}
+	spin, err := strconv.ParseFloat(records[1][3], 64)
+	if err != nil {
+		parse(err)
+	}
+	fieldCount, err := strconv.Atoi(records[1][4])
+	if err != nil {
+		parse(err)
+	}
+
 	r := ResultsIO{
 		Filename: filename,
 		Metadata: Metadata{
@@ -76,11 +97,11 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 			CompletionTime: records[0][4],
 		},
 		Config: PhysicsConfig{
-			MoleculeMass: records[1][0],
-			AtomMass:     records[1][1],
-			BathCount:    records[1][2],
-			Spin:         records[1][3],
-			FieldRange:   records[1][4],
+			MoleculeMass: moleculeMass,
+			AtomMass:     atomMass,
+			BathCount:    bathCount,
+			Spin:         spin,
+			FieldRange:   fieldCount,
 		},
 	}
 	for i, record := range records {

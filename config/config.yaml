@@ -1,7 +1,7 @@
 physics:
   moleculemass: 1.0
-  atommass: 1.0
-  bathcount: 3
+  atommass: 5.0
+  bathcount: 6
   spin: 0.5
   fieldrange: 100
 files:
