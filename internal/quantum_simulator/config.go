@@ -8,11 +8,20 @@ import (
 )
 
 type PhysicsConfig struct {
-	MoleculeMass float64
-	AtomMass     float64
-	BathCount    int
-	Spin         float64
-	FieldRange   int
+	MoleculeMass        float64
+	AtomMass            float64
+	BathCount           int
+	Spin                float64
+	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
+	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
+}
+
+type SpectrumConfig struct {
+	FieldRange int
+}
+
+type SpinEvolutionConfig struct {
+	TimeRange int
 }
 
 type FilesConfig struct {

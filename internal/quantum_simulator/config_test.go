@@ -29,7 +29,9 @@ func TestLoadConfig(t *testing.T) {
 				AtomMass:     1.0,
 				BathCount:    10,
 				Spin:         1,
-				FieldRange:   1,
+				SpectrumConfig: SpectrumConfig{
+					FieldRange: 1,
+				},
 			}, FilesConfig{
 				OutputsDir: "test/",
 				FigDir:     "figtest/",
@@ -47,7 +49,8 @@ func TestLoadConfig(t *testing.T) {
 			"  atommass: 1.0",
 			"  bathcount: 10",
 			"  spin: 1.0",
-			"  fieldrange: 1",
+			"  spectrum:",
+			"    fieldrange: 1",
 			"files:",
 			"  outputsdir: test/",
 			"  figdir: figtest/",

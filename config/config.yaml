@@ -3,7 +3,10 @@ physics:
   atommass: 5.0
   bathcount: 6
   spin: 0.5
-  fieldrange: 100
+  spectrum:
+    fieldrange: 100
+  timeevolution:
+    timerange: 10
 files:
   figdir: figures/
   outputsdir: outputs/
