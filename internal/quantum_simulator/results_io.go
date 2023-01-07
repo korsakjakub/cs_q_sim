@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 
 	"gonum.org/v1/plot/plotter"
@@ -36,12 +37,27 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	w := csv.NewWriter(file)
 	defer w.Flush()
 
-	meta := []string{r.Metadata.Date, r.Metadata.Simulation, r.Metadata.Cpu, r.Metadata.Ram, r.Metadata.CompletionTime}
-	if err := w.Write(meta); err != nil {
+	metaValOf := reflect.ValueOf(r.Metadata)
+	metaType := metaValOf.Type()
+	metaStr := make([]string, metaType.NumField())
+
+	for i := 0; i < metaType.NumField(); i++ {
+		metaStr[i] = fmt.Sprint(metaValOf.Field(i).Interface())
+	}
+
+	if err := w.Write(metaStr); err != nil {
 		parse(err)
 	}
-	config := []string{fmt.Sprint(r.Config.MoleculeMass), fmt.Sprint(r.Config.AtomMass), fmt.Sprint(r.Config.BathCount), fmt.Sprint(r.Config.Spin), fmt.Sprint(r.Config.FieldRange)}
-	if err := w.Write(config); err != nil {
+
+	confValOf := reflect.ValueOf(r.Config)
+	confType := confValOf.Type()
+	confStr := make([]string, confType.NumField())
+
+	for i := 0; i < confType.NumField(); i++ {
+		confStr[i] = fmt.Sprint(confValOf.Field(i).Interface())
+	}
+
+	if err := w.Write(confStr); err != nil {
 		parse(err)
 	}
 
@@ -86,6 +102,10 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 	if err != nil {
 		parse(err)
 	}
+	timeRange, err := strconv.Atoi(records[1][5])
+	if err != nil {
+		parse(err)
+	}
 
 	r := ResultsIO{
 		Filename: filename,
@@ -97,11 +117,12 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 			CompletionTime: records[0][4],
 		},
 		Config: PhysicsConfig{
-			MoleculeMass: moleculeMass,
-			AtomMass:     atomMass,
-			BathCount:    bathCount,
-			Spin:         spin,
-			FieldRange:   fieldCount,
+			MoleculeMass:        moleculeMass,
+			AtomMass:            atomMass,
+			BathCount:           bathCount,
+			Spin:                spin,
+			SpectrumConfig:      SpectrumConfig{FieldRange: fieldCount},
+			SpinEvolutionConfig: SpinEvolutionConfig{TimeRange: timeRange},
 		},
 	}
 	for i, record := range records {
