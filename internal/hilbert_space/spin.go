@@ -1,4 +1,4 @@
-package quantum_simulator
+package hilbert_space
 
 import (
 	"math"

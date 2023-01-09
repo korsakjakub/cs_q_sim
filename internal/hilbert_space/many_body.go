@@ -1,11 +1,11 @@
-package quantum_simulator
+package hilbert_space
 
 import (
 	"gonum.org/v1/gonum/mat"
 )
 
 // Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'particle' <= 'dim'
-func manyBody(operator *mat.Dense, particle int, dim int) *mat.Dense {
+func ManyBody(operator *mat.Dense, particle int, dim int) *mat.Dense {
 	spin := float64(operator.RawMatrix().Cols-1) * 0.5
 	if particle > dim {
 		return operator

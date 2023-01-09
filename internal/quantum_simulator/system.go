@@ -3,6 +3,7 @@ package quantum_simulator
 import (
 	"math"
 
+	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -36,14 +37,14 @@ func (s *System) forceAt(j int) float64 {
 func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	spin := s.PhysicsConfig.Spin
 	dim := s.PhysicsConfig.BathCount + 1 // bc is the BathCount and the total amount of objects in our system is BathCount + 1
-	sm := Sm(spin)
-	sp := Sp(spin)
+	sm := hs.Sm(spin)
+	sp := hs.Sp(spin)
 
 	f := s.forceAt(j)
-	h := manyBody(sp, 0, dim)
-	h.Mul(h, manyBody(sm, j, dim))
-	h2 := manyBody(sm, 0, dim)
-	h2.Mul(h2, manyBody(sp, j, dim))
+	h := hs.ManyBody(sp, 0, dim)
+	h.Mul(h, hs.ManyBody(sm, j, dim))
+	h2 := hs.ManyBody(sm, 0, dim)
+	h2.Mul(h2, hs.ManyBody(sp, j, dim))
 	h.Add(h, h2)
 	h.Scale(f, h)
 	return h
@@ -52,7 +53,7 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 // Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
 func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 	var h mat.Dense
-	h.Scale(b0-b, manyBody(Sz(s.PhysicsConfig.Spin), 0, s.PhysicsConfig.BathCount+1))
+	h.Scale(b0-b, hs.ManyBody(hs.Sz(s.PhysicsConfig.Spin), 0, s.PhysicsConfig.BathCount+1))
 	return &h
 }
 
