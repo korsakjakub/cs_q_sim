@@ -14,7 +14,7 @@ func parse(err error) {
 	os.Exit(2)
 }
 
-func PlotSpectrumMagField(xys plotter.XYs, filename string, conf qs.FilesConfig) {
+func PlotBasic(xys plotter.XYs, filename string, conf qs.FilesConfig) {
 	p := plot.New()
 	s, err := plotter.NewScatter(xys)
 	s.Radius = 1
@@ -39,7 +39,7 @@ func PlotSpectrumMagField(xys plotter.XYs, filename string, conf qs.FilesConfig)
 	}
 }
 
-func PlotSpectrumMagFieldFrom(filename string, conf qs.FilesConfig) {
+func PlotBasicFrom(filename string, conf qs.FilesConfig) {
 	r := qs.Read(conf, filename)
-	PlotSpectrumMagField(r.XYs, filename, conf)
+	PlotBasic(r.XYs, filename, conf)
 }

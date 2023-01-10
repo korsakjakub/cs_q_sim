@@ -21,7 +21,8 @@ type SpectrumConfig struct {
 }
 
 type SpinEvolutionConfig struct {
-	TimeRange int
+	MagneticField float64
+	TimeRange     int
 }
 
 type FilesConfig struct {

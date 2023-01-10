@@ -6,6 +6,7 @@ physics:
   spectrum:
     fieldrange: 100
   timeevolution:
+    magField: 1.0
     timerange: 10
 files:
   figdir: figures/

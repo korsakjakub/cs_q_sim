@@ -30,7 +30,7 @@ func TestResultsIO_Write(t *testing.T) {
 			fields: fields{
 				Filename: "test_output_file",
 				Metadata: Metadata{"1", "2", "3", "4", "5"},
-				Config:   PhysicsConfig{6, 7, 8, 9, SpectrumConfig{10}, SpinEvolutionConfig{}},
+				Config:   PhysicsConfig{6, 7, 8, 9, SpectrumConfig{10}, SpinEvolutionConfig{MagneticField: 11.0}},
 				XYs:      plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}},
 			},
 			args: args{
@@ -39,7 +39,7 @@ func TestResultsIO_Write(t *testing.T) {
 					OutputsDir: "/tmp/",
 				},
 			},
-			want: [][]string{{"1", "2", "3", "4", "5"}, {"6", "7", "8", "9", "{10}", "{0}"}, {"0.000000", "42.000000"}},
+			want: [][]string{{"1", "2", "3", "4", "5"}, {"6", "7", "8", "9", "{10}", "{11 0}"}, {"0.000000", "42.000000"}},
 		},
 	}
 	for _, tt := range tests {

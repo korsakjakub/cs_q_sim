@@ -20,3 +20,6 @@
 - evolution of entanglement between certain pairs of bath spins (entropy)
 - dark states, bright states
 - classify eigenstates of H as bright or dark
+
+## 09.01.2023
+- hbar = 1
