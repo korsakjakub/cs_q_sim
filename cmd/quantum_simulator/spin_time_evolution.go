@@ -11,11 +11,20 @@ import (
 	"gonum.org/v1/plot/plotter"
 )
 
-func spectrum(conf qs.Config) {
+func spin_time_evolution(conf qs.Config) {
+	/*
+		Given:
+		- initial condition -> psi(t=0)
+		- hamiltonian <- system
+
+		Do:
+		- calculate \ket{\psi(t)} = \sum_j e^(-i E_j t) \ket{E_j}\bra{E_j} \ket{\psi(0)}
+		- plot ||psi(t)||
+	*/
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc := conf.Physics.BathCount
-	fieldRange := conf.Physics.SpectrumConfig.FieldRange
+	timeRange := conf.Physics.SpinEvolutionConfig.TimeRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
 		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
@@ -28,11 +37,11 @@ func spectrum(conf qs.Config) {
 	}
 
 	var xys plotter.XYs
-	results := make(chan qs.Results, fieldRange)
+	results := make(chan qs.Results, timeRange)
 	var jobs []qs.Input
 
-	for i := 0.0; i < float64(fieldRange); i += 1.0 {
-		b := i * 1e3
+	for i := 0.0; i < float64(timeRange); i += 1.0 {
+		b := conf.Physics.SpinEvolutionConfig.MagneticField
 		b0 := 1.0002 * b
 		jobs = append(jobs, qs.Input{Hamiltonian: s.Hamiltonian(b0, b), B: b})
 	}
@@ -49,7 +58,7 @@ func spectrum(conf qs.Config) {
 
 	wg.Wait()
 
-	for i := 0; i < fieldRange; i += 1 {
+	for i := 0; i < timeRange; i += 1 {
 		v := <-results
 		for _, ev := range v.EigenValues {
 			xys = append(xys, plotter.XY{X: v.B, Y: cmplx.Abs(ev)})
@@ -59,12 +68,12 @@ func spectrum(conf qs.Config) {
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
-	au.PlotBasic(xys, "spectrum-"+start_time+".png", conf.Files)
+	au.PlotBasic(xys, "spin-"+start_time+".png", conf.Files)
 	r := qs.ResultsIO{
 		Filename: start_time,
 		Metadata: qs.Metadata{
 			Date:           start_time,
-			Simulation:     "burst spectrum vs. mag. field",
+			Simulation:     "Central spin exp. val. evoluiton",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
