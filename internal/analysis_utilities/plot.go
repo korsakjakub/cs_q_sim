@@ -39,7 +39,7 @@ func PlotBasic(xys plotter.XYs, filename string, conf qs.FilesConfig) {
 	}
 }
 
-func PlotBasicFrom(filename string, conf qs.FilesConfig) {
-	r := qs.Read(conf, filename)
-	PlotBasic(r.XYs, filename, conf)
+func PlotBasicFrom(outputFilePath, figureFilePath string, conf qs.FilesConfig) {
+	r := qs.Read(conf, outputFilePath)
+	PlotBasic(r.XYs, figureFilePath, conf)
 }
