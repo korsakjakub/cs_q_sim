@@ -41,10 +41,10 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	sp := hs.Sp(spin)
 
 	f := s.forceAt(j)
-	h := hs.ManyBody(sp, 0, dim)
-	h.Mul(h, hs.ManyBody(sm, j, dim))
-	h2 := hs.ManyBody(sm, 0, dim)
-	h2.Mul(h2, hs.ManyBody(sp, j, dim))
+	h := hs.ManyBodyOperator(sp, 0, dim)
+	h.Mul(h, hs.ManyBodyOperator(sm, j, dim))
+	h2 := hs.ManyBodyOperator(sm, 0, dim)
+	h2.Mul(h2, hs.ManyBodyOperator(sp, j, dim))
 	h.Add(h, h2)
 	h.Scale(f, h)
 	return h
@@ -53,7 +53,7 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 // Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
 func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 	var h mat.Dense
-	h.Scale(b0-b, hs.ManyBody(hs.Sz(s.PhysicsConfig.Spin), 0, s.PhysicsConfig.BathCount+1))
+	h.Scale(b0-b, hs.ManyBodyOperator(hs.Sz(s.PhysicsConfig.Spin), 0, s.PhysicsConfig.BathCount+1))
 	return &h
 }
 
@@ -72,19 +72,8 @@ func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
 	return h
 }
 
-type Results struct {
-	EigenVectors *mat.CDense
-	EigenValues  []complex128
-	B            float64
-}
-
-type Input struct {
-	Hamiltonian *mat.Dense
-	B           float64
-}
-
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) Diagonalize(input Input, results chan<- Results) {
+func (s *System) Diagonalize(input DiagonalizationInput, results chan<- DiagonalizationResults) {
 	var eig mat.Eigen
 	if err := eig.Factorize(input.Hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
@@ -93,7 +82,7 @@ func (s *System) Diagonalize(input Input, results chan<- Results) {
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 
-	results <- Results{
+	results <- DiagonalizationResults{
 		EigenVectors: evec,
 		EigenValues:  eig.Values(nil),
 		B:            input.B,

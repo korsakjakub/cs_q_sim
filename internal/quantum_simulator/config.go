@@ -8,21 +8,22 @@ import (
 )
 
 type PhysicsConfig struct {
-	MoleculeMass        float64
-	AtomMass            float64
-	BathCount           int
-	Spin                float64
+	MoleculeMass        float64             `mapstructure:"moleculemass"`
+	AtomMass            float64             `mapstructure:"atommass"`
+	BathCount           int                 `mapstructure:"bathcount"`
+	Spin                float64             `mapstructure:"spin"`
 	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
 	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
 }
 
 type SpectrumConfig struct {
-	FieldRange int
+	FieldRange int `mapstructure:"fieldrange"`
 }
 
 type SpinEvolutionConfig struct {
-	MagneticField float64
-	TimeRange     int
+	MagneticField float64   `mapstructure:"magfield"`
+	TimeRange     int       `mapstructure:"timerange"`
+	InitialKet    []float64 `mapstructure:"initialket"`
 }
 
 type FilesConfig struct {
