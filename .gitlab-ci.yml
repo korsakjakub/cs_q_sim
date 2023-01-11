@@ -2,5 +2,3 @@ include:
   - local: .gitlab/on_push.yml
 on_push:
   script: echo "test"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
