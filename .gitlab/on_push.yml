@@ -3,7 +3,7 @@ image: golang:1.19
 stages:
   - test
   - build
-  
+
 format:
   stage: test
   script:
