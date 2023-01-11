@@ -17,8 +17,8 @@ func spin_time_evolution(conf qs.Config) {
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.SpinEvolutionConfig.TimeRange
 	spin := conf.Physics.Spin
-	initialKet := hs.KetFromFloats(conf.Physics.SpinEvolutionConfig.InitialKet)
-	observable := hs.Observable{Dense: mat.Dense(*hs.ManyBodyOperator(hs.Sz(spin), 0, bc))}
+	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.SpinEvolutionConfig.InitialKet, int(2*spin+1)))
+	observable := hs.Observable{Dense: mat.Dense(*hs.ManyBodyOperator(hs.Sz(spin), 0, bc+1))}
 
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
@@ -32,7 +32,7 @@ func spin_time_evolution(conf qs.Config) {
 	}
 
 	b := conf.Physics.SpinEvolutionConfig.MagneticField
-	b0 := 1.0002 * b
+	b0 := 1.002 * b
 	diagJob := qs.DiagonalizationInput{Hamiltonian: s.Hamiltonian(b0, b), B: b}
 	diagOuts := make(chan qs.DiagonalizationResults)
 

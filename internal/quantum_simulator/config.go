@@ -21,9 +21,9 @@ type SpectrumConfig struct {
 }
 
 type SpinEvolutionConfig struct {
-	MagneticField float64   `mapstructure:"magfield"`
-	TimeRange     int       `mapstructure:"timerange"`
-	InitialKet    []float64 `mapstructure:"initialket"`
+	MagneticField float64 `mapstructure:"magfield"`
+	TimeRange     int     `mapstructure:"timerange"`
+	InitialKet    string  `mapstructure:"initialket"`
 }
 
 type FilesConfig struct {
