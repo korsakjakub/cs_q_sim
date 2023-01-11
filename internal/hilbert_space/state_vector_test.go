@@ -189,12 +189,65 @@ func TestKetsFromMatrix(t *testing.T) {
 		args args
 		want []*StateVec
 	}{
-		// TODO: Add test cases.
+		{
+			name: "single ket",
+			args: args{
+				mat: mat.NewCDense(2, 1, []complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
+			},
+			want: []*StateVec{
+				NewKet([]complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
+			},
+		},
+		{
+			name: "three kets",
+			args: args{
+				mat: mat.NewCDense(2, 3, []complex128{
+					complex(1.0, 0.0), complex(3.0, 0.0), complex(5.0, 0.0),
+					complex(2.0, 0.0), complex(4.0, 0.0), complex(6.0, 0.0)}),
+			},
+			want: []*StateVec{
+				NewKet([]complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
+				NewKet([]complex128{complex(3.0, 0.0), complex(4.0, 0.0)}),
+				NewKet([]complex128{complex(5.0, 0.0), complex(6.0, 0.0)}),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := KetsFromMatrix(tt.args.mat); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("KetsFromMatrix() = %v, want %v", got, tt.want)
+			got := KetsFromMatrix(tt.args.mat)
+			if len(got) != len(tt.want) {
+				t.Errorf("Outputs dimensions mismatch. Want: %v, got %v", len(got), len(tt.want))
+			}
+			for i := 0; i < len(got); i++ {
+				if !mat.CEqual(mat.NewCDense(len(got[i].Data), 1, got[i].Data), mat.NewCDense(len(tt.want[i].Data), 1, tt.want[i].Data)) {
+					t.Errorf("KetsFromMatrix() = %v, want %v", got[i], tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestNewKetReal(t *testing.T) {
+	type args struct {
+		elements []float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want *StateVec
+	}{
+		{
+			name: "simple",
+			args: args{
+				elements: []float64{1.0, 0.0, -1.0},
+			},
+			want: &StateVec{N: 3, Inc: 1, Data: []complex128{complex(1.0, 0.0), complex(0.0, 0.0), complex(-1.0, 0.0)}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewKetReal(tt.args.elements); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewKetReal() = %v, want %v", got, tt.want)
 			}
 		})
 	}
