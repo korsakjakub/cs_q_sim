@@ -1,20 +1,6 @@
-image: golang:1.19
-
-stages:
-  - test
-  - build
-  
-format:
-  stage: test
-  script:
-    - go fmt $(go list ./...)
-    - go vet $(go list ./...)
-    - make test
-
-compile:
-  stage: build
-  script:
-    - make build
-  artifacts:
-    paths:
-      - cmd
+include: 
+  - local: .gitlab/on_push.yml
+on_push:
+  script: echo "test"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
