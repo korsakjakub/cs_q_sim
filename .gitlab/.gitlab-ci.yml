@@ -14,7 +14,7 @@ compile:
   stage: build
   script:
     - make build
-    - mv /cmd/qsim.out /artifacts/
+    - mv cmd/qsim.out /artifacts/
   artifacts:
     paths:
       - qsim.out
