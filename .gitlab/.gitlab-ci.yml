@@ -19,11 +19,9 @@ build:
   stage: build
   script:
     - make build
-    - mkdir -p /artifacts/
-    - mv cmd/qsim.out /artifacts/
   artifacts:
     paths:
-      - /artifacts/qsim.out
+      - cmd/qsim.out
   only: 
     - main
 
