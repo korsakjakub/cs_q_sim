@@ -15,7 +15,7 @@ compile:
     - make build
 
 deploy:
-  image: gitlab/gitlab-runner:latest
+  image: docker:latest
   stage: deploy
   script:
     - docker build -t cs_q_sim .
