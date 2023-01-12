@@ -23,7 +23,7 @@ build:
     - mv cmd/qsim.out /artifacts/
   artifacts:
     paths:
-      - qsim.out
+      - /artifacts/qsim.out
   only: 
     - main
 
