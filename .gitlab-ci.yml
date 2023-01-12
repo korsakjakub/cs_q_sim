@@ -3,7 +3,6 @@ image: golang:1.18
 format:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-#    - if: $CI_PIPELINE_SOURCE == "push"
   stage: test
   script:
     - go fmt $(go list ./internal/...)

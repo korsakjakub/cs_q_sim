@@ -28,20 +28,20 @@ func spectrum(conf qs.Config) {
 	}
 
 	var xys plotter.XYs
-	results := make(chan qs.Results, fieldRange)
-	var jobs []qs.Input
+	results := make(chan qs.DiagonalizationResults, fieldRange)
+	var jobs []qs.DiagonalizationInput
 
 	for i := 0.0; i < float64(fieldRange); i += 1.0 {
 		b := i * 1e3
 		b0 := 1.0002 * b
-		jobs = append(jobs, qs.Input{Hamiltonian: s.Hamiltonian(b0, b), B: b})
+		jobs = append(jobs, qs.DiagonalizationInput{Hamiltonian: s.Hamiltonian(b0, b), B: b})
 	}
 
 	var wg sync.WaitGroup
 	wg.Add(len(jobs))
 
 	for _, job := range jobs {
-		go func(j qs.Input) {
+		go func(j qs.DiagonalizationInput) {
 			defer wg.Done()
 			s.Diagonalize(j, results)
 		}(job)
