@@ -1,5 +1,21 @@
-include: 
-  - local: .gitlab/on_push.yml
+image: golang:1.18
 
-buildTest:
-  extends: .on_push
+format:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#    - if: $CI_PIPELINE_SOURCE == "push"
+  stage: test
+  script:
+    - go fmt $(go list ./internal/...)
+    - go vet $(go list ./internal/...)
+    - make test
+
+compile:
+  stage: build
+  script:
+    - make build
+
+deploy:
+  stage: deploy
+  script: echo "Define your deployment script!"
+  environment: production
