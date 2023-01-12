@@ -35,7 +35,7 @@ func TestLoadConfig(t *testing.T) {
 				SpinEvolutionConfig: SpinEvolutionConfig{
 					MagneticField: 1,
 					TimeRange:     2,
-					InitialKet:    []float64{1.0, 1.0, -0.5, 0.5},
+					InitialKet:    "uu",
 				},
 			}, FilesConfig{
 				OutputsDir: "test/",
@@ -59,11 +59,7 @@ func TestLoadConfig(t *testing.T) {
 			"  timeevolution:",
 			"    magfield: 1",
 			"    timerange: 2",
-			"    initialket:",
-			"      - 1",
-			"      - 1",
-			"      - -0.5",
-			"      - 0.5",
+			"    initialket: uu",
 			"files:",
 			"  outputsdir: test/",
 			"  figdir: figtest/",

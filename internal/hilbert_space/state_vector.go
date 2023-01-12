@@ -13,6 +13,14 @@ func NewKet(elements []complex128) *StateVec {
 	return &StateVec{N: len(elements), Inc: 1, Data: elements}
 }
 
+func NewKetReal(elements []float64) *StateVec {
+	data := make([]complex128, len(elements))
+	for i, el := range elements {
+		data[i] = complex(el, 0.0)
+	}
+	return &StateVec{N: len(elements), Inc: 1, Data: data}
+}
+
 func (u *StateVec) Dot(v *StateVec) complex128 {
 	return cblas128.Dotc(cblas128.Vector(*u), cblas128.Vector(*v))
 }
@@ -43,13 +51,13 @@ func KetFromFloats(elements []float64) *StateVec {
 
 func KetsFromMatrix(mat mat.CMatrix) []*StateVec {
 	rows, cols := mat.Dims()
-	out := make([]*StateVec, rows)
-	for row := 0; row < rows; row++ {
-		tmp := make([]complex128, cols)
-		for col := 0; col < cols; col++ {
-			tmp[col] = mat.At(row, col)
+	out := make([]*StateVec, cols)
+	for col := 0; col < cols; col++ {
+		tmp := make([]complex128, rows)
+		for row := 0; row < rows; row++ {
+			tmp[row] = mat.At(row, col)
 		}
-		out[row] = NewKet(tmp)
+		out[col] = NewKet(tmp)
 	}
 	return out
 }

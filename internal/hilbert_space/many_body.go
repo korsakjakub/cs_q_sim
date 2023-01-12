@@ -35,22 +35,30 @@ func ManyBodyOperator(operator *mat.Dense, particle int, dim int) *mat.Dense {
 	return &n
 }
 
-func ManyBodyVector(states string, dim int) {
-	if len(states)%2 != 0 {
-		panic("Odd length of input string")
-	}
-	for i, state := range states {
-		if state == 'u' {
-			receiver.Kronecker(mat.NewDense(dim, 1, []float64{1.0, 0.0}))
-		} else if state == 'd' {
-			s := mat.NewDense(dim, 1, []float64{0.0, 1.0})
-		} else if state == 'p' {
-			s := mat.NewDense(dim, 1, []float64{1.0 / math.Sqrt2, 1.0 / math.Sqrt2})
-		} else if state == 'm' {
-			s := mat.NewDense(dim, 1, []float64{1.0 / math.Sqrt2, -1.0 / math.Sqrt2})
-		} else {
+func ManyBodyVector(states string, dim int) []float64 {
+	var u *mat.Dense
+
+	for _, state := range states {
+		var addition *mat.Dense
+		switch state {
+		case 'u':
+			addition = mat.NewDense(dim, 1, []float64{1.0, 0.0})
+		case 'd':
+			addition = mat.NewDense(dim, 1, []float64{0.0, 1.0})
+		case 'p':
+			addition = mat.NewDense(dim, 1, []float64{1.0 / math.Sqrt2, 1.0 / math.Sqrt2})
+		case 'm':
+			addition = mat.NewDense(dim, 1, []float64{1.0 / math.Sqrt2, -1.0 / math.Sqrt2})
+		default:
 			panic("Unknown state")
 		}
-
+		var temp mat.Dense
+		if u != nil {
+			temp.Kronecker(u, addition)
+			u = &temp
+		} else {
+			u = addition
+		}
 	}
+	return u.RawMatrix().Data
 }

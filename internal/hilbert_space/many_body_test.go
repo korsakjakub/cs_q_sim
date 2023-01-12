@@ -1,6 +1,7 @@
 package hilbert_space
 
 import (
+	"math"
 	"reflect"
 	"testing"
 
@@ -97,6 +98,51 @@ func Test_many_body(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := ManyBodyOperator(tt.args.operator, tt.args.particle, tt.args.dim); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("many_body() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestManyBodyVector(t *testing.T) {
+	type args struct {
+		states string
+		dim    int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []float64
+	}{
+		{
+			name: "two 1 kets",
+			args: args{
+				states: "uu",
+				dim:    2,
+			},
+			want: []float64{
+				1.0, 0.0, 0.0, 0.0,
+			},
+		},
+		{
+			name: "random state",
+			args: args{
+				states: "udmpu",
+				dim:    2,
+			},
+			want: []float64{
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0, -0.5, 0.0, -0.5, 0.0,
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ManyBodyVector(tt.args.states, tt.args.dim); !mat.EqualApprox(
+				mat.NewDense(int(math.Pow(float64(tt.args.dim), float64(len(tt.args.states)))), 1, got),
+				mat.NewDense(int(math.Pow(float64(tt.args.dim), float64(len(tt.args.states)))), 1, tt.want),
+				1e-6,
+			) {
 				t.Errorf("many_body() = %v, want %v", got, tt.want)
 			}
 		})
