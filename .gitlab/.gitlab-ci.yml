@@ -16,5 +16,9 @@ compile:
 
 deploy:
   stage: deploy
-  script: echo "Define your deployment script!"
-  environment: production
+  script:
+    - docker build -t cs_q_sim .
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
+    - docker push cs_q_sim
+  only:
+    - main
