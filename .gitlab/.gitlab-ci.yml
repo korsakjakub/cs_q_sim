@@ -16,6 +16,8 @@ compile:
 
 deploy:
   image: docker:latest
+  services:
+    - docker:dind
   stage: deploy
   script:
     - docker build -t cs_q_sim -f build/Dockerfile .
