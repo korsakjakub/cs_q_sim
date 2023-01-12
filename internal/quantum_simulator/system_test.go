@@ -261,8 +261,8 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			results := make(chan Results, 10)
-			s.Diagonalize(Input{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
+			results := make(chan DiagonalizationResults, 10)
+			s.Diagonalize(DiagonalizationInput{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
 
 			res := <-results
 
@@ -322,8 +322,8 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			results := make(chan Results, 10)
-			s.Diagonalize(Input{Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b), B: 0.0}, results)
+			results := make(chan DiagonalizationResults, 10)
+			s.Diagonalize(DiagonalizationInput{Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b), B: 0.0}, results)
 			res := <-results
 			evec := res.EigenVectors
 			_, vecs_count := evec.Dims()

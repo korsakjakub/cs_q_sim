@@ -32,6 +32,11 @@ func TestLoadConfig(t *testing.T) {
 				SpectrumConfig: SpectrumConfig{
 					FieldRange: 1,
 				},
+				SpinEvolutionConfig: SpinEvolutionConfig{
+					MagneticField: 1,
+					TimeRange:     2,
+					InitialKet:    "uu",
+				},
 			}, FilesConfig{
 				OutputsDir: "test/",
 				FigDir:     "figtest/",
@@ -51,6 +56,10 @@ func TestLoadConfig(t *testing.T) {
 			"  spin: 1.0",
 			"  spectrum:",
 			"    fieldrange: 1",
+			"  timeevolution:",
+			"    magfield: 1",
+			"    timerange: 2",
+			"    initialket: uu",
 			"files:",
 			"  outputsdir: test/",
 			"  figdir: figtest/",
