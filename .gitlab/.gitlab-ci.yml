@@ -2,6 +2,7 @@ format:
   image: golang:1.18
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "push"
   stage: test
   script:
     - go fmt $(go list ./internal/...)
@@ -13,15 +14,21 @@ compile:
   stage: build
   script:
     - make build
+    - mv /cmd/qsim.out /artifacts/
+  artifacts:
+    paths:
+      - qsim.out
+  only: 
+    - main
 
 deploy:
-  image: docker:latest
-  services:
-    - docker:dind
   stage: deploy
   script:
-    - docker build -t cs_q_sim -f build/Dockerfile .
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
-    - docker push cs_q_sim
+    - git config --global user.email "jakub@korsak.xyz"
+    - git config --global user.name "GitLab CI (JK)"
+    - git tag $(date +'%Y%m%d%H%M%S')
+    - git push --tags
+  dependencies:
+    - compile
   only:
     - main
