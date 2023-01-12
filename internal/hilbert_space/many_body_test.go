@@ -96,7 +96,7 @@ func Test_many_body(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ManyBody(tt.args.operator, tt.args.particle, tt.args.dim); !reflect.DeepEqual(got, tt.want) {
+			if got := ManyBodyOperator(tt.args.operator, tt.args.particle, tt.args.dim); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("many_body() = %v, want %v", got, tt.want)
 			}
 		})

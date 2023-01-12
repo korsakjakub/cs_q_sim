@@ -6,8 +6,11 @@ physics:
   spectrum:
     fieldrange: 100
   timeevolution:
-    magField: 1.0
+    magfield: 1.0
     timerange: 10
+    initialket:
+      - 1
+      - 0.0
 files:
   figdir: figures/
   outputsdir: outputs/
