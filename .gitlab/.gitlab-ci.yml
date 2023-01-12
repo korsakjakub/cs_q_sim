@@ -1,4 +1,9 @@
-format:
+stages:
+  - test
+  - build
+  - create_release
+
+test:
   image: golang:1.18
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -9,11 +14,12 @@ format:
     - go vet $(go list ./internal/...)
     - make test
 
-compile:
+build:
   image: golang:1.18
   stage: build
   script:
     - make build
+    - mkdir -p /artifacts/
     - mv cmd/qsim.out /artifacts/
   artifacts:
     paths:
@@ -21,14 +27,14 @@ compile:
   only: 
     - main
 
-deploy:
-  stage: deploy
+create_release:
+  stage: create_release
   script:
     - git config --global user.email "jakub@korsak.xyz"
     - git config --global user.name "GitLab CI (JK)"
     - git tag $(date +'%Y%m%d%H%M%S')
     - git push --tags
   dependencies:
-    - compile
+    - build
   only:
     - main
