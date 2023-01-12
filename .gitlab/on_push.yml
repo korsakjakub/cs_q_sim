@@ -1,20 +1,10 @@
 image: golang:1.19
 
-stages:
-  - test
-  - build
-
-format:
-  stage: test
+.on_push:
+  rules:
+    if: $CI_COMMIT_BRANCH == "main"
   script:
     - go fmt $(go list ./...)
     - go vet $(go list ./...)
     - make test
-
-compile:
-  stage: build
-  script:
     - make build
-  artifacts:
-    paths:
-      - cmd

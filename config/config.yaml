@@ -1,13 +1,14 @@
 physics:
   moleculemass: 1.0
-  atommass: 5.0
-  bathcount: 6
+  atommass: 2.0
+  bathcount: 7
   spin: 0.5
   spectrum:
     fieldrange: 100
   timeevolution:
-    magField: 1.0
-    timerange: 10
+    magfield: 1e5
+    timerange: 100
+    initialket: dduuuuuu
 files:
   figdir: figures/
   outputsdir: outputs/

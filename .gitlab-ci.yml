@@ -1,4 +1,0 @@
-include: 
-  - local: .gitlab/on_push.yml
-on_push:
-  script: echo "test"

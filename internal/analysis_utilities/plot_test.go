@@ -2,7 +2,6 @@ package analysis_utilities
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -72,7 +71,13 @@ func TestPlotBasicFrom(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ioutil.WriteFile(tt.args.conf.OutputsDir+tt.args.outputFilePath, []byte(tt.args.output), 0644)
+			f, err := os.Create(tt.args.conf.OutputsDir + tt.args.outputFilePath)
+			if err != nil {
+				t.Errorf("could not write output file")
+			}
+			defer f.Close()
+			f.WriteString(tt.args.output)
+
 			PlotBasicFrom(tt.args.outputFilePath, tt.args.figureFilePath, tt.args.conf)
 		})
 		if _, err := os.Stat(tt.args.conf.FigDir + tt.args.figureFilePath); errors.Is(err, os.ErrNotExist) {
