@@ -18,7 +18,7 @@ deploy:
   image: docker:latest
   stage: deploy
   script:
-    - docker build -t cs_q_sim .
+    - make docker-build
     - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
     - docker push cs_q_sim
   only:
