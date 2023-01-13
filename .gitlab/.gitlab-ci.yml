@@ -28,24 +28,27 @@ build:
 
 create_release:
   stage: create_release
+  variables:
+    DOCKER_IMAGE_TAG:
+      value: "latest"
   script:
     - git config --global user.email "jakub@korsak.xyz"
     - git config --global user.name "GitLab CI (JK)"
     - git tag $(date +'%Y%m%d%H%M%S')
     - git push --tags https://${PUSH_TOKEN_NAME}:${PUSH_TOKEN}@gitlab.com/korsakjakub/cs_q_sim.git
-  dependencies:
-    - build
   only:
-    - main
+    - web
 
 build_push_docker:
   image: docker:stable
   stage: build_push_docker
   variables:
+    DOCKER_IMAGE_TAG:
+      value: "latest"
     REPO_NAME: cs_q_sim
   script:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
     - docker build -t $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA -f build/Dockerfile .
     - docker push $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA
   only:
-    - main
+   - web
