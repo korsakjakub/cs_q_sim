@@ -45,7 +45,7 @@ build_push_docker:
     REPO_NAME: cs_q_sim
   script:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
-    - docker build -t $REPO_NAME:$CI_COMMIT_SHORT_SHA -f build/Dockerfile .
+    - docker build -t $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA -f build/Dockerfile .
     - docker push $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA
   only:
     - main
