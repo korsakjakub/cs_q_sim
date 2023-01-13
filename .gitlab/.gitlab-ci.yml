@@ -2,6 +2,7 @@ stages:
   - test
   - build
   - create_release
+  - build_push_docker
 
 test:
   image: golang:1.18
@@ -34,5 +35,16 @@ create_release:
     - git push --tags https://${PUSH_TOKEN_NAME}:${PUSH_TOKEN}@gitlab.com/korsakjakub/cs_q_sim.git
   dependencies:
     - build
+  only:
+    - main
+
+build_push_docker:
+  image: docker:stable
+  stage: build_push_docker
+  variables:
+    CI_DOCKER_REPO: $CI_REGISTRY/korsakjakub/cs_q_sim
+  script:
+    - docker build -t $CI_DOCKER_REPO:$CI_COMMIT_SHORT_SHA -f build/Dockerfile .
+    - docker push $CI_DOCKER_REPO:$CI_COMMIT_SHORT_SHA
   only:
     - main
