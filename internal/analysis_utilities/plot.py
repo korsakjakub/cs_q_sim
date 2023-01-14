@@ -23,4 +23,4 @@ def plot(outdir, figdir, filename):
     plt.savefig(f"{figdir}/plt-{filename}.png")
 
 if __name__ == '__main__':
-    plot("outputs", "figures", "2023-01-14T11:28:54+01:00")
+    plot("outputs", "figures", "2023-01-14T12:52:24+01:00")
