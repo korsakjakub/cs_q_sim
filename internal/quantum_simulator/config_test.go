@@ -27,10 +27,10 @@ func TestLoadConfig(t *testing.T) {
 			want: Config{PhysicsConfig{
 				MoleculeMass: 1.0,
 				AtomMass:     1.0,
-				BathCount:    10,
 				Spin:         1,
 				SpectrumConfig: SpectrumConfig{
 					FieldRange: 1,
+					BathCount:  10,
 				},
 				SpinEvolutionConfig: SpinEvolutionConfig{
 					MagneticField: 1,
@@ -52,10 +52,10 @@ func TestLoadConfig(t *testing.T) {
 			"physics:",
 			"  moleculemass: 1.0",
 			"  atommass: 1.0",
-			"  bathcount: 10",
 			"  spin: 1.0",
 			"  spectrum:",
 			"    fieldrange: 1",
+			"    bathcount: 10",
 			"  timeevolution:",
 			"    magfield: 1",
 			"    timerange: 2",

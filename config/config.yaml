@@ -1,17 +1,17 @@
 physics:
   moleculemass: 1.0
   atommass: 2.0
-  bathcount: 7
   spin: 0.5
   spectrum:
     fieldrange: 100
+    bathcount: 4
   timeevolution:
-    magfield: 1e5
-    timerange: 100
-    initialket: dduuuuuu
+    magfield: 0.1
+    timerange: 1000
+    initialket: uuu
 files:
   figdir: figures/
   outputsdir: outputs/
   results:
-    cpu: "i7-1185G7"
+    cpu: "ryzen 5800x"
     ram: "32GB"
