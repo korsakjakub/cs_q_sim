@@ -16,12 +16,12 @@ func parse(err error) {
 
 func PlotBasic(xys plotter.XYs, filename string, conf qs.FilesConfig) {
 	p := plot.New()
-	s, err := plotter.NewScatter(xys)
+	l, s, err := plotter.NewLinePoints(xys)
 	s.Radius = 1
 	if err != nil {
 		parse(err)
 	}
-	p.Add(s)
+	p.Add(l, s)
 	wt, err := p.WriterTo(512, 512, "png")
 	if err != nil {
 		parse(err)
