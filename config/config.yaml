@@ -7,8 +7,8 @@ physics:
     bathcount: 4
   timeevolution:
     magfield: 0.1
-    timerange: 1000
-    initialket: uuu
+    timerange: 100
+    initialket: uu
 files:
   figdir: figures/
   outputsdir: outputs/

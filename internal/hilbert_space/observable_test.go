@@ -1,6 +1,7 @@
 package hilbert_space
 
 import (
+	"math"
 	"testing"
 
 	"gonum.org/v1/gonum/mat"
@@ -47,13 +48,33 @@ func TestObservable_ExpectationValue(t *testing.T) {
 			},
 			want: -1.0,
 		},
+		{
+			name: "Ket(0) x Ket(0) and 1/2 S_z^0",
+			fields: fields{
+				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
+			},
+			args: args{
+				state: *NewKetReal(ManyBodyVector("uu", 2)),
+			},
+			want: 0.5,
+		},
+		{
+			name: "Ket(+) x Ket(0) and 1/2 S_z^0",
+			fields: fields{
+				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
+			},
+			args: args{
+				state: *NewKetReal(ManyBodyVector("pu", 2)),
+			},
+			want: 0.0,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			o := Observable{
 				Dense: tt.fields.Dense,
 			}
-			if got := o.ExpectationValue(&tt.args.state); got != tt.want {
+			if got := o.ExpectationValue(&tt.args.state); math.Abs(got-tt.want) > 1e-14 {
 				t.Errorf("Observable.ExpectationValue() = %v, want %v", got, tt.want)
 			}
 		})
