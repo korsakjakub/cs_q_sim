@@ -10,13 +10,13 @@ import (
 type PhysicsConfig struct {
 	MoleculeMass        float64             `mapstructure:"moleculemass"`
 	AtomMass            float64             `mapstructure:"atommass"`
-	BathCount           int                 `mapstructure:"bathcount"`
 	Spin                float64             `mapstructure:"spin"`
 	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
 	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
 }
 
 type SpectrumConfig struct {
+	BathCount  int `mapstructure:"bathcount"`
 	FieldRange int `mapstructure:"fieldrange"`
 }
 

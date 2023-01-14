@@ -119,9 +119,8 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 		Config: PhysicsConfig{
 			MoleculeMass:        moleculeMass,
 			AtomMass:            atomMass,
-			BathCount:           bathCount,
 			Spin:                spin,
-			SpectrumConfig:      SpectrumConfig{FieldRange: fieldCount},
+			SpectrumConfig:      SpectrumConfig{FieldRange: fieldCount, BathCount: bathCount},
 			SpinEvolutionConfig: SpinEvolutionConfig{TimeRange: timeRange},
 		},
 	}
