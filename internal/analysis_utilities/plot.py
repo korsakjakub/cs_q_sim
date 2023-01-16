@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import csv
 import os
+import sys
 
 def plot(outdir, figdir, filename):
     with open(f"{outdir}/{filename}") as csv_file:
@@ -17,10 +18,11 @@ def plot(outdir, figdir, filename):
             else:
                 metadata.append(row)
             i += 1
-    print(xs, ys)
-    print(metadata)
-    p = plt.plot(xs, ys)
+    initial_ket = "|" + metadata[-1][-1].split()[-1][:-1].replace('u', '↑').replace('d', '↓') + ">"
+    p = plt.plot(xs, ys, label=f"Ψ(0) = {initial_ket}")
+    plt.legend(loc='upper right')
     plt.savefig(f"{figdir}/plt-{filename}.png")
 
 if __name__ == '__main__':
-    plot("outputs", "figures", "2023-01-14T12:52:24+01:00")
+    filename = sys.argv[1]
+    plot("outputs", "figures", filename)
