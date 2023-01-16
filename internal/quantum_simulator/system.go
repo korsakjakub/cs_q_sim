@@ -52,9 +52,19 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 
 // Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
 func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
-	var h mat.Dense
-	h.Scale(b0-b, hs.ManyBodyOperator(hs.Sz(s.PhysicsConfig.Spin), 0, len(s.Bath)+1))
-	return &h
+	dim := len(s.Bath) + 1
+	spin := s.PhysicsConfig.Spin
+	sz := hs.Sz(spin)
+
+	h := hs.ManyBodyOperator(sz, 0, dim)
+	h.Scale(b0, h)
+
+	for j := 1; j < dim; j++ {
+		h2 := hs.ManyBodyOperator(sz, j, dim)
+		h2.Scale(b, h2)
+		h.Add(h, h2)
+	}
+	return h
 }
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
