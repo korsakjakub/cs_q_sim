@@ -9,7 +9,7 @@ import (
 var conf qs.Config
 
 func main() {
-	conf = qs.LoadConfig([]string{os.Getenv("CONFIG_PATH")}, os.Getenv("CONFIG_NAME"), os.Getenv("CONFIG_TYPE"))
+	conf = qs.LoadConfig([]string{os.Getenv("CONFIG_PATH"), "../../config/"}, os.Getenv("CONFIG_NAME"), os.Getenv("CONFIG_TYPE"))
 	// conf = qs.LoadConfig([]string{"../../config/"})
 	// spectrum(conf)
 	spin_time_evolution(conf)

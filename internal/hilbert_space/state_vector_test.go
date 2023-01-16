@@ -128,6 +128,16 @@ func TestStateVec_Evolve(t *testing.T) {
 			want: NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 0.0)}),
 		},
 		{
+			name: "Large trivial",
+			u:    NewKetReal(ManyBodyVector("uu", 2)),
+			args: args{
+				time:       0.0,
+				energies:   []complex128{complex(1.0, 0.0), complex(1.0, 0.0), complex(1.0, 0.0), complex(1.0, 0.0)},
+				eigenBasis: []*StateVec{NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 1.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(0.0, 0.0), complex(1.0, 0.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 1.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(0.0, 0.0), complex(1.0, 0.0), complex(0.0, 0.0), complex(0.0, 0.0)})},
+			},
+			want: NewKetReal(ManyBodyVector("uu", 2)),
+		},
+		{
 			name: "another example",
 			u:    NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 0.0)}),
 			args: args{

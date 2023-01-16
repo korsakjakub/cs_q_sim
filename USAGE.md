@@ -7,5 +7,5 @@ make (build|run|test|clean)
 
 Or also run make, but with Docker
 ```
-make (docker-build|docker-run|docker-clearn)
+make (docker-build|docker-run|docker-clean)
 ```

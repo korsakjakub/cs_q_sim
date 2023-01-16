@@ -14,7 +14,7 @@ import (
 func spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
-	bc := conf.Physics.BathCount
+	bc := conf.Physics.SpectrumConfig.BathCount
 	fieldRange := conf.Physics.SpectrumConfig.FieldRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {

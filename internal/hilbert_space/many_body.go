@@ -6,7 +6,8 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-// Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'particle' <= 'dim'
+// Given an operator from 1-body Hilbert space, return the one-body operator from 'dim'-body Hilbert space, the one-body operator being in slot 'particle' < 'dim'.
+// Particle is in [0, dim-1]
 func ManyBodyOperator(operator *mat.Dense, particle int, dim int) *mat.Dense {
 	spin := float64(operator.RawMatrix().Cols-1) * 0.5
 	if particle > dim {

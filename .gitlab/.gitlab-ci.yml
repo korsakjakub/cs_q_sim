@@ -4,8 +4,13 @@ stages:
   - create_release
   - build_push_docker
 
+variables:
+  DOCKER_IMAGE_TAG:
+    value: "latest"
+    description: "Docker image tag to push to DockerHub"
+
 test:
-  image: golang:1.18
+  image: golang:1.19
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -16,21 +21,19 @@ test:
     - make test
 
 build:
-  image: golang:1.18
+  image: golang:1.19
   stage: build
   script:
     - make build
   artifacts:
     paths:
       - cmd/qsim.out
-  only: 
-    - main
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH == "main"
 
 create_release:
   stage: create_release
-  variables:
-    DOCKER_IMAGE_TAG:
-      value: "latest"
   script:
     - git config --global user.email "jakub@korsak.xyz"
     - git config --global user.name "GitLab CI (JK)"
@@ -43,12 +46,10 @@ build_push_docker:
   image: docker:stable
   stage: build_push_docker
   variables:
-    DOCKER_IMAGE_TAG:
-      value: "latest"
     REPO_NAME: cs_q_sim
   script:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_ACCESS_TOKEN
-    - docker build -t $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA -f build/Dockerfile .
-    - docker push $DOCKER_USERNAME/$REPO_NAME:$CI_COMMIT_SHORT_SHA
+    - docker build -t $DOCKER_USERNAME/$REPO_NAME:$DOCKER_IMAGE_TAG -f build/Dockerfile .
+    - docker push $DOCKER_USERNAME/$REPO_NAME:$DOCKER_IMAGE_TAG
   only:
    - web
