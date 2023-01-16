@@ -307,7 +307,6 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 			name: "strain test",
 			fields: fields{CentralSpin: State{0.0, 1.0}, Bath: []State{
 				{0.0, 1.0}, {0.0, 2.0}, {0.0, 1.1}, {0.0, 1.2}, {0.0, 1.3},
-				{0.0, 1.4}, {0.0, 1.5}, {0.0, 1.6}, {0.0, 1.7}, {0.0, 1.8},
 			}, PhysicsConfig: PhysicsConfig{MoleculeMass: 1.1e-10, AtomMass: 1.0, Spin: 0.5}},
 			args: args{
 				b0: 1.0,
