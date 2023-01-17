@@ -1,10 +1,9 @@
 package hilbert_space
 
 import (
-	"math/cmplx"
-
 	"gonum.org/v1/gonum/blas/cblas128"
 	"gonum.org/v1/gonum/mat"
+	"math/cmplx"
 )
 
 type StateVec cblas128.Vector
@@ -32,8 +31,10 @@ func (u *StateVec) Norm() float64 {
 func (u *StateVec) Evolve(time float64, energies []complex128, eigenBasis []*StateVec) *StateVec {
 	out := make([]complex128, len(eigenBasis))
 
-	for i, basisVector := range eigenBasis {
-		out[i] = cmplx.Exp(-energies[i]*complex(0, time)) * basisVector.Dot(u)
+	for k, _ := range u.Data { // iterate over slots of a vector
+		for j, basisVector := range eigenBasis {
+			out[k] += cmplx.Exp(-energies[j]*complex(0, time)) * basisVector.Dot(u) * basisVector.Data[k]
+		}
 	}
 	return NewKet(out)
 }
@@ -49,13 +50,26 @@ func KetFromFloats(elements []float64) *StateVec {
 	return NewKet(cElements)
 }
 
-func KetsFromMatrix(mat mat.CMatrix) []*StateVec {
+func KetsFromCMatrix(mat mat.CMatrix) []*StateVec {
 	rows, cols := mat.Dims()
 	out := make([]*StateVec, cols)
 	for col := 0; col < cols; col++ {
 		tmp := make([]complex128, rows)
 		for row := 0; row < rows; row++ {
 			tmp[row] = mat.At(row, col)
+		}
+		out[col] = NewKet(tmp)
+	}
+	return out
+}
+
+func KetsFromMatrix(mat mat.Matrix) []*StateVec {
+	rows, cols := mat.Dims()
+	out := make([]*StateVec, cols)
+	for col := 0; col < cols; col++ {
+		tmp := make([]complex128, rows)
+		for row := 0; row < rows; row++ {
+			tmp[row] = complex(mat.At(row, col), 0.0)
 		}
 		out[col] = NewKet(tmp)
 	}
