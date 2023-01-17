@@ -135,7 +135,9 @@ func TestStateVec_Evolve(t *testing.T) {
 				energies:   []complex128{complex(1.0, 0.0), complex(1.0, 0.0), complex(1.0, 0.0), complex(1.0, 0.0)},
 				eigenBasis: []*StateVec{NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 1.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(0.0, 0.0), complex(1.0, 0.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(1.0, 0.0), complex(0.0, 1.0), complex(0.0, 0.0), complex(0.0, 0.0)}), NewKet([]complex128{complex(0.0, 0.0), complex(1.0, 0.0), complex(0.0, 0.0), complex(0.0, 0.0)})},
 			},
-			want: NewKetReal(ManyBodyVector("uu", 2)),
+			want: &StateVec{N: 4, Inc: 1, Data: []complex128{
+				complex(2.0, 0.0), complex(0.0, 2.0), complex(0.0, 0.0), complex(0.0, 0.0),
+			}},
 		},
 		{
 			name: "another example",
@@ -150,7 +152,7 @@ func TestStateVec_Evolve(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.u.Evolve(tt.args.time, tt.args.energies, tt.args.eigenBasis); cmplx.Abs(got.Dot(tt.want))-1.0 > 1e-6 {
+			if got := tt.u.Evolve(tt.args.time, tt.args.energies, tt.args.eigenBasis); cmplx.Abs(got.Dot(tt.want))-math.Pow(got.Norm(), 2) > 1e-6 {
 				t.Errorf("StateVec.At() = %v, want %v", got, tt.want)
 			}
 		})
