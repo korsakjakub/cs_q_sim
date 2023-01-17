@@ -19,7 +19,9 @@ def plot(outdir, figdir, filename):
                 metadata.append(row)
             i += 1
     initial_ket = "|" + metadata[-1][-1].split()[-1][:-1].replace('u', '↑').replace('d', '↓') + ">"
+    print(metadata)
     p = plt.plot(xs, ys, label=f"Ψ(0) = {initial_ket}")
+    plt.title(metadata[0][1])
     plt.legend(loc='upper right')
     plt.savefig(f"{figdir}/plt-{filename}.png")
 

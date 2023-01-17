@@ -1,10 +1,10 @@
 package main
 
 import (
+	au "github.com/korsakjakub/cs_q_sim/internal/analysis_utilities"
 	"math"
 	"time"
 
-	au "github.com/korsakjakub/cs_q_sim/internal/analysis_utilities"
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/gonum/mat"
@@ -54,7 +54,7 @@ func spin_time_evolution(conf qs.Config) {
 		Filename: start_time,
 		Metadata: qs.Metadata{
 			Date:           start_time,
-			Simulation:     "Central spin exp. val. evoluiton",
+			Simulation:     "Central spin expectation value time evolution",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
