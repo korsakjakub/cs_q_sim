@@ -1,9 +1,10 @@
 package hilbert_space
 
 import (
+	"math/cmplx"
+
 	"gonum.org/v1/gonum/blas/cblas128"
 	"gonum.org/v1/gonum/mat"
-	"math/cmplx"
 )
 
 type StateVec cblas128.Vector
@@ -31,7 +32,7 @@ func (u *StateVec) Norm() float64 {
 func (u *StateVec) Evolve(time float64, energies []complex128, eigenBasis []*StateVec) *StateVec {
 	out := make([]complex128, len(eigenBasis))
 
-	for k, _ := range u.Data { // iterate over slots of a vector
+	for k := range u.Data { // iterate over slots of a vector
 		for j, basisVector := range eigenBasis {
 			out[k] += cmplx.Exp(-energies[j]*complex(0, time)) * basisVector.Dot(u) * basisVector.Data[k]
 		}
