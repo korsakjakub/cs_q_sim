@@ -11,6 +11,7 @@ func TestLoadConfig(t *testing.T) {
 		additionalPath []string
 		args           []string
 		filename       string
+		lines          []string
 	}
 	tests := []struct {
 		name string
@@ -23,6 +24,30 @@ func TestLoadConfig(t *testing.T) {
 				additionalPath: []string{"/tmp"},
 				args:           []string{"config123217318973", "yaml"},
 				filename:       "/tmp/config123217318973.yaml",
+				lines: []string{
+					"physics:",
+					"  moleculemass: 1.0",
+					"  atommass: 1.0",
+					"  spin: 1.0",
+					"  spectrum:",
+					"    fieldrange: 1",
+					"    bathcount: 10",
+					"  timeevolution:",
+					"    magfield: 1",
+					"    timerange: 2",
+					"    initialket: uu",
+					"    observables:",
+					"      - operator: Sz",
+					"        slot: 0",
+					"      - operator: Sz",
+					"        slot: 1",
+					"files:",
+					"  outputsdir: test/",
+					"  figdir: figtest/",
+					"  results:",
+					"    cpu: 2",
+					"    ram: 3",
+				},
 			},
 			want: Config{PhysicsConfig{
 				MoleculeMass: 1.0,
@@ -36,6 +61,10 @@ func TestLoadConfig(t *testing.T) {
 					MagneticField: 1,
 					TimeRange:     2,
 					InitialKet:    "uu",
+					ObservablesConfig: []ObservableConfig{
+						{Operator: "Sz", Slot: 0},
+						{Operator: "Sz", Slot: 1},
+					},
 				},
 			}, FilesConfig{
 				OutputsDir: "test/",
@@ -48,32 +77,13 @@ func TestLoadConfig(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var lines = []string{
-			"physics:",
-			"  moleculemass: 1.0",
-			"  atommass: 1.0",
-			"  spin: 1.0",
-			"  spectrum:",
-			"    fieldrange: 1",
-			"    bathcount: 10",
-			"  timeevolution:",
-			"    magfield: 1",
-			"    timerange: 2",
-			"    initialket: uu",
-			"files:",
-			"  outputsdir: test/",
-			"  figdir: figtest/",
-			"  results:",
-			"    cpu: 2",
-			"    ram: 3",
-		}
 		f, err := os.Create(tt.args.filename)
 		if err != nil {
 			t.Error(err)
 		}
 		defer f.Close()
 
-		for _, line := range lines {
+		for _, line := range tt.args.lines {
 			_, err := f.WriteString(line + "\n")
 			if err != nil {
 				t.Error(err)

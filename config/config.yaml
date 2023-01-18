@@ -8,7 +8,13 @@ physics:
   timeevolution:
     magfield: 100.0
     timerange: 100
-    initialket: ddddd
+    initialket: uuddddd
+    observables:
+      - operator: Sz
+        slot: 0
+      - operator: Sz
+        slot: 3
+
 files:
   figdir: figures/
   outputsdir: outputs/
