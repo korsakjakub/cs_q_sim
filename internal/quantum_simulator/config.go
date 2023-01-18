@@ -21,9 +21,15 @@ type SpectrumConfig struct {
 }
 
 type SpinEvolutionConfig struct {
-	MagneticField float64 `mapstructure:"magfield"`
-	TimeRange     int     `mapstructure:"timerange"`
-	InitialKet    string  `mapstructure:"initialket"`
+	MagneticField     float64            `mapstructure:"magfield"`
+	TimeRange         int                `mapstructure:"timerange"`
+	InitialKet        string             `mapstructure:"initialket"`
+	ObservablesConfig []ObservableConfig `mapstructure:"observables"`
+}
+
+type ObservableConfig struct {
+	Operator string `mapstructure:"operator"`
+	Slot     int    `mapstructure:"slot"`
 }
 
 type FilesConfig struct {
