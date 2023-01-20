@@ -11,6 +11,7 @@ type PhysicsConfig struct {
 	MoleculeMass        float64             `mapstructure:"moleculemass"`
 	AtomMass            float64             `mapstructure:"atommass"`
 	Spin                float64             `mapstructure:"spin"`
+	TiltAngle           float64             `mapstructure:"tiltangle"`
 	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
 	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
 }
@@ -23,6 +24,7 @@ type SpectrumConfig struct {
 type SpinEvolutionConfig struct {
 	MagneticField     float64            `mapstructure:"magfield"`
 	TimeRange         int                `mapstructure:"timerange"`
+	Dt                float64            `mapstructure:"dt"`
 	InitialKet        string             `mapstructure:"initialket"`
 	ObservablesConfig []ObservableConfig `mapstructure:"observables"`
 }

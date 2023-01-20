@@ -69,7 +69,7 @@ func spin_time_evolution(conf qs.Config) {
 	for i, observable := range observables {
 		var xys plotter.XYs
 		for t := 0; t < timeRange; t += 1 {
-			xys = append(xys, plotter.XY{X: float64(t), Y: observable.ExpectationValue(initialKet.Evolve(float64(t), diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
+			xys = append(xys, plotter.XY{X: 1e-4 * float64(t), Y: observable.ExpectationValue(initialKet.Evolve(1e-4*float64(t), diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
 		}
 
 		elapsed_time := time.Since(start)
