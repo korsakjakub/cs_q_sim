@@ -29,9 +29,9 @@ func (u *StateVec) Norm() float64 {
 	return cblas128.Nrm2(cblas128.Vector(*u))
 }
 
-// |Ψ(t)> = exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
+// |Ψ(t)> = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
 // Thus for k-th element we have
-// (|Ψ(t)>)^k = exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
+// (|Ψ(t)>)^k = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
 func (u *StateVec) Evolve(time float64, energies []complex128, eigenBasis []*StateVec) *StateVec {
 	out := make([]complex128, len(eigenBasis))
 
