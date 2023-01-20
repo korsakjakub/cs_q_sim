@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import csv
-import os
 import sys
 
 def ket_to_arrows(ket: str) -> str:

@@ -2,18 +2,20 @@ physics:
   moleculemass: 1.0
   atommass: 20.0
   spin: 0.5
+  tiltangle: 0.0
   spectrum:
     fieldrange: 100
     bathcount: 4
   timeevolution:
     magfield: 100.0
     timerange: 100
+    dt: 1e-3
     initialket: uuddddd
     observables:
       - operator: Sz
-        slot: 0
+        slot: 1
       - operator: Sz
-        slot: 3
+        slot: 4
 
 files:
   figdir: figures/
