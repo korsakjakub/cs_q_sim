@@ -7,8 +7,8 @@ physics:
     fieldrange: 100
     bathcount: 4
   timeevolution:
-    magfield: 100.0
-    timerange: 100
+    magfield: 10000.0
+    timerange: 500
     dt: 1e-3
     initialket: uuddddd
     observables:
