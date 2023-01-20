@@ -1,28 +1,26 @@
 package quantum_simulator
 
 import (
-	"encoding/csv"
-	"fmt"
+	"io"
 	"os"
-	"reflect"
-	"strconv"
 
 	"gonum.org/v1/plot/plotter"
+	"gopkg.in/yaml.v2"
 )
 
 type Metadata struct {
-	Date           string
-	Simulation     string
-	Cpu            string
-	Ram            string
-	CompletionTime string
+	Date           string `mapstructure:"date"`
+	Simulation     string `mapstructure:"simulation"`
+	Cpu            string `mapstructure:"cpu"`
+	Ram            string `mapstructure:"ram"`
+	CompletionTime string `mapstructure:"completiontime"`
 }
 
 type ResultsIO struct {
-	Filename string
-	Metadata Metadata
-	Config   PhysicsConfig
-	XYs      plotter.XYs
+	Filename string        `mapstructure:"filename"`
+	Metadata Metadata      `mapstructure:"metadata"`
+	Config   PhysicsConfig `mapstructure:"config"`
+	XYs      plotter.XYs   `mapstructure:"xys"`
 }
 
 func (r *ResultsIO) Write(conf FilesConfig) {
@@ -34,40 +32,11 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 
 	defer file.Close()
 
-	w := csv.NewWriter(file)
-	defer w.Flush()
-
-	metaValOf := reflect.ValueOf(r.Metadata)
-	metaType := metaValOf.Type()
-	metaStr := make([]string, metaType.NumField())
-
-	for i := 0; i < metaType.NumField(); i++ {
-		metaStr[i] = fmt.Sprint(metaValOf.Field(i).Interface())
-	}
-
-	if err := w.Write(metaStr); err != nil {
+	if b, err := yaml.Marshal(r); err != nil {
 		parse(err)
+	} else {
+		io.WriteString(file, string(b))
 	}
-
-	confValOf := reflect.ValueOf(r.Config)
-	confType := confValOf.Type()
-	confStr := make([]string, confType.NumField())
-
-	for i := 0; i < confType.NumField(); i++ {
-		confStr[i] = fmt.Sprint(confValOf.Field(i).Interface())
-	}
-
-	if err := w.Write(confStr); err != nil {
-		parse(err)
-	}
-
-	var data [][]string
-	for _, record := range r.XYs {
-		row := []string{fmt.Sprintf("%f", record.X),
-			fmt.Sprintf("%f", record.Y)}
-		data = append(data, row)
-	}
-	w.WriteAll(data)
 }
 
 func Read(conf FilesConfig, filename string) ResultsIO {
@@ -75,62 +44,14 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 	if err != nil {
 		parse(err)
 	}
-	reader := csv.NewReader(file)
-	reader.FieldsPerRecord = -1
-	records, err := reader.ReadAll()
-	if err != nil {
-		parse(err)
-	}
 
-	moleculeMass, err := strconv.ParseFloat(records[1][0], 64)
-	if err != nil {
-		parse(err)
-	}
-	atomMass, err := strconv.ParseFloat(records[1][1], 64)
-	if err != nil {
-		parse(err)
-	}
-	bathCount, err := strconv.Atoi(records[1][2])
-	if err != nil {
-		parse(err)
-	}
-	spin, err := strconv.ParseFloat(records[1][3], 64)
-	if err != nil {
-		parse(err)
-	}
-	fieldCount, err := strconv.Atoi(records[1][4])
-	if err != nil {
-		parse(err)
-	}
-	timeRange, err := strconv.Atoi(records[1][5])
-	if err != nil {
-		parse(err)
-	}
+	var results ResultsIO
 
-	r := ResultsIO{
-		Filename: filename,
-		Metadata: Metadata{
-			Date:           records[0][0],
-			Simulation:     records[0][1],
-			Cpu:            records[0][2],
-			Ram:            records[0][3],
-			CompletionTime: records[0][4],
-		},
-		Config: PhysicsConfig{
-			MoleculeMass:        moleculeMass,
-			AtomMass:            atomMass,
-			Spin:                spin,
-			SpectrumConfig:      SpectrumConfig{FieldRange: fieldCount, BathCount: bathCount},
-			SpinEvolutionConfig: SpinEvolutionConfig{TimeRange: timeRange},
-		},
+	if b, err := io.ReadAll(file); err != nil {
+		parse(err)
+		return ResultsIO{}
+	} else {
+		yaml.Unmarshal(b, &results)
+		return results
 	}
-	for i, record := range records {
-		if i < 2 {
-			continue
-		}
-		x, _ := strconv.ParseFloat(record[0], 64)
-		y, _ := strconv.ParseFloat(record[1], 64)
-		r.XYs = append(r.XYs, plotter.XY{X: x, Y: y})
-	}
-	return r
 }
