@@ -29,11 +29,14 @@ func (u *StateVec) Norm() float64 {
 	return cblas128.Nrm2(cblas128.Vector(*u))
 }
 
+// |Ψ(t)> = exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
+// Thus for k-th element we have
+// (|Ψ(t)>)^k = exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
 func (u *StateVec) Evolve(time float64, energies []complex128, eigenBasis []*StateVec) *StateVec {
 	out := make([]complex128, len(eigenBasis))
 
 	for k := range u.Data { // iterate over slots of a vector
-		for j, basisVector := range eigenBasis {
+		for j, basisVector := range eigenBasis { // sum over eigenenergies
 			out[k] += cmplx.Exp(-energies[j]*complex(0, time)) * basisVector.Dot(u) * basisVector.Data[k]
 		}
 	}
