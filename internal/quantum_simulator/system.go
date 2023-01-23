@@ -18,10 +18,7 @@ type System struct {
 type State struct {
 	Angle    float64
 	Distance float64
-}
-
-func (s *System) tiltAngle(angle float64) float64 {
-	return angle // TODO: calculate the tilted angle
+	Force    float64
 }
 
 // Given an index j, return force between the j-th bath molecule and the central spin
@@ -29,11 +26,13 @@ func (s *System) forceAt(j int) float64 {
 	if j == 0 {
 		return 0.0
 	}
-
 	// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
 	// Therefore we pick Bath[j-1] instead of Bath[j]
-	c := (s.PhysicsConfig.MoleculeMass * s.PhysicsConfig.AtomMass) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
-		0.5 * (1.0 - 3.0*math.Pow(math.Cos(s.tiltAngle(s.Bath[j-1].Angle)), 2))
+	c := (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
+		0.5 * (1.0 - 3.0*math.Pow(math.Cos(s.Bath[j-1].Angle)*math.Sin(s.PhysicsConfig.TiltAngle), 2))
+
+	// assign force value to bath state
+	s.Bath[j-1].Force = c
 	return c
 }
 

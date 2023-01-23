@@ -1,19 +1,24 @@
 physics:
-  moleculemass: 1.0
-  atommass: 20.0
+  bathdipolemoment: 1.0
+  atomdipolemoment: 20.0
   spin: 0.5
-  tiltangle: 0.0
+  tiltangle: 0.785398163397
   spectrum:
-    fieldrange: 100
+    magneticfieldrange: 100
     bathcount: 4
   timeevolution:
-    magfield: 10000.0
+    bathmagneticfield: 1000.0
+    centralmagneticfield: 1002.0
     timerange: 500
     dt: 1e-3
     initialket: uuddddd
     observables:
       - operator: Sz
         slot: 1
+      - operator: Sz
+        slot: 2
+      - operator: Sz
+        slot: 3
       - operator: Sz
         slot: 4
 

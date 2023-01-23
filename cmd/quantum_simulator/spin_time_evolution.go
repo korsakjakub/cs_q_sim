@@ -2,8 +2,6 @@ package main
 
 import (
 	"math"
-	"os"
-	"strconv"
 	"time"
 
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
@@ -46,7 +44,7 @@ func spin_time_evolution(conf qs.Config) {
 
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
-		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
+		bath = append(bath, qs.State{Angle: 2 * float64(i-1) * math.Pi / float64(bc), Distance: 1e3})
 	}
 
 	s := &qs.System{
@@ -55,8 +53,8 @@ func spin_time_evolution(conf qs.Config) {
 		PhysicsConfig: conf.Physics,
 	}
 
-	b := conf.Physics.SpinEvolutionConfig.MagneticField
-	b0 := 1.002 * b
+	b := conf.Physics.SpinEvolutionConfig.BathMagneticField
+	b0 := conf.Physics.SpinEvolutionConfig.CentralMagneticField
 	diagJob := qs.DiagonalizationInput{Hamiltonian: s.Hamiltonian(b0, b), B: b}
 	diagOuts := make(chan qs.DiagonalizationResults)
 
@@ -68,33 +66,27 @@ func spin_time_evolution(conf qs.Config) {
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
-	conf.Files.OutputsDir += start_time + "/"
-
-	os.Mkdir(conf.Files.OutputsDir, os.ModePerm)
-
+	xyss := make([]plotter.XYs, len(observables))
 	for i, observable := range observables {
 		var xys plotter.XYs
 		for t := 0; t < timeRange; t += 1 {
 			xys = append(xys, plotter.XY{X: 1e-4 * float64(t), Y: observable.ExpectationValue(initialKet.Evolve(1e-4*float64(t), diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
 		}
-
-		slot := conf.Physics.SpinEvolutionConfig.ObservablesConfig[i].Slot
-
-		// au.PlotBasic(xys, "spin-"+strconv.Itoa(slot)+"-"+start_time+".png", conf.Files)
-		r := qs.ResultsIO{
-			Filename: strconv.Itoa(slot) + "-" + start_time,
-			Metadata: qs.Metadata{
-				Date:           start_time,
-				Simulation:     "Central spin expectation value time evolution",
-				Cpu:            conf.Files.ResultsConfig.Cpu,
-				Ram:            conf.Files.ResultsConfig.Ram,
-				CompletionTime: elapsed_time.String(),
-			},
-			Config: conf.Physics,
-			XYs:    xys,
-		}
-		r.Write(conf.Files)
-
+		xyss[i] = xys
 	}
+
+	r := qs.ResultsIO{
+		Filename: start_time,
+		Metadata: qs.Metadata{
+			Date:           start_time,
+			Simulation:     "Central spin expectation value time evolution",
+			Cpu:            conf.Files.ResultsConfig.Cpu,
+			Ram:            conf.Files.ResultsConfig.Ram,
+			CompletionTime: elapsed_time.String(),
+		},
+		System: *s,
+		XYs:    xyss,
+	}
+	r.Write(conf.Files)
 
 }

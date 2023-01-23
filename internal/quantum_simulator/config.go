@@ -8,8 +8,8 @@ import (
 )
 
 type PhysicsConfig struct {
-	MoleculeMass        float64             `mapstructure:"moleculemass"`
-	AtomMass            float64             `mapstructure:"atommass"`
+	BathDipoleMoment    float64             `mapstructure:"bathdipolemoment"`
+	AtomDipoleMoment    float64             `mapstructure:"atomdipolemoment"`
 	Spin                float64             `mapstructure:"spin"`
 	TiltAngle           float64             `mapstructure:"tiltangle"`
 	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
@@ -17,16 +17,17 @@ type PhysicsConfig struct {
 }
 
 type SpectrumConfig struct {
-	BathCount  int `mapstructure:"bathcount"`
-	FieldRange int `mapstructure:"fieldrange"`
+	BathCount          int `mapstructure:"bathcount"`
+	MagneticFieldRange int `mapstructure:"magneticfieldrange"`
 }
 
 type SpinEvolutionConfig struct {
-	MagneticField     float64            `mapstructure:"magfield"`
-	TimeRange         int                `mapstructure:"timerange"`
-	Dt                float64            `mapstructure:"dt"`
-	InitialKet        string             `mapstructure:"initialket"`
-	ObservablesConfig []ObservableConfig `mapstructure:"observables"`
+	BathMagneticField    float64            `mapstructure:"bathmagneticfield"`
+	CentralMagneticField float64            `mapstructure:"centralmagneticfield"`
+	TimeRange            int                `mapstructure:"timerange"`
+	Dt                   float64            `mapstructure:"dt"`
+	InitialKet           string             `mapstructure:"initialket"`
+	ObservablesConfig    []ObservableConfig `mapstructure:"observables"`
 }
 
 type ObservableConfig struct {

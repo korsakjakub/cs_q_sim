@@ -13,8 +13,8 @@ func TestResultsIO_Write(t *testing.T) {
 	type fields struct {
 		Filename string
 		Metadata Metadata
-		Config   PhysicsConfig
-		XYs      plotter.XYs
+		System   System
+		XYs      []plotter.XYs
 	}
 	type args struct {
 		conf FilesConfig
@@ -30,19 +30,22 @@ func TestResultsIO_Write(t *testing.T) {
 			fields: fields{
 				Filename: "test_output_file",
 				Metadata: Metadata{"1", "2", "3", "4", "5"},
-				Config: PhysicsConfig{6, 7, 8, 9.0, SpectrumConfig{10, 11}, SpinEvolutionConfig{
-					MagneticField: 12.0,
-					TimeRange:     13.0,
-					Dt:            14.0,
-					InitialKet:    "15",
-					ObservablesConfig: []ObservableConfig{
-						{
-							Operator: "16",
-							Slot:     17,
+				System: System{
+					PhysicsConfig: PhysicsConfig{6, 7, 8, 9.0, SpectrumConfig{10, 11}, SpinEvolutionConfig{
+						BathMagneticField:    12.0,
+						CentralMagneticField: 13.0,
+						TimeRange:            14.0,
+						Dt:                   15.0,
+						InitialKet:           "16",
+						ObservablesConfig: []ObservableConfig{
+							{
+								Operator: "17",
+								Slot:     18,
+							},
 						},
-					},
-				}},
-				XYs: plotter.XYs{plotter.XY{X: 0.0, Y: 42.0}, plotter.XY{X: 1.0, Y: 68.0}},
+					}},
+				},
+				XYs: []plotter.XYs{{plotter.XY{X: 0.0, Y: 42.0}, plotter.XY{X: 1.0, Y: 68.0}}},
 			},
 			args: args{
 				conf: FilesConfig{
@@ -57,27 +60,34 @@ func TestResultsIO_Write(t *testing.T) {
 				"  cpu: \"3\"\n" +
 				"  ram: \"4\"\n" +
 				"  completiontime: \"5\"\n" +
-				"config:\n" +
-				"  moleculemass: 6\n" +
-				"  atommass: 7\n" +
-				"  spin: 8\n" +
-				"  tiltangle: 9\n" +
-				"  spectrumconfig:\n" +
-				"    bathcount: 10\n" +
-				"    fieldrange: 11\n" +
-				"  spinevolutionconfig:\n" +
-				"    magneticfield: 12\n" +
-				"    timerange: 13\n" +
-				"    dt: 14\n" +
-				"    initialket: \"15\"\n" +
-				"    observablesconfig:\n" +
-				"    - operator: \"16\"\n" +
-				"      slot: 17\n" +
+				"system:\n" +
+				"  centralspin:\n" +
+				"    angle: 0\n" +
+				"    distance: 0\n" +
+				"    force: 0\n" +
+				"  bath: []\n" +
+				"  physicsconfig:\n" +
+				"    bathdipolemoment: 6\n" +
+				"    atomdipolemoment: 7\n" +
+				"    spin: 8\n" +
+				"    tiltangle: 9\n" +
+				"    spectrumconfig:\n" +
+				"      bathcount: 10\n" +
+				"      magneticfieldrange: 11\n" +
+				"    spinevolutionconfig:\n" +
+				"      bathmagneticfield: 12\n" +
+				"      centralmagneticfield: 13\n" +
+				"      timerange: 14\n" +
+				"      dt: 15\n" +
+				"      initialket: \"16\"\n" +
+				"      observablesconfig:\n" +
+				"      - operator: \"17\"\n" +
+				"        slot: 18\n" +
 				"xys:\n" +
-				"- x: 0\n" +
-				"  \"y\": 42\n" +
-				"- x: 1\n" +
-				"  \"y\": 68\n",
+				"- - x: 0\n" +
+				"    \"y\": 42\n" +
+				"  - x: 1\n" +
+				"    \"y\": 68\n",
 		},
 	}
 	for _, tt := range tests {
@@ -85,7 +95,7 @@ func TestResultsIO_Write(t *testing.T) {
 			r := &ResultsIO{
 				Filename: tt.fields.Filename,
 				Metadata: tt.fields.Metadata,
-				Config:   tt.fields.Config,
+				System:   tt.fields.System,
 				XYs:      tt.fields.XYs,
 			}
 			r.Write(tt.args.conf)
@@ -135,27 +145,34 @@ func TestRead(t *testing.T) {
 					"  cpu: \"3\"\n" +
 					"  ram: \"4\"\n" +
 					"  completiontime: \"5\"\n" +
-					"config:\n" +
-					"  moleculemass: 6\n" +
-					"  atommass: 7\n" +
-					"  spin: 8\n" +
-					"  tiltangle: 9\n" +
-					"  spectrumconfig:\n" +
-					"    bathcount: 10\n" +
-					"    fieldrange: 11\n" +
-					"  spinevolutionconfig:\n" +
-					"    magneticfield: 12\n" +
-					"    timerange: 13\n" +
-					"    dt: 14\n" +
-					"    initialket: \"15\"\n" +
-					"    observablesconfig:\n" +
-					"    - operator: \"16\"\n" +
-					"      slot: 17\n" +
+					"system:\n" +
+					"  central_spin:\n" +
+					"    angle: 0\n" +
+					"    distance: 0\n" +
+					"    force: 0\n" +
+					"  bath: \n" +
+					"  physicsconfig:\n" +
+					"    bathdipolemoment: 6\n" +
+					"    atomdipolemoment: 7\n" +
+					"    spin: 8\n" +
+					"    tiltangle: 9\n" +
+					"    spectrumconfig:\n" +
+					"      bathcount: 10\n" +
+					"      magneticfieldrange: 11\n" +
+					"    spinevolutionconfig:\n" +
+					"      bathmagneticfield: 12\n" +
+					"      centralmagneticfield: 13\n" +
+					"      timerange: 14\n" +
+					"      dt: 15\n" +
+					"      initialket: \"16\"\n" +
+					"      observablesconfig:\n" +
+					"      - operator: \"17\"\n" +
+					"        slot: 18\n" +
 					"xys:\n" +
-					"- x: 0\n" +
-					"  \"y\": 42\n" +
-					"- x: 1\n" +
-					"  \"y\": 68\n",
+					"- - x: 0\n" +
+					"    \"y\": 42\n" +
+					"  - x: 1\n" +
+					"    \"y\": 68\n",
 			},
 			want: ResultsIO{
 				Filename: "test_read",
@@ -166,28 +183,32 @@ func TestRead(t *testing.T) {
 					Ram:            "4",
 					CompletionTime: "5",
 				},
-				Config: PhysicsConfig{
-					MoleculeMass:   6,
-					AtomMass:       7,
-					Spin:           8,
-					TiltAngle:      9,
-					SpectrumConfig: SpectrumConfig{BathCount: 10, FieldRange: 11},
-					SpinEvolutionConfig: SpinEvolutionConfig{
-						MagneticField: 12,
-						TimeRange:     13,
-						Dt:            14,
-						InitialKet:    "15",
-						ObservablesConfig: []ObservableConfig{
-							{
-								Operator: "16",
-								Slot:     17,
+				System: System{
+					PhysicsConfig: PhysicsConfig{
+						BathDipoleMoment: 6,
+						AtomDipoleMoment: 7,
+						Spin:             8,
+						TiltAngle:        9,
+						SpectrumConfig:   SpectrumConfig{BathCount: 10, MagneticFieldRange: 11},
+						SpinEvolutionConfig: SpinEvolutionConfig{
+							BathMagneticField:    12,
+							CentralMagneticField: 13,
+							TimeRange:            14,
+							Dt:                   15,
+							InitialKet:           "16",
+							ObservablesConfig: []ObservableConfig{
+								{
+									Operator: "17",
+									Slot:     18,
+								},
 							},
 						},
 					},
 				},
-				XYs: plotter.XYs{
+				XYs: []plotter.XYs{{
 					plotter.XY{X: 0.0, Y: 42.0},
 					plotter.XY{X: 1.0, Y: 68.0},
+				},
 				},
 			},
 		},
