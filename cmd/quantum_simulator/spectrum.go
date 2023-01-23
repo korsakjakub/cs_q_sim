@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	au "github.com/korsakjakub/cs_q_sim/internal/analysis_utilities"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/plot/plotter"
 )
@@ -15,7 +14,7 @@ func spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc := conf.Physics.SpectrumConfig.BathCount
-	fieldRange := conf.Physics.SpectrumConfig.FieldRange
+	fieldRange := conf.Physics.SpectrumConfig.MagneticFieldRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
 		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
@@ -59,7 +58,6 @@ func spectrum(conf qs.Config) {
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
-	au.PlotBasic(xys, "spectrum-"+start_time+".png", conf.Files)
 	r := qs.ResultsIO{
 		Filename: start_time,
 		Metadata: qs.Metadata{
@@ -69,8 +67,8 @@ func spectrum(conf qs.Config) {
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
 		},
-		Config: conf.Physics,
-		XYs:    xys,
+		System: *s,
+		XYs:    []plotter.XYs{xys},
 	}
 	r.Write(conf.Files)
 }

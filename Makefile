@@ -18,7 +18,7 @@ build: ${binary_dir}${package}/main.go
 	go build -o ${binary_path} ${binary_dir}${package}/*.go
 
 test:
-	go test -v ${internal_path}/***
+	go test -v ${internal_path}/*** -cover
 
 run: ${binary_path}
 	${binary_path}

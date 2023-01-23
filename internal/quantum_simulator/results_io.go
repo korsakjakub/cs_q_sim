@@ -19,8 +19,8 @@ type Metadata struct {
 type ResultsIO struct {
 	Filename string        `mapstructure:"filename"`
 	Metadata Metadata      `mapstructure:"metadata"`
-	Config   PhysicsConfig `mapstructure:"config"`
-	XYs      plotter.XYs   `mapstructure:"xys"`
+	System   System        `mapstructure:"system"`
+	XYs      []plotter.XYs `mapstructure:"xyss"`
 }
 
 func (r *ResultsIO) Write(conf FilesConfig) {
