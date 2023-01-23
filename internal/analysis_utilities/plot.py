@@ -10,8 +10,12 @@ def ket_to_arrows(ket: str) -> str:
 def plot(outdir, figdir, filenames):
     for filename in filenames:
         if "outputs" in filename:
-            outdir = filename.split("/")[0]
-            filename = filename.split("/")[1]
+            if len(filename.split("/")) > 2:
+                outdir = filename.split("/")[0] + "/" + filename.split("/")[1]
+                filename = filename.split("/")[2]
+            else:
+                outdir = filename.split("/")[0]
+                filename = filename.split("/")[1]
         with open(f"{outdir}/{filename}") as res_file:
             contents = yaml.safe_load(res_file)
             metadata = contents["metadata"]
@@ -29,5 +33,5 @@ def plot(outdir, figdir, filenames):
     plt.savefig(f"{figdir}/plt-{p}.png")
 
 if __name__ == '__main__':
-    filenames = sys.argv[1:]
-    plot("outputs", "figures", filenames)
+    paths = sys.argv[1:]
+    plot("outputs", "figures", paths)

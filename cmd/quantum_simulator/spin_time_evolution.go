@@ -2,10 +2,9 @@ package main
 
 import (
 	"math"
+	"os"
 	"strconv"
 	"time"
-
-	au "github.com/korsakjakub/cs_q_sim/internal/analysis_utilities"
 
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
@@ -66,17 +65,22 @@ func spin_time_evolution(conf qs.Config) {
 	diag := <-diagOuts
 	close(diagOuts)
 
+	elapsed_time := time.Since(start)
+	start_time := start.Format(time.RFC3339)
+
+	conf.Files.OutputsDir += start_time + "/"
+
+	os.Mkdir(conf.Files.OutputsDir, os.ModePerm)
+
 	for i, observable := range observables {
 		var xys plotter.XYs
 		for t := 0; t < timeRange; t += 1 {
 			xys = append(xys, plotter.XY{X: 1e-4 * float64(t), Y: observable.ExpectationValue(initialKet.Evolve(1e-4*float64(t), diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
 		}
 
-		elapsed_time := time.Since(start)
-		start_time := start.Format(time.RFC3339)
 		slot := conf.Physics.SpinEvolutionConfig.ObservablesConfig[i].Slot
 
-		au.PlotBasic(xys, "spin-"+strconv.Itoa(slot)+"-"+start_time+".png", conf.Files)
+		// au.PlotBasic(xys, "spin-"+strconv.Itoa(slot)+"-"+start_time+".png", conf.Files)
 		r := qs.ResultsIO{
 			Filename: strconv.Itoa(slot) + "-" + start_time,
 			Metadata: qs.Metadata{
