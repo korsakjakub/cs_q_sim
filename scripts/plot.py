@@ -14,13 +14,16 @@ def plot(outdir, figdir, filename):
     with open(f"{outdir}/{filename}") as res_file:
         contents = yaml.safe_load(res_file)
         metadata = contents["metadata"]
+        i = 0
         for xys in contents["xys"]:
             xs = []
             ys = []
             for xy in xys:
                 xs.append(xy["x"])
                 ys.append(xy["y"])
-            plt.plot(xs, ys, label=r"$\langle S_z^{(" + filename[0] + r")}\rangle(t)$")
+            slot = contents["system"]["physicsconfig"]["spinevolutionconfig"]["observablesconfig"][i]["slot"]
+            plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$")
+            i += 1
         plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(contents["system"]["physicsconfig"]["spinevolutionconfig"]["initialket"]))
 
     plt.legend(loc='upper right')

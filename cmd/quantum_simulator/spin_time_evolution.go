@@ -10,7 +10,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 )
 
-func LoadObservables(conf qs.PhysicsConfig) []hs.Observable {
+func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
 	observables := make([]hs.Observable, len(conf.SpinEvolutionConfig.ObservablesConfig))
 	ketLength := len(conf.SpinEvolutionConfig.InitialKet)
 	for i, obs := range conf.SpinEvolutionConfig.ObservablesConfig {
@@ -40,7 +40,7 @@ func spin_time_evolution(conf qs.Config) {
 	timeRange := conf.Physics.SpinEvolutionConfig.TimeRange
 	spin := conf.Physics.Spin
 	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.SpinEvolutionConfig.InitialKet, int(2*spin+1)))
-	observables := LoadObservables(conf.Physics)
+	observables := loadObservables(conf.Physics)
 
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
@@ -63,18 +63,19 @@ func spin_time_evolution(conf qs.Config) {
 	diag := <-diagOuts
 	close(diagOuts)
 
-	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
 	xyss := make([]plotter.XYs, len(observables))
 	for i, observable := range observables {
 		var xys plotter.XYs
 		for t := 0; t < timeRange; t += 1 {
-			xys = append(xys, plotter.XY{X: 1e-4 * float64(t), Y: observable.ExpectationValue(initialKet.Evolve(1e-4*float64(t), diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
+			time := conf.Physics.SpinEvolutionConfig.Dt * float64(t)
+			xys = append(xys, plotter.XY{X: time, Y: observable.ExpectationValue(initialKet.Evolve(time, diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
 		}
 		xyss[i] = xys
 	}
 
+	elapsed_time := time.Since(start)
 	r := qs.ResultsIO{
 		Filename: start_time,
 		Metadata: qs.Metadata{
