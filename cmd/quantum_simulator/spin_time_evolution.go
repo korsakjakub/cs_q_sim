@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"strconv"
 	"time"
 
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
@@ -44,7 +45,7 @@ func spin_time_evolution(conf qs.Config) {
 
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
-		bath = append(bath, qs.State{Angle: 2 * float64(i-1) * math.Pi / float64(bc), Distance: 1e3})
+		bath = append(bath, qs.State{Angle: 2 * float64(i) * math.Pi / float64(bc), Distance: 1e3})
 	}
 
 	s := &qs.System{
@@ -70,7 +71,7 @@ func spin_time_evolution(conf qs.Config) {
 		var xys plotter.XYs
 		for t := 0; t < timeRange; t += 1 {
 			time := conf.Physics.SpinEvolutionConfig.Dt * float64(t)
-			xys = append(xys, plotter.XY{X: time, Y: observable.ExpectationValue(initialKet.Evolve(time, diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
 		}
 		xyss[i] = xys
 	}
@@ -85,9 +86,25 @@ func spin_time_evolution(conf qs.Config) {
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
 		},
-		System: *s,
-		XYs:    xyss,
+		Values: struct {
+			System       qs.System "mapstructure:\"system\""
+			EigenValues  []string  "mapstructure:\"evalues\""
+			EigenVectors []string  "mapstructure:\"evectors\""
+		}{
+			System:       *s,
+			EigenValues:  eValsToString(diag.EigenValues),
+			EigenVectors: eValsToString(diag.EigenVectors.RawCMatrix().Data),
+		},
+		XYs: xyss,
 	}
 	r.Write(conf.Files)
 
+}
+
+func eValsToString(evals []complex128) []string {
+	output := make([]string, len(evals))
+	for i, e := range evals {
+		output[i] = strconv.FormatComplex(e, 'e', 8, 128)
+	}
+	return output
 }

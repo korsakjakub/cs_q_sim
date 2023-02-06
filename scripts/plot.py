@@ -21,10 +21,10 @@ def plot(outdir, figdir, filename):
             for xy in xys:
                 xs.append(xy["x"])
                 ys.append(xy["y"])
-            slot = contents["system"]["physicsconfig"]["spinevolutionconfig"]["observablesconfig"][i]["slot"]
+            slot = contents["values"]["system"]["physicsconfig"]["spinevolutionconfig"]["observablesconfig"][i]["slot"]
             plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$")
             i += 1
-        plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(contents["system"]["physicsconfig"]["spinevolutionconfig"]["initialket"]))
+        plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(contents["values"]["system"]["physicsconfig"]["spinevolutionconfig"]["initialket"]))
 
     plt.legend(loc='upper right')
     plt.ylim([-0.55, 0.55])

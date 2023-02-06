@@ -17,10 +17,14 @@ type Metadata struct {
 }
 
 type ResultsIO struct {
-	Filename string        `mapstructure:"filename"`
-	Metadata Metadata      `mapstructure:"metadata"`
-	System   System        `mapstructure:"system"`
-	XYs      []plotter.XYs `mapstructure:"xyss"`
+	Filename string   `mapstructure:"filename"`
+	Metadata Metadata `mapstructure:"metadata"`
+	Values   struct {
+		System       System   `mapstructure:"system"`
+		EigenValues  []string `mapstructure:"evalues"`
+		EigenVectors []string `mapstructure:"evectors"`
+	} `mapstructure:"values"`
+	XYs []plotter.XYs `mapstructure:"xyss"`
 }
 
 func (r *ResultsIO) Write(conf FilesConfig) {
