@@ -94,10 +94,34 @@ func (s *System) Diagonalize(input DiagonalizationInput, results chan<- Diagonal
 	dim, _ := input.Hamiltonian.Caps()
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
+	var qr mat.QR
+	realEvec := RealPart(evec)
+	qr.Factorize(realEvec)
+	q := mat.NewDense(dim, dim, nil)
+	qr.QTo(q)
 
 	results <- DiagonalizationResults{
-		EigenVectors: evec,
+		EigenVectors: Complex(q),
 		EigenValues:  eig.Values(nil),
 		B:            input.B,
 	}
+}
+
+func RealPart(m *mat.CDense) *mat.Dense {
+	r, c := m.Dims()
+	out := mat.NewDense(r, c, nil)
+	for i, el := range m.RawCMatrix().Data {
+		out.RawMatrix().Data[i] = real(el)
+	}
+	return out
+}
+
+func Complex(m *mat.Dense) *mat.CDense {
+	r, c := m.Dims()
+	out := mat.NewCDense(r, c, nil)
+	for i, el := range m.RawMatrix().Data {
+		out.RawCMatrix().Data[i] = complex(el, 0.0)
+	}
+	return out
+
 }
