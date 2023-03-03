@@ -1,6 +1,7 @@
 package quantum_simulator
 
 import (
+	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"math"
 	"reflect"
 	"sort"
@@ -253,6 +254,29 @@ func TestSystem_diagonalize(t *testing.T) {
 			}),
 			want1: []complex128{-1.41163, 1.41163, 1.41163, -1.41163, -1.0, 1.0, -1.0, 1.0},
 		},
+		{
+			name: "Degenerate",
+			fields: fields{
+				CentralSpin: State{
+					Angle:    0,
+					Distance: 0,
+					Force:    0,
+				},
+				Bath:          []State{},
+				PhysicsConfig: PhysicsConfig{},
+			},
+			args: args{hamiltonian: mat.NewDense(3, 3, []float64{
+				2.0, 0.0, 2.0,
+				0.0, -2.0, 0.0,
+				2.0, 0.0, -1.0,
+			})},
+			want: mat.NewCDense(3, 3, []complex128{
+				0.8944271909999159, -0.4472135954999579, 0.0,
+				0.0, 0.0, 1.0,
+				0.4472135954999579, 0.8944271909999159, 0.0,
+			}),
+			want1: []complex128{3.0, -2.0, -2.0},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -265,6 +289,16 @@ func TestSystem_diagonalize(t *testing.T) {
 			s.Diagonalize(DiagonalizationInput{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
 
 			res := <-results
+			eRow, eCol := res.EigenVectors.Dims()
+			reals := make([]float64, eRow*eCol)
+			for i, _ := range reals {
+				reals[i] = real(res.EigenVectors.RawCMatrix().Data[i])
+			}
+			m := mat.NewDense(eRow, eCol, reals)
+			m.Mul(m.T(), m)
+			if !mat.EqualApprox(m, hs.Id(0.5*(float64(eRow)-1.0)), 1e-14) {
+				t.Errorf("Matrix of eigenvectors is not orthogonal. Eigenvectors: \n%v\n", res.EigenVectors)
+			}
 
 			if res.EigenVectors.RawCMatrix().Cols != tt.want.RawCMatrix().Cols || res.EigenVectors.RawCMatrix().Rows != tt.want.RawCMatrix().Rows {
 				t.Errorf("Dims got = %v, %v, Dims want %v, %v", res.EigenVectors.RawCMatrix().Cols, res.EigenVectors.RawCMatrix().Rows, tt.want.RawCMatrix().Cols, tt.want.RawCMatrix().Rows)

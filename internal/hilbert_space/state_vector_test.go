@@ -264,3 +264,189 @@ func TestNewKetReal(t *testing.T) {
 		})
 	}
 }
+
+func TestCMatrixFromKets(t *testing.T) {
+	type args struct {
+		kets []*StateVec
+	}
+	tests := []struct {
+		name string
+		args args
+		want *mat.CDense
+	}{
+		{
+			name: "one",
+			args: args{
+				kets: []*StateVec{{
+					N:    2,
+					Inc:  1,
+					Data: []complex128{1.0, 0.0},
+				}},
+			},
+			want: mat.NewCDense(1, 2, []complex128{1.0, 0.0}),
+		},
+		{
+			name: "two",
+			args: args{
+				kets: []*StateVec{
+					{N: 2, Inc: 1, Data: []complex128{1.0, 2.0}},
+					{N: 2, Inc: 1, Data: []complex128{3.0, 4.0}},
+				},
+			},
+			want: mat.NewCDense(2, 2, []complex128{1.0, 2.0, 3.0, 4.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := CMatrixFromKets(tt.args.kets); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CMatrixFromKets() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStateVec_Normalize(t *testing.T) {
+	tests := []struct {
+		name string
+		u    *StateVec
+		want *StateVec
+	}{
+		{
+			name: "number",
+			u:    NewKet([]complex128{5.0}),
+			want: NewKet([]complex128{1.0}),
+		},
+		{
+			name: "3D",
+			u:    NewKet([]complex128{2.0, 3.0, 6.0}),
+			want: NewKet([]complex128{2.0 / 7.0, 3.0 / 7.0, 6.0 / 7.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.u.Normalize()
+			if got := tt.u; !reflect.DeepEqual(got.Data, tt.want.Data) {
+				t.Errorf("Normalize() = %v, want %v", got.Data, tt.want.Data)
+			}
+		})
+	}
+}
+
+func TestStateVec_Sub(t *testing.T) {
+	type args struct {
+		a *StateVec
+	}
+	tests := []struct {
+		name    string
+		u       *StateVec
+		args    args
+		want    *StateVec
+		wantErr bool
+	}{
+		{
+			name:    "2D",
+			u:       NewKet([]complex128{1.0, 2.0}),
+			args:    args{a: NewKet([]complex128{3.0, 5.0})},
+			want:    NewKet([]complex128{-2.0, -3.0}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.u.Sub(tt.args.a); (err != nil) != tt.wantErr {
+				t.Errorf("Sub() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got := tt.u.Data; !reflect.DeepEqual(got, tt.want.Data) {
+				t.Errorf("Sub() error = %v, want %v", got, tt.want.Data)
+			}
+		})
+	}
+}
+
+func TestNewZeroKet(t *testing.T) {
+	type args struct {
+		dim int
+	}
+	tests := []struct {
+		name string
+		args args
+		want *StateVec
+	}{
+		{
+			name: "d=2",
+			args: args{dim: 2},
+			want: &StateVec{N: 2, Inc: 1, Data: []complex128{0.0, 0.0}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewZeroKet(tt.args.dim); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewZeroKet() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewStdBasisKet(t *testing.T) {
+	type args struct {
+		at  int
+		dim int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *StateVec
+		wantErr bool
+	}{
+		{
+			name: "2D",
+			args: args{
+				at:  1,
+				dim: 2,
+			},
+			want:    NewKet([]complex128{0.0, 1.0}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewStdBasisKet(tt.args.at, tt.args.dim)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewStdBasisKet() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewStdBasisKet() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStateVec_Scale(t *testing.T) {
+	type args struct {
+		a complex128
+	}
+	tests := []struct {
+		name string
+		u    *StateVec
+		args args
+		want *StateVec
+	}{
+		{
+			name: "scale by 2",
+			u:    NewKet([]complex128{1.0, 2.0}),
+			args: args{
+				a: complex(2.0, 0.0),
+			},
+			want: NewKet([]complex128{2.0, 4.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.u.Scale(tt.args.a)
+			if got := tt.u; !reflect.DeepEqual(got.Data, tt.want.Data) {
+				t.Errorf("Scale() got = %v, want %v", got.Data, tt.want.Data)
+			}
+		})
+	}
+}
