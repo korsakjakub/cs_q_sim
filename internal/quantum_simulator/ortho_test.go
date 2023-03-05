@@ -9,7 +9,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-func TestNewOrtho(t *testing.T) {
+func TestOrtho_NewOrtho(t *testing.T) {
 	type args struct {
 		eigenvalues  []float64
 		eigenvectors []*hs.StateVec
@@ -105,6 +105,33 @@ func TestOrtho_Orthonormalize(t *testing.T) {
 				if !mat.EqualApprox(got, hs.Id(0.5*(float64(d)-1.0)), 1e-14) {
 					t.Errorf("Orthonormalize() = %v, want %v", got, tt.want)
 				}
+			}
+		})
+	}
+}
+
+func TestOrtho_OrthoToEigen(t *testing.T) {
+	tests := []struct {
+		name  string
+		o     Ortho
+		want  []complex128
+		want1 *mat.CDense
+	}{
+		{
+			name:  "Simple case",
+			o:     NewOrtho([]float64{1.0, 2.0}, []*hs.StateVec{hs.NewKet([]complex128{1.0, 2.0}), hs.NewKet([]complex128{3.0, 4.0})}),
+			want:  []complex128{1.0, 2.0},
+			want1: mat.NewCDense(2, 2, []complex128{1.0, 2.0, 3.0, 4.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := tt.o.OrthoToEigen()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Ortho.OrthoToEigen() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Ortho.OrthoToEigen() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

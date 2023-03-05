@@ -23,13 +23,13 @@ def read(jd, jk):
         for xy in yml["xys"][0]:
             jk_y.append(xy["y"])
             x.append(xy["x"])
-    print([jk_y[i] - jd_y[i] for i, _ in enumerate(jk_y)])
+    # print([jk_y[i] - jd_y[i] for i, _ in enumerate(jk_y)])
     plt.plot(x, jk_y, label="JK")
     plt.plot(x, jd_y, label="JD")
     plt.legend()
     plt.xlabel(r"$t$ $[s]$")
     plt.ylabel(r"$\langle S^{(0)}_z \rangle$")
-    plt.savefig("jd_jk_comparison_27022023.png")
+    plt.savefig("jd_jk_comparison_05032023.png")
 
 
 if __name__ == '__main__':

@@ -126,11 +126,11 @@ func KetsFromMatrix(mat mat.Matrix) []*StateVec {
 func CMatrixFromKets(kets []*StateVec) *mat.CDense {
 	rows := len(kets)
 	cols := len(kets[0].Data)
-	var data []complex128
-	for _, el := range kets {
-		for _, ell := range el.Data {
-			data = append(data, ell)
+	m := mat.NewCDense(rows, cols, nil)
+	for col := 0; col < cols; col++ {
+		for row := 0; row < rows; row++ {
+			m.Set(col, row, kets[row].Data[col])
 		}
 	}
-	return mat.NewCDense(rows, cols, data)
+	return m
 }

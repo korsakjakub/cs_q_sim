@@ -4,6 +4,7 @@ import (
 	"math"
 
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
+	"gonum.org/v1/gonum/mat"
 )
 
 type Ortho map[float64][]*hs.StateVec
@@ -23,7 +24,7 @@ func NewOrtho(eigenvalues []float64, eigenvectors []*hs.StateVec) Ortho {
 func (o Ortho) Orthonormalize() {
 	for _, v := range o {
 		if len(v) > 1 {
-			for i, _ := range v {
+			for i := range v {
 				for j := 0; j < i; j++ {
 					u := v[j].Scale(v[i].Dot(v[j]) / complex(math.Pow(v[j].Norm(), 2), 0.0))
 					err := v[i].Sub(u)
@@ -32,23 +33,23 @@ func (o Ortho) Orthonormalize() {
 					}
 				}
 			}
-			for i, _ := range v {
+			for i := range v {
 				v[i].Normalize()
 			}
 		}
 	}
-	/*
-		for k, v := range o {
-			if len(v) > 1 {
-				var qr mat.QR
-				u := hs.CMatrixFromKets(v)
-				rows, cols := u.Dims()
-				qr.Factorize(RealPart(u))
-				q := mat.NewDense(rows, cols, nil)
-				qr.QTo(q)
-				o[k] = hs.KetsFromMatrix(q)
-				fmt.Println(o[k])
-			}
+}
+
+func (o *Ortho) OrthoToEigen() ([]complex128, *mat.CDense) {
+	var eigenvalues []complex128
+	var kets []*hs.StateVec
+	for k, v := range *o {
+		degen_num := len(v)
+		for i := 0; i < degen_num; i++ {
+			eigenvalues = append(eigenvalues, complex(k, 0.0))
 		}
-	*/
+		kets = append(kets, v...)
+	}
+	eigenvectors := hs.CMatrixFromKets(kets)
+	return eigenvalues, eigenvectors
 }

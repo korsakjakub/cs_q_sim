@@ -94,15 +94,14 @@ func (s *System) Diagonalize(input DiagonalizationInput, results chan<- Diagonal
 	dim, _ := input.Hamiltonian.Caps()
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
-	var qr mat.QR
-	realEvec := RealPart(evec)
-	qr.Factorize(realEvec)
-	q := mat.NewDense(dim, dim, nil)
-	qr.QTo(q)
+
+	orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
+	orto.Orthonormalize()
+	eigenvalues, eigenvectors := orto.OrthoToEigen()
 
 	results <- DiagonalizationResults{
-		EigenVectors: Complex(q),
-		EigenValues:  eig.Values(nil),
+		EigenVectors: eigenvectors,
+		EigenValues:  eigenvalues,
 		B:            input.B,
 	}
 }
@@ -124,4 +123,12 @@ func Complex(m *mat.Dense) *mat.CDense {
 	}
 	return out
 
+}
+
+func ComplexToFloats(m []complex128) []float64 {
+	out := make([]float64, len(m))
+	for i, el := range m {
+		out[i] = real(el)
+	}
+	return out
 }

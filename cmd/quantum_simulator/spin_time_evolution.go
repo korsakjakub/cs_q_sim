@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -60,7 +59,6 @@ func spin_time_evolution(conf qs.Config) {
 	diagJob := qs.DiagonalizationInput{Hamiltonian: s.Hamiltonian(b0, b), B: b}
 	diagOuts := make(chan qs.DiagonalizationResults)
 
-	fmt.Println(s.Hamiltonian(b0, b))
 	go s.Diagonalize(diagJob, diagOuts)
 
 	diag := <-diagOuts
