@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -93,7 +94,7 @@ func spin_time_evolution(conf qs.Config) {
 		}{
 			System:       *s,
 			EigenValues:  eValsToString(diag.EigenValues),
-			EigenVectors: eValsToString(diag.EigenVectors.RawCMatrix().Data),
+			EigenVectors: ketsToString(hs.KetsFromCMatrix(diag.EigenVectors)), //eValsToString(diag.EigenVectors.RawCMatrix().Data),
 		},
 		XYs: xyss,
 	}
@@ -105,6 +106,19 @@ func eValsToString(evals []complex128) []string {
 	output := make([]string, len(evals))
 	for i, e := range evals {
 		output[i] = strconv.FormatComplex(e, 'e', 8, 128)
+	}
+	return output
+}
+
+func ketsToString(kets []*hs.StateVec) []string {
+	output := make([]string, len(kets))
+	for i, ket := range kets {
+		outData := "[]complex128{"
+		for _, d := range ket.Data {
+			outData = outData + strconv.FormatComplex(d, 'e', 8, 128) + ","
+		}
+		outData += "}"
+		output[i] = fmt.Sprintf("{N: %d, Inc: %d, Data: %v}", ket.N, ket.Inc, outData)
 	}
 	return output
 }
