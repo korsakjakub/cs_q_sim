@@ -29,7 +29,7 @@ def read(jd, jk):
     plt.legend()
     plt.xlabel(r"$t$ $[s]$")
     plt.ylabel(r"$\langle S^{(0)}_z \rangle$")
-    plt.savefig("jd_jk_comparison_05032023.png")
+    plt.savefig("jd_jk_comparison_07032023.png")
 
 
 if __name__ == '__main__':

@@ -132,8 +132,8 @@ func TestOrtho_NewOrtho(t *testing.T) {
 				Eigen{
 					Eigenvalue: 1.00100000e+03,
 					EigenVectors: []*hs.StateVec{
-						{N: 16, Inc: 1, Data: []complex128{(0.00000000e+00 + 0.00000000e+00i), (-4.75650635e-01 + 0.00000000e+00i), (7.88145605e-01 + 0.00000000e+00i), (-1.97504872e-18 + 0.00000000e+00i), (3.90618713e-01 + 0.00000000e+00i), (-7.10111551e-18 + 0.00000000e+00i), (7.11115050e-18 + 0.00000000e+00i), (-2.68418964e-18 + 0.00000000e+00i), (9.60190464e-16 + 0.00000000e+00i), (3.55777097e-17 + 0.00000000e+00i), (-3.68066484e-17 + 0.00000000e+00i), (5.98727391e-17 + 0.00000000e+00i), (5.62574410e-22 + 0.00000000e+00i), (1.03915347e-17 + 0.00000000e+00i), (-7.53147014e-20 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i)}},
 						{N: 16, Inc: 1, Data: []complex128{(0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i), (1.00000000e+00 + 0.00000000e+00i)}},
+						{N: 16, Inc: 1, Data: []complex128{(0.00000000e+00 + 0.00000000e+00i), (-4.75650635e-01 + 0.00000000e+00i), (7.88145605e-01 + 0.00000000e+00i), (-1.97504872e-18 + 0.00000000e+00i), (3.90618713e-01 + 0.00000000e+00i), (-7.10111551e-18 + 0.00000000e+00i), (7.11115050e-18 + 0.00000000e+00i), (-2.68418964e-18 + 0.00000000e+00i), (9.60190464e-16 + 0.00000000e+00i), (3.55777097e-17 + 0.00000000e+00i), (-3.68066484e-17 + 0.00000000e+00i), (5.98727391e-17 + 0.00000000e+00i), (5.62574410e-22 + 0.00000000e+00i), (1.03915347e-17 + 0.00000000e+00i), (-7.53147014e-20 + 0.00000000e+00i), (0.00000000e+00 + 0.00000000e+00i)}},
 					},
 				},
 				Eigen{
@@ -149,13 +149,21 @@ func TestOrtho_NewOrtho(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewOrtho(tt.args.eigenvalues, tt.args.eigenvectors); !reflect.DeepEqual(got, *tt.want) {
-				for i := range got {
+			got := NewOrtho(tt.args.eigenvalues, tt.args.eigenvectors)
+			for i, w := range *tt.want {
+				ctrl := 0
+				for _, a := range got[i].EigenVectors {
+					for _, b := range w.EigenVectors {
+						if reflect.DeepEqual(a, b) {
+							ctrl++
+						}
+					}
+				}
+				if ctrl != len(got[i].EigenVectors) || len(got[i].EigenVectors) != len(w.EigenVectors) {
 					t.Errorf("\n\nElement: %d\n\n", i)
 					spew.Dump(got[i])
 					spew.Dump((*tt.want)[i])
 				}
-				//t.Errorf("NewOrtho() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -218,7 +226,7 @@ func TestOrtho_OrthoToEigen(t *testing.T) {
 			name:  "Simple case",
 			o:     NewOrtho([]float64{1.0, 2.0}, []*hs.StateVec{hs.NewKet([]complex128{1.0, 2.0}), hs.NewKet([]complex128{3.0, 4.0})}),
 			want:  []complex128{1.0, 2.0},
-			want1: mat.NewCDense(2, 2, []complex128{1.0, 2.0, 3.0, 4.0}),
+			want1: mat.NewCDense(2, 2, []complex128{1.0, 3.0, 2.0, 4.0}),
 		},
 	}
 	for _, tt := range tests {

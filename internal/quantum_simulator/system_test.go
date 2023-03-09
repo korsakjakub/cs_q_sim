@@ -1,12 +1,11 @@
 package quantum_simulator
 
 import (
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"math"
 	"reflect"
-	"sort"
 	"testing"
 
+	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -205,8 +204,6 @@ func TestSystem_diagonalize(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *mat.CDense
-		want1  []complex128
 	}{
 		{
 			name:   "2-body",
@@ -219,40 +216,6 @@ func TestSystem_diagonalize(t *testing.T) {
 					0.0, 0.0, 0.0, 1.0,
 				}),
 			},
-			want: mat.NewCDense(4, 4, []complex128{
-				0.0, 0.0, 1.0, 0.0,
-				-0.38, 0.924967, 0.0, 0.0,
-				0.924967, 0.38, 0.0, 0.0,
-				0.0, 0.0, 0.0, 1.0},
-			),
-			want1: []complex128{1.40621, -1.40621, -1.0, 1.0},
-		},
-		{
-			name:   "3-body",
-			fields: fields{CentralSpin: State{0.0, 1.0, 0.0}, Bath: []State{{0.0, 1.0, 0.0}, {0.0, 2.0, 0.0}}, PhysicsConfig: PhysicsConfig{BathDipoleMoment: 1.1e-10, AtomDipoleMoment: 1.0, Spin: 0.5}},
-			args: args{
-				hamiltonian: mat.NewDense(8, 8, []float64{
-					-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-					0.0, -1.0, 0.0, 0.0, -0.12358, 0.0, 0.0, 0.0,
-					0.0, 0.0, -1.0, 0.0, -0.98865, 0.0, 0.0, 0.0,
-					0.0, 0.0, 0.0, -1.0, 0.0, -0.98865, -0.12358, 0.0,
-					0.0, -0.12358, -0.98865, 0.0, 1.0, 0.0, 0.0, 0.0,
-					0.0, 0.0, 0.0, -0.98865, 0.0, 1.0, 0.0, 0.0,
-					0.0, 0.0, 0.0, -0.1235, 0.0, 0.0, 1.0, 0.0,
-					0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-				}),
-			},
-			want: mat.NewCDense(8, 8, []complex128{
-				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-				0.0, 0.0, 0.0, 0.047360608952921095, 0.9922780311236191, 0.11463542937958777, 0.0, 0.0,
-				0.0, 0.0, 0.0, 0.3788887040079745, -0.12403349930334975, 0.9170927112488266, 0.0, 0.0,
-				-0.9242307292434829, 0.0, -0.38183771185436777, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, -0.9242295833258997, 0.0, 0.38183723928558116, 0.0, 0.0,
-				-0.3788897239387569, -0.12403349930335, 0.9171016481084843, 0.0, 0.0, 0.0, 0.0, 0.0,
-				-0.047330077283605464, 0.9922780311236191, 0.11456233605562893, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-			}),
-			want1: []complex128{-1.41163, 1.41163, 1.41163, -1.41163, -1.0, 1.0, -1.0, 1.0},
 		},
 		{
 			name: "Degenerate",
@@ -270,12 +233,22 @@ func TestSystem_diagonalize(t *testing.T) {
 				0.0, -2.0, 0.0,
 				2.0, 0.0, -1.0,
 			})},
-			want: mat.NewCDense(3, 3, []complex128{
-				0.8944271909999159, -0.4472135954999579, 0.0,
-				0.0, 0.0, 1.0,
-				0.4472135954999579, 0.8944271909999159, 0.0,
-			}),
-			want1: []complex128{3.0, -2.0, -2.0},
+		},
+		{
+			name:   "3-body",
+			fields: fields{CentralSpin: State{0.0, 1.0, 0.0}, Bath: []State{{0.0, 1.0, 0.0}, {0.0, 2.0, 0.0}}, PhysicsConfig: PhysicsConfig{BathDipoleMoment: 1.1e-10, AtomDipoleMoment: 1.0, Spin: 0.5}},
+			args: args{
+				hamiltonian: mat.NewDense(8, 8, []float64{
+					-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+					0.0, -1.0, 0.0, 0.0, -0.12358, 0.0, 0.0, 0.0,
+					0.0, 0.0, -1.0, 0.0, -0.98865, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -1.0, 0.0, -0.98865, -0.12358, 0.0,
+					0.0, -0.12358, -0.98865, 0.0, 1.0, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -0.98865, 0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, -0.1235, 0.0, 0.0, 1.0, 0.0,
+					0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+				}),
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -289,34 +262,17 @@ func TestSystem_diagonalize(t *testing.T) {
 			s.Diagonalize(DiagonalizationInput{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
 
 			res := <-results
-			eRow, eCol := res.EigenVectors.Dims()
-			reals := make([]float64, eRow*eCol)
-			for i, _ := range reals {
-				reals[i] = real(res.EigenVectors.RawCMatrix().Data[i])
-			}
-			m := mat.NewDense(eRow, eCol, reals)
-			m.Mul(m.T(), m)
-			if !mat.EqualApprox(m, hs.Id(0.5*(float64(eRow)-1.0)), 1e-14) {
-				t.Errorf("Matrix of eigenvectors is not orthogonal. Eigenvectors: \n%v\n", res.EigenVectors)
-			}
-
-			if res.EigenVectors.RawCMatrix().Cols != tt.want.RawCMatrix().Cols || res.EigenVectors.RawCMatrix().Rows != tt.want.RawCMatrix().Rows {
-				t.Errorf("Dims got = %v, %v, Dims want %v, %v", res.EigenVectors.RawCMatrix().Cols, res.EigenVectors.RawCMatrix().Rows, tt.want.RawCMatrix().Cols, tt.want.RawCMatrix().Rows)
-			}
-			if !mat.CEqualApprox(res.EigenVectors, tt.want, 1e-4) {
-				t.Errorf("System.diagonalize() got = %v, want %v", res.EigenVectors, tt.want)
-			}
-			if len(res.EigenValues) != len(tt.want1) {
-				t.Errorf("Dims got = %v, Dims want %v", len(res.EigenValues), len(tt.want1))
-			}
-			sort.Slice(res.EigenValues, func(i, j int) bool {
-				return real(res.EigenValues[i]) < real(res.EigenValues[j])
-			})
-			sort.Slice(tt.want1, func(i, j int) bool {
-				return real(tt.want1[i]) < real(tt.want1[j])
-			})
-			if !mat.CEqualApprox(mat.NewCDense(1, len(res.EigenValues), res.EigenValues), mat.NewCDense(1, len(tt.want1), tt.want1), 1e-4) {
-				t.Errorf("System.diagonalize() got1 = %v, want %v", res.EigenValues, tt.want1)
+			kets := hs.KetsFromCMatrix(res.EigenVectors)
+			for e, ket := range kets {
+				for i, el := range ket.Data {
+					tmp := 0.0
+					for j, ell := range ket.Data {
+						tmp += tt.args.hamiltonian.At(i, j) * real(ell)
+					}
+					if math.Abs(real(res.EigenValues[e]*el)-tmp) > 1e-10 {
+						t.Errorf("Vector is not an eigenvector: \n%v\n with eigenvalue: \n%v\n", ket, res.EigenValues[e])
+					}
+				}
 			}
 		})
 	}

@@ -115,16 +115,6 @@ func RealPart(m *mat.CDense) *mat.Dense {
 	return out
 }
 
-func Complex(m *mat.Dense) *mat.CDense {
-	r, c := m.Dims()
-	out := mat.NewCDense(r, c, nil)
-	for i, el := range m.RawMatrix().Data {
-		out.RawCMatrix().Data[i] = complex(el, 0.0)
-	}
-	return out
-
-}
-
 func ComplexToFloats(m []complex128) []float64 {
 	out := make([]float64, len(m))
 	for i, el := range m {

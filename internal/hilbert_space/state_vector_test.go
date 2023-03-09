@@ -192,53 +192,6 @@ func TestKetFromFloats(t *testing.T) {
 	}
 }
 
-func TestKetsFromMatrix(t *testing.T) {
-	type args struct {
-		mat mat.CMatrix
-	}
-	tests := []struct {
-		name string
-		args args
-		want []*StateVec
-	}{
-		{
-			name: "single ket",
-			args: args{
-				mat: mat.NewCDense(2, 1, []complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
-			},
-			want: []*StateVec{
-				NewKet([]complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
-			},
-		},
-		{
-			name: "three kets",
-			args: args{
-				mat: mat.NewCDense(2, 3, []complex128{
-					complex(1.0, 0.0), complex(3.0, 0.0), complex(5.0, 0.0),
-					complex(2.0, 0.0), complex(4.0, 0.0), complex(6.0, 0.0)}),
-			},
-			want: []*StateVec{
-				NewKet([]complex128{complex(1.0, 0.0), complex(2.0, 0.0)}),
-				NewKet([]complex128{complex(3.0, 0.0), complex(4.0, 0.0)}),
-				NewKet([]complex128{complex(5.0, 0.0), complex(6.0, 0.0)}),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := KetsFromCMatrix(tt.args.mat)
-			if len(got) != len(tt.want) {
-				t.Errorf("Outputs dimensions mismatch. Want: %v, got %v", len(got), len(tt.want))
-			}
-			for i := 0; i < len(got); i++ {
-				if !mat.CEqual(mat.NewCDense(len(got[i].Data), 1, got[i].Data), mat.NewCDense(len(tt.want[i].Data), 1, tt.want[i].Data)) {
-					t.Errorf("KetsFromMatrix() = %v, want %v", got[i], tt.want[i])
-				}
-			}
-		})
-	}
-}
-
 func TestNewKetReal(t *testing.T) {
 	type args struct {
 		elements []float64
@@ -283,14 +236,14 @@ func TestCMatrixFromKets(t *testing.T) {
 					Data: []complex128{1.0, 0.0},
 				}},
 			},
-			want: mat.NewCDense(1, 2, []complex128{1.0, 0.0}),
+			want: mat.NewCDense(2, 1, []complex128{1.0, 0.0}),
 		},
 		{
 			name: "two",
 			args: args{
 				kets: []*StateVec{
-					{N: 2, Inc: 1, Data: []complex128{1.0, 2.0}},
-					{N: 2, Inc: 1, Data: []complex128{3.0, 4.0}},
+					{N: 2, Inc: 1, Data: []complex128{1.0, 3.0}},
+					{N: 2, Inc: 1, Data: []complex128{2.0, 4.0}},
 				},
 			},
 			want: mat.NewCDense(2, 2, []complex128{1.0, 2.0, 3.0, 4.0}),

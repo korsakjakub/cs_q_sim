@@ -110,23 +110,10 @@ func KetsFromCMatrix(mat mat.CMatrix) []*StateVec {
 	return out
 }
 
-func KetsFromMatrix(mat mat.Matrix) []*StateVec {
-	rows, cols := mat.Dims()
-	out := make([]*StateVec, cols)
-	for col := 0; col < cols; col++ {
-		tmp := make([]complex128, rows)
-		for row := 0; row < rows; row++ {
-			tmp[row] = complex(mat.At(row, col), 0.0)
-		}
-		out[col] = NewKet(tmp)
-	}
-	return out
-}
-
 func CMatrixFromKets(kets []*StateVec) *mat.CDense {
 	rows := len(kets)
 	cols := len(kets[0].Data)
-	m := mat.NewCDense(rows, cols, nil)
+	m := mat.NewCDense(cols, rows, nil)
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
 			m.Set(col, row, kets[row].Data[col])
