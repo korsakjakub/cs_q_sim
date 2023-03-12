@@ -18,5 +18,5 @@ func main() {
 			"message": "OK!",
 		})
 	})
-	server.Run(":8080")
+	server.Run("0.0.0.0:8080")
 }
