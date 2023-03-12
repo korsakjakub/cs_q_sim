@@ -67,8 +67,12 @@ func spectrum(conf qs.Config) {
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),
 		},
-		System: *s,
-		XYs:    []plotter.XYs{xys},
+		Values: struct {
+			System       qs.System "mapstructure:\"system\""
+			EigenValues  []string  "mapstructure:\"evalues\""
+			EigenVectors []string  "mapstructure:\"evectors\""
+		}{System: *s},
+		XYs: []plotter.XYs{xys},
 	}
 	r.Write(conf.Files)
 }

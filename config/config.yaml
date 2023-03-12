@@ -11,20 +11,14 @@ physics:
     centralmagneticfield: 1002.0
     timerange: 500
     dt: 1e-3
-    initialket: uuddddd
+    initialket: duuuudddd
     observables:
       - operator: Sz
-        slot: 1
-      - operator: Sz
-        slot: 2
-      - operator: Sz
-        slot: 3
-      - operator: Sz
-        slot: 4
+        slot: 0
 
 files:
   figdir: figures/
   outputsdir: outputs/
   results:
-    cpu: "i7-1185G7"
+    cpu: "Ryzen 5800x"
     ram: "32GB"

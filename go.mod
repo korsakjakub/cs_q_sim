@@ -2,7 +2,10 @@ module github.com/korsakjakub/cs_q_sim
 
 go 1.19
 
-require github.com/spf13/viper v1.14.0
+require (
+	github.com/davecgh/go-spew v1.1.1
+	github.com/spf13/viper v1.14.0
+)
 
 require (
 	git.sr.ht/~sbinet/gg v0.3.1 // indirect

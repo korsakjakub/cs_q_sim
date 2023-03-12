@@ -95,9 +95,30 @@ func (s *System) Diagonalize(input DiagonalizationInput, results chan<- Diagonal
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 
+	orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
+	orto.Orthonormalize()
+	eigenvalues, eigenvectors := orto.OrthoToEigen()
+
 	results <- DiagonalizationResults{
-		EigenVectors: evec,
-		EigenValues:  eig.Values(nil),
+		EigenVectors: eigenvectors,
+		EigenValues:  eigenvalues,
 		B:            input.B,
 	}
+}
+
+func RealPart(m *mat.CDense) *mat.Dense {
+	r, c := m.Dims()
+	out := mat.NewDense(r, c, nil)
+	for i, el := range m.RawCMatrix().Data {
+		out.RawMatrix().Data[i] = real(el)
+	}
+	return out
+}
+
+func ComplexToFloats(m []complex128) []float64 {
+	out := make([]float64, len(m))
+	for i, el := range m {
+		out[i] = real(el)
+	}
+	return out
 }
