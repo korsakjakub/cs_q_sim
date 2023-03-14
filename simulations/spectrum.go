@@ -1,4 +1,4 @@
-package main
+package simulations
 
 import (
 	"math"
@@ -10,7 +10,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 )
 
-func spectrum(conf qs.Config) {
+func Spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc := conf.Physics.SpectrumConfig.BathCount

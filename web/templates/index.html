@@ -1,0 +1,40 @@
+{{ template "header.html" }}
+CONTENT
+<div class="rendered-form">
+    <div class="formbuilder-number form-group field-bathdipolemoment">
+        <label for="bathdipolemoment" class="formbuilder-number-label">Bath Dipole Moment</label>
+        <input type="number" placeholder="1.0" class="form-control" name="bathdipolemoment" access="false" value="1.0" min="0" id="bathdipolemoment">
+    </div>
+    <div class="formbuilder-number form-group field-atomdipolemoment">
+        <label for="atomdipolemoment" class="formbuilder-number-label">Atom Dipole Moment</label>
+        <input type="number" placeholder="2.0" class="form-control" name="atomdipolemoment" access="false" value="2.0" min="0" id="atomdipolemoment">
+    </div>
+    <div class="formbuilder-number form-group field-tiltangle">
+        <label for="tiltangle" class="formbuilder-number-label">Tilt angle</label>
+        <input type="number" placeholder="0.0" class="form-control" name="tiltangle" access="false" value="0.0" id="tiltangle">
+    </div>
+    <div class="formbuilder-number form-group field-bathmagneticfield">
+        <label for="bathmagneticfield" class="formbuilder-number-label">Bath magnetic field</label>
+        <input type="number" placeholder="1000" class="form-control" name="bathmagneticfield" access="false" value="1000" id="bathmagneticfield">
+    </div>
+    <div class="formbuilder-number form-group field-centralmagneticfield">
+        <label for="centralmagneticfield" class="formbuilder-number-label">Atom magnetic field</label>
+        <input type="number" placeholder="1002" class="form-control" name="centralmagneticfield" access="false" value="1002" id="centralmagneticfield">
+    </div>
+    <div class="formbuilder-number form-group field-timerange">
+        <label for="timerange" class="formbuilder-number-label">Time range</label>
+        <input type="number" placeholder="100" class="form-control" name="timerange" access="false" value="100" id="timerange">
+    </div>
+    <div class="formbuilder-text form-group field-text-1674732454317">
+        <label for="text-1674732454317" class="formbuilder-text-label">dt</label>
+        <input type="text" placeholder="1e-3" class="form-control" name="text-1674732454317" access="false" value="1e-3" id="text-1674732454317">
+    </div>
+    <div class="formbuilder-text form-group field-initialket">
+        <label for="initialket" class="formbuilder-text-label">Initial ket</label>
+        <input type="text" placeholder="uuddddd" class="form-control" name="initialket" access="false" value="uuddddd" maxlength="10" id="initialket">
+    </div>
+    <button type="submit" class="btn btn-primary">Calculate!</button>
+</div>
+{{ .message }}
+<img src="./figures/plt-2023-01-24T12:49:37+01:00.png">
+{{ template "footer.html" }}

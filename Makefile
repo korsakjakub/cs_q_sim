@@ -2,7 +2,7 @@ binary_dir=cmd/
 binary_name=qsim.out
 binary_path=${binary_dir}${binary_name}
 internal_path=./internal
-package=quantum_simulator
+package=cli
 dockerfile_path=build/Dockerfile
 docker_name=cs_q_sim:1.0
 

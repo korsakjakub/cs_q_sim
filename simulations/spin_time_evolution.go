@@ -1,4 +1,4 @@
-package main
+package simulations
 
 import (
 	"fmt"
@@ -35,7 +35,7 @@ func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
 	return observables
 }
 
-func spin_time_evolution(conf qs.Config) {
+func Spin_time_evolution(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc := len(conf.Physics.SpinEvolutionConfig.InitialKet) - 1
