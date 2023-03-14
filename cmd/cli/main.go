@@ -4,7 +4,7 @@ import (
 	"os"
 
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
-	sim "github.com/korsakjakub/cs_q_sim/internal/simulations"
+	sim "github.com/korsakjakub/cs_q_sim/simulations"
 )
 
 var conf qs.Config
