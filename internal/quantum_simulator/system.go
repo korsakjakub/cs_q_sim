@@ -24,6 +24,8 @@ type State struct {
 func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 	if conf.Geometry == "ring" {
 		return math.Cos(float64(2*j)*math.Pi/float64(conf.BathCount)) * math.Sin(conf.TiltAngle)
+	} else if conf.Geometry == "cube" && j < 8 {
+		return 0.0 // TODO: write out angles for cube
 	}
 	return 0.0
 }
