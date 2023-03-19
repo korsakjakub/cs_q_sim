@@ -30,9 +30,9 @@ func TestLoadConfig(t *testing.T) {
 					"  atomdipolemoment: 1.0",
 					"  spin: 1.0",
 					"  tiltangle: 0.0",
+					"  bathcount: 10",
 					"  spectrum:",
 					"    magneticfieldrange: 1",
-					"    bathcount: 10",
 					"  timeevolution:",
 					"    bathmagneticfield: 1",
 					"    centralmagneticfield: 1",
@@ -57,9 +57,9 @@ func TestLoadConfig(t *testing.T) {
 				AtomDipoleMoment: 1.0,
 				Spin:             1,
 				TiltAngle:        0.0,
+				BathCount:        10,
 				SpectrumConfig: SpectrumConfig{
 					MagneticFieldRange: 1,
-					BathCount:          10,
 				},
 				SpinEvolutionConfig: SpinEvolutionConfig{
 					BathMagneticField:    1,

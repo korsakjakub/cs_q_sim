@@ -24,7 +24,7 @@ func NewKetReal(elements []float64) *StateVec {
 
 func NewZeroKet(dim int) *StateVec {
 	out := make([]complex128, dim)
-	for i, _ := range out {
+	for i := range out {
 		out[i] = complex(0.0, 0.0)
 	}
 	return NewKet(out)

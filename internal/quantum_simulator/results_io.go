@@ -1,6 +1,7 @@
 package quantum_simulator
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -41,6 +42,7 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	} else {
 		io.WriteString(file, string(b))
 	}
+	fmt.Printf("File created:\n%v%v\n", path, r.Filename)
 }
 
 func Read(conf FilesConfig, filename string) ResultsIO {

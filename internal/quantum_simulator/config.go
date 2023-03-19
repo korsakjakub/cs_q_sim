@@ -10,14 +10,15 @@ import (
 type PhysicsConfig struct {
 	BathDipoleMoment    float64             `mapstructure:"bathdipolemoment"`
 	AtomDipoleMoment    float64             `mapstructure:"atomdipolemoment"`
+	BathCount           int                 `mapstructure:"bathcount"`
 	Spin                float64             `mapstructure:"spin"`
 	TiltAngle           float64             `mapstructure:"tiltangle"`
+	Geometry            string              `mapstructure:"geometry"`
 	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
 	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
 }
 
 type SpectrumConfig struct {
-	BathCount          int `mapstructure:"bathcount"`
 	MagneticFieldRange int `mapstructure:"magneticfieldrange"`
 }
 

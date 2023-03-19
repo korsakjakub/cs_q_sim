@@ -3,9 +3,10 @@ physics:
   atomdipolemoment: 20.0
   spin: 0.5
   tiltangle: 0.785398163397
+  geometry: ring
+  bathcount: 
   spectrum:
     magneticfieldrange: 100
-    bathcount: 4
   timeevolution:
     bathmagneticfield: 1000.0
     centralmagneticfield: 1002.0
