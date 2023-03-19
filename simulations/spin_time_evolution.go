@@ -38,7 +38,8 @@ func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
 func Spin_time_evolution(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
-	bc := len(conf.Physics.SpinEvolutionConfig.InitialKet) - 1
+	conf.Physics.BathCount = len(conf.Physics.SpinEvolutionConfig.InitialKet) - 1
+	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.SpinEvolutionConfig.TimeRange
 	spin := conf.Physics.Spin
 	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.SpinEvolutionConfig.InitialKet, int(2*spin+1)))
@@ -46,7 +47,7 @@ func Spin_time_evolution(conf qs.Config) {
 
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
-		bath = append(bath, qs.State{Angle: 2 * float64(i) * math.Pi / float64(bc), Distance: 1e3})
+		bath = append(bath, qs.State{Angle: qs.PolarAngleCos(i, conf.Physics), Distance: 1e3})
 	}
 
 	s := &qs.System{
@@ -99,7 +100,6 @@ func Spin_time_evolution(conf qs.Config) {
 		XYs: xyss,
 	}
 	r.Write(conf.Files)
-
 }
 
 func eValsToString(evals []complex128) []string {
