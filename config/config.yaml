@@ -2,16 +2,16 @@ physics:
   bathdipolemoment: 1.0
   atomdipolemoment: 20.0
   spin: 0.5
-  tiltangle: 0.785398163397
-  geometry: ring
+  tiltangle: 2.35619449019
+  geometry: cube
   bathcount: 
   spectrum:
     magneticfieldrange: 100
   timeevolution:
     bathmagneticfield: 1000.0
     centralmagneticfield: 1002.0
-    timerange: 500
-    dt: 1e-3
+    timerange: 0
+    dt: 1e-4
     initialket: duuuudddd
     observables:
       - operator: Sz
