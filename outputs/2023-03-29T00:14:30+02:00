@@ -1,0 +1,71 @@
+filename: "2023-03-29T00:14:30+02:00"
+metadata:
+  date: "2023-03-29T00:14:30+02:00"
+  simulation: Forces vs particle number
+  cpu: Ryzen 5800x
+  ram: 32GB
+  completiontime: 15.89µs
+values:
+  system:
+    centralspin:
+      angle: 0
+      distance: 0
+      force: 0
+    bath:
+    - angle: 3.57931706706258
+      distance: 1000
+      force: -3364.5193189989936
+    - angle: 1.1285673496225834
+      distance: 1000
+      force: -253.54356597089344
+    - angle: -1.1285673496225834
+      distance: 1000
+      force: -253.54356597089344
+    - angle: -3.57931706706258
+      distance: 1000
+      force: -3364.5193189989936
+    - angle: 1.982698170368558
+      distance: 1000
+      force: -970.0718568797699
+    - angle: 1.982698170368558
+      distance: 1000
+      force: -970.0718568797699
+    - angle: -1.982698170368558
+      distance: 1000
+      force: -970.0718568797699
+    - angle: -1.982698170368558
+      distance: 1000
+      force: -970.0718568797699
+    - angle: 1.4548162923087018
+      distance: 1000
+      force: -480.79670521308896
+    - angle: 1.4548162923087018
+      distance: 1000
+      force: -480.79670521308896
+    - angle: -1.4548162923087018
+      distance: 1000
+      force: -480.79670521308896
+    - angle: -1.4548162923087018
+      distance: 1000
+      force: -480.79670521308896
+    physicsconfig:
+      bathdipolemoment: 1
+      atomdipolemoment: 20
+      bathcount: 12
+      spin: 0.5
+      tiltangle: 0.7
+      geometry: icosahedron
+      spectrumconfig:
+        magneticfieldrange: 100
+      spinevolutionconfig:
+        bathmagneticfield: 1000
+        centralmagneticfield: 1002
+        timerange: 0
+        dt: 0.0001
+        initialket: duuuudddduuuu
+        observablesconfig:
+        - operator: Sz
+          slot: 0
+  eigenvalues: []
+  eigenvectors: []
+xys: []

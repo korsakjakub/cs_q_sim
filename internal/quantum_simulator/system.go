@@ -21,21 +21,47 @@ type State struct {
 	Force    float64
 }
 
+type point struct {
+	x float64
+	y float64
+	z float64
+}
+
 func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 	if conf.Geometry == "ring" {
 		return math.Cos(float64(2*j)*math.Pi/float64(conf.BathCount)) * math.Sin(conf.TiltAngle)
 	} else if conf.Geometry == "cube" && j < 8 {
-		f1 := math.Pi / 4.0
-		f2 := 3.0 * math.Pi / 4.0
-		angles := []float64{f1 - conf.TiltAngle, f1 - conf.TiltAngle, f1 + conf.TiltAngle, f1 + conf.TiltAngle,
-			f2 - conf.TiltAngle, f2 - conf.TiltAngle, f2 + conf.TiltAngle, f2 + conf.TiltAngle}
-		return angles[j]
+		a := 1 / math.Sqrt(3.0)
+		v := []point{{a, a, a}, {-a, a, a}, {a, -a, a}, {-a, -a, a}, {a, a, -a}, {-a, a, -a}, {a, -a, -a}, {-a, -a, -a}}
+		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
+	} else if conf.Geometry == "dodecahedron" && j < 20 {
+		a := 1 / math.Sqrt(3.0)
+		phi := (0.5 + math.Sqrt(5.0)*0.5) * a
+		iphi := 1.0 / phi * a
+		v := []point{{a, a, a}, {-a, a, a}, {a, -a, a}, {-a, -a, a},
+			{a, a, -a}, {-a, a, -a}, {a, -a, -a}, {-a, -a, -a},
+			{0.0, phi, iphi}, {0.0, -phi, iphi}, {0.0, phi, -iphi}, {0.0, -phi, -iphi},
+			{iphi, 0.0, phi}, {-iphi, 0.0, phi}, {iphi, 0.0, -phi}, {-iphi, 0.0, -phi},
+			{phi, iphi, 0.0}, {-phi, iphi, 0.0}, {phi, -iphi, 0.0}, {-phi, -iphi, 0.0}}
+		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
+	} else if conf.Geometry == "icosahedron" {
+		phi := 0.5 + math.Sqrt(5.0)*0.5
+		a := math.Sqrt(phi*phi + 1.0)
+		aphi := a * phi
+		v := []point{{0.0, a, aphi}, {0.0, -a, aphi}, {0.0, a, -aphi}, {0.0, -a, -aphi},
+			{a, aphi, 0.0}, {-a, aphi, 0.0}, {a, -aphi, 0.0}, {-a, -aphi, 0.0},
+			{aphi, 0.0, a}, {-aphi, 0.0, a}, {aphi, 0.0, -a}, {-aphi, 0.0, -a}}
+		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
+	} else if conf.Geometry == "sphere" { // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
+		bc := float64(conf.BathCount)
+		i := float64(j) + 0.5
+		return 1.0 - 2.0*i/bc
 	}
 	return 0.0
 }
 
 // Given an index j, return force between the j-th bath molecule and the central spin
-func (s *System) forceAt(j int) float64 {
+func (s *System) ForceAt(j int) float64 {
 	if j == 0 {
 		return 0.0
 	}
@@ -56,7 +82,7 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	sm := hs.Sm(spin)
 	sp := hs.Sp(spin)
 
-	f := s.forceAt(j)
+	f := s.ForceAt(j)
 	h := hs.ManyBodyOperator(sp, 0, dim)
 	h.Mul(h, hs.ManyBodyOperator(sm, j, dim))
 	h2 := hs.ManyBodyOperator(sm, 0, dim)
