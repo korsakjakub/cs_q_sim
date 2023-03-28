@@ -44,7 +44,7 @@ func TestSystem_forceAt(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			if got := s.forceAt(tt.args.j); math.Abs(got-tt.want) > 1e-4 {
+			if got := s.ForceAt(tt.args.j); math.Abs(got-tt.want) > 1e-4 {
 				t.Errorf("System.forceAt() = %v, want %v", got, tt.want)
 			}
 		})
