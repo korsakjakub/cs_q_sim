@@ -60,8 +60,13 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
 	} else if conf.Geometry == "sphere" { // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
 		bc := float64(conf.BathCount)
-		i := float64(j) + 0.5
-		return 1.0 - 2.0*i/bc
+		phi := math.Acos(1.0 - 2.0*(float64(j)-0.5)/bc)
+		theta := math.Pi * (1.0 + math.Sqrt(5.0)) * bc
+
+		y := math.Sin(theta) * math.Sin(phi)
+		z := math.Cos(phi)
+
+		return y*math.Sin(conf.TiltAngle) + z*math.Cos(conf.TiltAngle)
 	}
 	return 0.0
 }
