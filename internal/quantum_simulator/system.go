@@ -62,17 +62,21 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 
 // Given an index j, return force between the j-th bath molecule and the central spin
 func (s *System) InteractionAt(j int) float64 {
-	if j == 0 {
-		return 0.0
-	}
-	// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
-	// Therefore we pick Bath[j-1] instead of Bath[j]
-	c := (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
-		0.5 * (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
+	if len(s.PhysicsConfig.InteractionCoefficients) > 0 {
+		return s.PhysicsConfig.InteractionCoefficients[j]
+	} else {
+		if j == 0 {
+			return 0.0
+		}
+		// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
+		// Therefore we pick Bath[j-1] instead of Bath[j]
+		c := (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
+			0.5 * (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
 
-	// assign force value to bath state
-	s.Bath[j-1].InteractionStrength = c
-	return c
+		// assign force value to bath state
+		s.Bath[j-1].InteractionStrength = c
+		return c
+	}
 }
 
 // Given an index j, return the Heisenberg term (0, j - interaction) of the hamiltonian

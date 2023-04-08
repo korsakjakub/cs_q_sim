@@ -3,32 +3,27 @@ package quantum_simulator
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"reflect"
 
 	"github.com/spf13/viper"
 )
 
 type PhysicsConfig struct {
-	BathDipoleMoment    float64             `mapstructure:"bathdipolemoment"`
-	AtomDipoleMoment    float64             `mapstructure:"atomdipolemoment"`
-	BathCount           int                 `mapstructure:"bathcount"`
-	Spin                float64             `mapstructure:"spin"`
-	TiltAngle           float64             `mapstructure:"tiltangle"`
-	Geometry            string              `mapstructure:"geometry"`
-	SpectrumConfig      SpectrumConfig      `mapstructure:"spectrum"`
-	SpinEvolutionConfig SpinEvolutionConfig `mapstructure:"timeevolution"`
-}
-
-type SpectrumConfig struct {
-	MagneticFieldRange int `mapstructure:"magneticfieldrange"`
-}
-
-type SpinEvolutionConfig struct {
-	BathMagneticField    float64            `mapstructure:"bathmagneticfield"`
-	CentralMagneticField float64            `mapstructure:"centralmagneticfield"`
-	TimeRange            int                `mapstructure:"timerange"`
-	Dt                   float64            `mapstructure:"dt"`
-	InitialKet           string             `mapstructure:"initialket"`
-	ObservablesConfig    []ObservableConfig `mapstructure:"observables"`
+	BathDipoleMoment	float64			`mapstructure:"bathdipolemoment"`
+	AtomDipoleMoment	float64			`mapstructure:"atomdipolemoment"`
+	BathCount		int			`mapstructure:"bathcount"`
+	Spin			float64			`mapstructure:"spin"`
+	TiltAngle		float64			`mapstructure:"tiltangle"`
+	Geometry		string			`mapstructure:"geometry"`
+	InteractionCoefficients	[]float64		`mapstructure:"interactioncoefficients"`
+	BathMagneticField	float64			`mapstructure:"bathmagneticfield"`
+	CentralMagneticField	float64			`mapstructure:"centralmagneticfield"`
+	TimeRange		int			`mapstructure:"timerange"`
+	Dt			float64			`mapstructure:"dt"`
+	InitialKet		string			`mapstructure:"initialket"`
+	ObservablesConfig	[]ObservableConfig	`mapstructure:"observables"`
+	MagneticFieldRange	int			`mapstructure:"magneticfieldrange"`
 }
 
 type ObservableConfig struct {
@@ -48,6 +43,8 @@ type ResultsConfig struct {
 }
 
 type Config struct {
+	Simulation string `mapstructure:"simulation"`
+	Verbosity string `mapstructure:"verbosity"` // debug for more verbosity
 	Physics PhysicsConfig `mapstructure:"physics"`
 	Files   FilesConfig   `mapstructure:"files"`
 }
@@ -59,30 +56,34 @@ func parse(err error) {
 	os.Exit(2)
 }
 
-func LoadConfig(additionalPath []string, args ...string) Config {
+func LoadConfig(additionalPath []string) Config {
 	vp = viper.New()
 	var config Config
-	if len(args) > 0 {
-		vp.SetConfigName(args[0])
-		vp.SetConfigType(args[1])
-	} else {
-		vp.SetConfigName("config")
-		vp.SetConfigType("yaml")
-	}
-	vp.AddConfigPath("./")
 	for _, path := range additionalPath {
-		vp.AddConfigPath(path)
+		vp.SetConfigFile(path)
+		vp.AddConfigPath(filepath.Dir(path))
+		err := vp.MergeInConfig()
+		if err != nil {
+			parse(err)
+		}
 	}
 
-	err := vp.ReadInConfig()
-	if err != nil {
-		parse(err)
-	}
-
-	err = vp.Unmarshal(&config)
+	err := vp.Unmarshal(&config)
 	if err != nil {
 		parse(err)
 	}
 
 	return config
 }
+
+func Validate(conf interface{}, fields []string) error {
+	confValues := reflect.ValueOf(conf)
+	for _, field := range fields {
+		if !confValues.FieldByName(field).IsZero() {
+			continue
+		}
+		return fmt.Errorf("Failed to validate the struct. The field %s is required and not provided.", field)
+	}
+	return nil
+}
+

@@ -1,0 +1,14 @@
+simulation: time-evolution-selected-coeffs
+verbosity: debug
+physics:
+  spin: 0.5
+  interactioncoefficients: [0.0, -44.93871218982019, 22.46935609503098, 89.87742437988217, 22.469356095030992, -44.93871218982019, 22.469356095030953, 89.87742437988217, 22.469356095030992]
+  bathmagneticfield: 1000.0
+  centralmagneticfield: 1002.0
+  timerange: 500
+  dt: 1e-3
+  initialket: duuuudddd
+  observables:
+    - operator: Sz
+      slot: 0
+

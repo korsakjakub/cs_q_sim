@@ -14,7 +14,7 @@ func Spectrum(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	bc := conf.Physics.BathCount
-	fieldRange := conf.Physics.SpectrumConfig.MagneticFieldRange
+	fieldRange := conf.Physics.MagneticFieldRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
 		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})

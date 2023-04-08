@@ -9,7 +9,7 @@ import (
 func Interactions(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
-	conf.Physics.BathCount = len(conf.Physics.SpinEvolutionConfig.InitialKet) - 1
+	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
 	bc := conf.Physics.BathCount
 
 	start := time.Now()
