@@ -9,7 +9,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-func TestSystem_forceAt(t *testing.T) {
+func TestSystem_InteractionAt(t *testing.T) {
 	type fields struct {
 		CentralSpin   State
 		Bath          []State
@@ -44,7 +44,7 @@ func TestSystem_forceAt(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			if got := s.ForceAt(tt.args.j); math.Abs(got-tt.want) > 1e-4 {
+			if got := s.InteractionAt(tt.args.j); math.Abs(got-tt.want) > 1e-4 {
 				t.Errorf("System.forceAt() = %v, want %v", got, tt.want)
 			}
 		})
@@ -223,7 +223,7 @@ func TestSystem_diagonalize(t *testing.T) {
 				CentralSpin: State{
 					Angle:    0,
 					Distance: 0,
-					Force:    0,
+					InteractionStrength:    0,
 				},
 				Bath:          []State{},
 				PhysicsConfig: PhysicsConfig{},

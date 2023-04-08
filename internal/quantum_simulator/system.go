@@ -18,7 +18,7 @@ type System struct {
 type State struct {
 	Angle    float64
 	Distance float64
-	Force    float64
+	InteractionStrength    float64
 }
 
 type point struct {
@@ -61,7 +61,7 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 }
 
 // Given an index j, return force between the j-th bath molecule and the central spin
-func (s *System) ForceAt(j int) float64 {
+func (s *System) InteractionAt(j int) float64 {
 	if j == 0 {
 		return 0.0
 	}
@@ -71,7 +71,7 @@ func (s *System) ForceAt(j int) float64 {
 		0.5 * (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
 
 	// assign force value to bath state
-	s.Bath[j-1].Force = c
+	s.Bath[j-1].InteractionStrength = c
 	return c
 }
 
@@ -82,7 +82,7 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	sm := hs.Sm(spin)
 	sp := hs.Sp(spin)
 
-	f := s.ForceAt(j)
+	f := s.InteractionAt(j)
 	h := hs.ManyBodyOperator(sp, 0, dim)
 	h.Mul(h, hs.ManyBodyOperator(sm, j, dim))
 	h2 := hs.ManyBodyOperator(sm, 0, dim)

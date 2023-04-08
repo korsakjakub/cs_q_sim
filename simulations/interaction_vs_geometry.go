@@ -6,7 +6,7 @@ import (
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 )
 
-func Forces(conf qs.Config) {
+func Interactions(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	conf.Physics.BathCount = len(conf.Physics.SpinEvolutionConfig.InitialKet) - 1
@@ -24,7 +24,7 @@ func Forces(conf qs.Config) {
 	}
 
 	for j := 0; j <= bc; j += 1 {
-		s.ForceAt(j)
+		s.InteractionAt(j)
 	}
 
 	start_time := start.Format(time.RFC3339)
