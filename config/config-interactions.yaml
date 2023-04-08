@@ -1,4 +1,4 @@
-simulation: spin-evolution
+simulation: interactions
 verbosity: debug
 physics:
   bathdipolemoment: 1.0
@@ -8,10 +8,4 @@ physics:
   geometry: ring
   bathmagneticfield: 1000.0
   centralmagneticfield: 1002.0
-  timerange: 1
-  dt: 1e-4
-  initialket: duu
-  observables:
-    - operator: Sz
-      slot: 0
 

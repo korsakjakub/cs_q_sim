@@ -11,17 +11,15 @@ export CONFIG_PATH=config/
 .DEFAULT_GOAL := all
 .PHONY: all build
 
-all: build run
+all: build
 
 build: ${binary_dir}${package}/main.go
 	go mod download
 	go build -o ${binary_path} ${binary_dir}${package}/*.go
+	# run ${binary_path}
 
 test:
 	go test -v ${internal_path}/*** -cover
-
-run: ${binary_path}
-	${binary_path}
 
 clean:
 	go clean

@@ -1,0 +1,7 @@
+files:
+  figdir: figures/
+  outputsdir: outputs/
+  results:
+    cpu: "Ryzen 5800x"
+    ram: "32GB"
+
