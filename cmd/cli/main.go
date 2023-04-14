@@ -84,6 +84,20 @@ func main() {
 		}
 		printHeader("spin evolution for selected coefficients")
 		sim.SpinTimeEvolutionSelectedCoeffs(conf)
+	case "find-geometry-given-interactions":
+		s := []string {
+				"BathDipoleMoment", 
+				"AtomDipoleMoment",
+				"Spin",
+				"InteractionCoefficients",
+				"BathMagneticField",
+				"CentralMagneticField",
+			}
+		if err := qs.Validate(conf.Physics, s); err != nil {
+			panic(err)
+		}
+		printHeader("Find geometry for specified interactions")
+		sim.FindGeometryGivenInteractions(conf)
 	}
 }
 

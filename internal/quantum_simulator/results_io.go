@@ -40,7 +40,9 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 	if b, err := yaml.Marshal(r); err != nil {
 		parse(err)
 	} else {
-		io.WriteString(file, string(b))
+		if _, err := io.WriteString(file, string(b)); err != nil {
+			parse(err)
+		}
 	}
 	fmt.Printf("File created:\n%v%v\n", path, r.Filename)
 }
@@ -57,7 +59,10 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 		parse(err)
 		return ResultsIO{}
 	} else {
-		yaml.Unmarshal(b, &results)
+		if err := yaml.Unmarshal(b, &results); err != nil {
+			parse(err)
+			return ResultsIO{}
+		}
 		return results
 	}
 }
