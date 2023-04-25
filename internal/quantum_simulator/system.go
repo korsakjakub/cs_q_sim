@@ -16,15 +16,21 @@ type System struct {
 }
 
 type State struct {
-	Angle    float64
-	Distance float64
-	InteractionStrength    float64
+	Angle               float64
+	Distance            float64
+	InteractionStrength float64
 }
 
 type point struct {
 	x float64
 	y float64
 	z float64
+}
+
+func (s *System) DistanceGivenInteractionAt(j int) float64 {
+	rj := math.Pow(math.Abs(s.PhysicsConfig.BathDipoleMoment*s.PhysicsConfig.AtomDipoleMoment/(4*math.Pi*e0)*0.5/s.Bath[j-1].InteractionStrength*(1.0-3.0*math.Pow(s.Bath[j-1].Angle, 2))), 1.0/3.0)
+	s.Bath[j-1].Distance = rj
+	return rj
 }
 
 func PolarAngleCos(j int, conf PhysicsConfig) float64 {
@@ -63,7 +69,9 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 // Given an index j, return force between the j-th bath molecule and the central spin
 func (s *System) InteractionAt(j int) float64 {
 	if len(s.PhysicsConfig.InteractionCoefficients) > 0 {
-		return s.PhysicsConfig.InteractionCoefficients[j]
+		cj := s.PhysicsConfig.InteractionCoefficients[j]
+		s.Bath[j-1].InteractionStrength = cj
+		return cj
 	} else {
 		if j == 0 {
 			return 0.0
