@@ -34,7 +34,6 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 		PhysicsConfig: conf.Physics,
 	}
 
-
 	if conf.Verbosity == "debug" {
 		fmt.Println("Preparing the Hamiltonian...")
 	}
@@ -95,4 +94,3 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	}
 	r.Write(conf.Files)
 }
-

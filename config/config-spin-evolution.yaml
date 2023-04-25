@@ -4,13 +4,14 @@ physics:
   bathdipolemoment: 1.0
   atomdipolemoment: 20.0
   spin: 0.5
-  tiltangle: 0.7
-  geometry: ring
+  tiltangle: 0.0001
+  constantdistance: 100
+  geometry: sphere
   bathmagneticfield: 1000.0
   centralmagneticfield: 1002.0
-  timerange: 1
+  timerange: 400
   dt: 1e-4
-  initialket: duu
+  initialket: duuuudddd
   observables:
     - operator: Sz
       slot: 0

@@ -10,20 +10,21 @@ import (
 )
 
 type PhysicsConfig struct {
-	BathDipoleMoment	float64			`mapstructure:"bathdipolemoment"`
-	AtomDipoleMoment	float64			`mapstructure:"atomdipolemoment"`
-	BathCount		int			`mapstructure:"bathcount"`
-	Spin			float64			`mapstructure:"spin"`
-	TiltAngle		float64			`mapstructure:"tiltangle"`
-	Geometry		string			`mapstructure:"geometry"`
-	InteractionCoefficients	[]float64		`mapstructure:"interactioncoefficients"`
-	BathMagneticField	float64			`mapstructure:"bathmagneticfield"`
-	CentralMagneticField	float64			`mapstructure:"centralmagneticfield"`
-	TimeRange		int			`mapstructure:"timerange"`
-	Dt			float64			`mapstructure:"dt"`
-	InitialKet		string			`mapstructure:"initialket"`
-	ObservablesConfig	[]ObservableConfig	`mapstructure:"observables"`
-	MagneticFieldRange	int			`mapstructure:"magneticfieldrange"`
+	BathDipoleMoment        float64            `mapstructure:"bathdipolemoment"`
+	AtomDipoleMoment        float64            `mapstructure:"atomdipolemoment"`
+	BathCount               int                `mapstructure:"bathcount"`
+	Spin                    float64            `mapstructure:"spin"`
+	TiltAngle               float64            `mapstructure:"tiltangle"`
+	ConstantDistance        float64            `mapstructure:"constantdistance"`
+	Geometry                string             `mapstructure:"geometry"`
+	InteractionCoefficients []float64          `mapstructure:"interactioncoefficients"`
+	BathMagneticField       float64            `mapstructure:"bathmagneticfield"`
+	CentralMagneticField    float64            `mapstructure:"centralmagneticfield"`
+	TimeRange               int                `mapstructure:"timerange"`
+	Dt                      float64            `mapstructure:"dt"`
+	InitialKet              string             `mapstructure:"initialket"`
+	ObservablesConfig       []ObservableConfig `mapstructure:"observables"`
+	MagneticFieldRange      int                `mapstructure:"magneticfieldrange"`
 }
 
 type ObservableConfig struct {
@@ -43,10 +44,10 @@ type ResultsConfig struct {
 }
 
 type Config struct {
-	Simulation string `mapstructure:"simulation"`
-	Verbosity string `mapstructure:"verbosity"` // debug for more verbosity
-	Physics PhysicsConfig `mapstructure:"physics"`
-	Files   FilesConfig   `mapstructure:"files"`
+	Simulation string        `mapstructure:"simulation"`
+	Verbosity  string        `mapstructure:"verbosity"` // debug for more verbosity
+	Physics    PhysicsConfig `mapstructure:"physics"`
+	Files      FilesConfig   `mapstructure:"files"`
 }
 
 var vp *viper.Viper
@@ -86,4 +87,3 @@ func Validate(conf interface{}, fields []string) error {
 	}
 	return nil
 }
-
