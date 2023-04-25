@@ -16,9 +16,9 @@ type System struct {
 }
 
 type State struct {
-	Angle    float64
-	Distance float64
-	InteractionStrength    float64
+	Angle               float64
+	Distance            float64
+	InteractionStrength float64
 }
 
 type point struct {
@@ -28,7 +28,7 @@ type point struct {
 }
 
 func (s *System) DistanceGivenInteractionAt(j int) float64 {
-	rj:= s.Bath[j-1].InteractionStrength / s.PhysicsConfig.BathDipoleMoment / s.PhysicsConfig.AtomDipoleMoment * (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) / 0.5 / (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
+	rj := math.Pow(math.Abs(s.PhysicsConfig.BathDipoleMoment*s.PhysicsConfig.AtomDipoleMoment/(4*math.Pi*e0)*0.5/s.Bath[j-1].InteractionStrength*(1.0-3.0*math.Pow(s.Bath[j-1].Angle, 2))), 1.0/3.0)
 	s.Bath[j-1].Distance = rj
 	return rj
 }
