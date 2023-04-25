@@ -48,6 +48,7 @@ func main() {
 			"AtomDipoleMoment",
 			"Spin",
 			"TiltAngle",
+			"ConstantDistance",
 			"Geometry",
 			"BathMagneticField",
 			"CentralMagneticField",
