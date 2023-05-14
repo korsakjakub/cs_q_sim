@@ -8,12 +8,11 @@ physics:
   tiltangle: 6.28318530718
   constantdistance: 1.5
   geometry: ring
-  bathmagneticfield: 10000
-  centralmagneticfield: 10010
-  timerange: 500
-  dt: 1e-6
-  initialket: duuuudd
+  bathmagneticfield: 100
+  centralmagneticfield: 101
+  timerange: 1
+  dt: 1e-7
+  initialket: dupm
   observables:
     - operator: Sz
       slot: 0
-
