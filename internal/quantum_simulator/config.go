@@ -25,6 +25,7 @@ type PhysicsConfig struct {
 	InitialKet              string             `mapstructure:"initialket"`
 	ObservablesConfig       []ObservableConfig `mapstructure:"observables"`
 	MagneticFieldRange      int                `mapstructure:"magneticfieldrange"`
+	Units                   string             `mapstructure:"units"`
 }
 
 type ObservableConfig struct {

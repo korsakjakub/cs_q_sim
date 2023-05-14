@@ -81,9 +81,17 @@ func (s *System) InteractionAt(j int) float64 {
 		if j == 0 {
 			return 0.0
 		}
+
+		var k float64
+		if s.PhysicsConfig.Units == "atomic" {
+			k = 149.42785955012954
+		} else { // SI
+			k = 1 / (4 * math.Pi * e0)
+		}
+
 		// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
 		// Therefore we pick Bath[j-1] instead of Bath[j]
-		c := (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / (4 * math.Pi * e0 * math.Pow(math.Abs(s.Bath[j-1].Distance), 3)) *
+		c := k * (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / math.Pow(math.Abs(s.Bath[j-1].Distance), 3) *
 			0.5 * (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
 
 		// assign force value to bath state

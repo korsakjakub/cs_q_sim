@@ -73,7 +73,7 @@ func (o Ortho) Orthonormalize() {
 					u := eigen.EigenVectors[j].Scale(eigen.EigenVectors[i].Dot(eigen.EigenVectors[j]) / complex(math.Pow(eigen.EigenVectors[j].Norm(), 2), 0.0))
 					err := eigen.EigenVectors[i].Sub(u)
 					if err != nil {
-						return
+						panic(err)
 					}
 				}
 			}

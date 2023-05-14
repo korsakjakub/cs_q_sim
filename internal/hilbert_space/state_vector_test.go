@@ -396,8 +396,7 @@ func TestStateVec_Scale(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.u.Scale(tt.args.a)
-			if got := tt.u; !reflect.DeepEqual(got.Data, tt.want.Data) {
+			if got := tt.u.Scale(tt.args.a); !reflect.DeepEqual(got.Data, tt.want.Data) {
 				t.Errorf("Scale() got = %v, want %v", got.Data, tt.want.Data)
 			}
 		})
