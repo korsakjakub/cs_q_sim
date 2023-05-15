@@ -39,16 +39,11 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	}
 	b := conf.Physics.BathMagneticField
 	b0 := conf.Physics.CentralMagneticField
-	diagJob := qs.DiagonalizationInput{Hamiltonian: s.Hamiltonian(b0, b), B: b}
-	diagOuts := make(chan qs.DiagonalizationResults)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Diagonalizing...")
 	}
-	go s.Diagonalize(diagJob, diagOuts)
-
-	diag := <-diagOuts
-	close(diagOuts)
+	eigenValues, eigenVectors := s.Diagonalize(s.Hamiltonian(b0, b))
 
 	start_time := start.Format(time.RFC3339)
 
@@ -63,7 +58,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, diag.EigenValues, hs.KetsFromCMatrix(diag.EigenVectors)))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, eigenValues, hs.KetsFromCMatrix(eigenVectors)))})
 		}
 		xyss[i] = xys
 	}
@@ -87,8 +82,8 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			EigenVectors []string  "mapstructure:\"evectors\""
 		}{
 			System:       *s,
-			EigenValues:  eValsToString(diag.EigenValues),
-			EigenVectors: ketsToString(hs.KetsFromCMatrix(diag.EigenVectors)), //eValsToString(diag.EigenVectors.RawCMatrix().Data),
+			EigenValues:  eValsToString(eigenValues),
+			EigenVectors: ketsToString(hs.KetsFromCMatrix(eigenVectors)), //eValsToString(diag.EigenVectors.RawCMatrix().Data),
 		},
 		XYs: xyss,
 	}
