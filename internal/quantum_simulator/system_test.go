@@ -221,9 +221,9 @@ func TestSystem_diagonalize(t *testing.T) {
 			name: "Degenerate",
 			fields: fields{
 				CentralSpin: State{
-					Angle:    0,
-					Distance: 0,
-					InteractionStrength:    0,
+					Angle:               0,
+					Distance:            0,
+					InteractionStrength: 0,
 				},
 				Bath:          []State{},
 				PhysicsConfig: PhysicsConfig{},
@@ -258,19 +258,17 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			results := make(chan DiagonalizationResults, 10)
-			s.Diagonalize(DiagonalizationInput{Hamiltonian: tt.args.hamiltonian, B: 0.0}, results)
+			eigenValues, eigenVectors := s.Diagonalize(tt.args.hamiltonian)
 
-			res := <-results
-			kets := hs.KetsFromCMatrix(res.EigenVectors)
+			kets := hs.KetsFromCMatrix(eigenVectors)
 			for e, ket := range kets {
 				for i, el := range ket.Data {
 					tmp := 0.0
 					for j, ell := range ket.Data {
 						tmp += tt.args.hamiltonian.At(i, j) * real(ell)
 					}
-					if math.Abs(real(res.EigenValues[e]*el)-tmp) > 1e-10 {
-						t.Errorf("Vector is not an eigenvector: \n%v\n with eigenvalue: \n%v\n", ket, res.EigenValues[e])
+					if math.Abs(real(eigenValues[e]*el)-tmp) > 1e-10 {
+						t.Errorf("Vector is not an eigenvector: \n%v\n with eigenvalue: \n%v\n", ket, eigenValues[e])
 					}
 				}
 			}
@@ -311,15 +309,10 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			results := make(chan DiagonalizationResults, 10)
-			s.Diagonalize(DiagonalizationInput{Hamiltonian: s.Hamiltonian(tt.args.b0, tt.args.b), B: 0.0}, results)
-			res := <-results
-			evec := res.EigenVectors
-			_, vecs_count := evec.Dims()
+			eigenValues, eigenVectors := s.Diagonalize(s.Hamiltonian(tt.args.b0, tt.args.b))
+			_, vecs_count := eigenVectors.Dims()
 
-			eval := res.EigenValues
-
-			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eval), vecs_count)
+			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eigenValues), vecs_count)
 		})
 	}
 }

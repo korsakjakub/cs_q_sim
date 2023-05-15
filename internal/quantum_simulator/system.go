@@ -150,24 +150,18 @@ func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
 }
 
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) Diagonalize(input DiagonalizationInput, results chan<- DiagonalizationResults) {
+func (s *System) Diagonalize(hamiltonian *mat.Dense) ([]complex128, *mat.CDense) {
 	var eig mat.Eigen
-	if err := eig.Factorize(input.Hamiltonian, mat.EigenRight); !err {
+	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
 		panic("cannot diagonalize")
 	}
-	dim, _ := input.Hamiltonian.Caps()
+	dim, _ := hamiltonian.Caps()
 	evec := mat.NewCDense(dim, dim, nil)
 	eig.VectorsTo(evec)
 
 	orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
 	orto.Orthonormalize()
-	eigenvalues, eigenvectors := orto.OrthoToEigen()
-
-	results <- DiagonalizationResults{
-		EigenVectors: eigenvectors,
-		EigenValues:  eigenvalues,
-		B:            input.B,
-	}
+	return orto.OrthoToEigen()
 }
 
 func RealPart(m *mat.CDense) *mat.Dense {
