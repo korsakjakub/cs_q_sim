@@ -40,11 +40,11 @@ func NewStdBasisKet(at, dim int) (*StateVec, error) {
 }
 
 func (u *StateVec) Scale(a complex128) *StateVec {
-	out := u
+	out := make([]complex128, u.N)
 	for i, e := range u.Data {
-		out.Data[i] = a * e
+		out[i] = a * e
 	}
-	return out
+	return NewKet(out)
 }
 
 func (u *StateVec) Dot(v *StateVec) complex128 {

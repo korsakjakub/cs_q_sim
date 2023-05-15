@@ -124,7 +124,7 @@ func SpinTimeEvolution(conf qs.Config) {
 func eValsToString(evals []complex128) []string {
 	output := make([]string, len(evals))
 	for i, e := range evals {
-		output[i] = strconv.FormatComplex(e, 'e', 8, 128)
+		output[i] = strconv.FormatFloat(real(e), 'e', 8, 64)
 	}
 	return output
 }
@@ -132,12 +132,12 @@ func eValsToString(evals []complex128) []string {
 func ketsToString(kets []*hs.StateVec) []string {
 	output := make([]string, len(kets))
 	for i, ket := range kets {
-		outData := "[]complex128{"
+		// outData := "[]complex128{"
+		outData := ""
 		for _, d := range ket.Data {
-			outData = outData + strconv.FormatComplex(d, 'e', 8, 128) + ","
+			outData = outData + strconv.FormatFloat(real(d), 'e', 8, 64) + ","
 		}
-		outData += "}"
-		output[i] = fmt.Sprintf("{N: %d, Inc: %d, Data: %v}", ket.N, ket.Inc, outData)
+		output[i] = fmt.Sprintf("%v", outData)
 	}
 	return output
 }

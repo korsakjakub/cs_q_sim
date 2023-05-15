@@ -1,18 +1,18 @@
 simulation: spin-evolution
 verbosity: debug
 physics:
-  bathdipolemoment: 1.0
-  atomdipolemoment: 20.0
+  units: atomic
+  bathdipolemoment: 1.77
+  atomdipolemoment: 3626.87
   spin: 0.5
-  tiltangle: 0.0001
-  constantdistance: 100
-  geometry: sphere
-  bathmagneticfield: 1000.0
-  centralmagneticfield: 1002.0
-  timerange: 400
-  dt: 1e-4
-  initialket: duuuudddd
+  tiltangle: 6.28318530718
+  constantdistance: 1.5
+  geometry: ring
+  bathmagneticfield: 100
+  centralmagneticfield: 101
+  timerange: 1
+  dt: 1e-7
+  initialket: dupm
   observables:
     - operator: Sz
       slot: 0
-
