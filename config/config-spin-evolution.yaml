@@ -11,8 +11,8 @@ physics:
   bathmagneticfield: 100
   centralmagneticfield: 101
   timerange: 1
-  dt: 1e-7
-  initialket: dupm
+  dt: 1e-5
+  initialket: duu
   observables:
     - operator: Sz
       slot: 0

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/gonum/mat"
@@ -42,7 +43,8 @@ func SpinTimeEvolution(conf qs.Config) {
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	spew.Dump(hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	observables := loadObservables(conf.Physics)
 
 	if conf.Verbosity == "debug" {
@@ -85,7 +87,7 @@ func SpinTimeEvolution(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, eigenValues, hs.KetsFromCMatrix(eigenVectors)))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(hs.Evolve(initialKet, time, eigenValues, eigenVectors))})
 		}
 		xyss[i] = xys
 	}
@@ -109,31 +111,27 @@ func SpinTimeEvolution(conf qs.Config) {
 			EigenVectors []string  "mapstructure:\"evectors\""
 		}{
 			System:       *s,
-			EigenValues:  eValsToString(eigenValues),
-			EigenVectors: ketsToString(hs.KetsFromCMatrix(eigenVectors)),
+			EigenValues:  []string{""}, // eValsToString(eigenValues),
+			EigenVectors: []string{""}, // ketsToString(eigenVectors),
 		},
 		XYs: xyss,
 	}
 	r.Write(conf.Files)
 }
 
-func eValsToString(evals []complex128) []string {
+func eValsToString(evals []float64) []string {
 	output := make([]string, len(evals))
 	for i, e := range evals {
-		output[i] = strconv.FormatFloat(real(e), 'e', 8, 64)
+		output[i] = strconv.FormatFloat(e, 'e', 8, 64)
 	}
 	return output
 }
 
-func ketsToString(kets []*hs.StateVec) []string {
-	output := make([]string, len(kets))
-	for i, ket := range kets {
-		// outData := "[]complex128{"
-		outData := ""
-		for _, d := range ket.Data {
-			outData = outData + strconv.FormatFloat(real(d), 'e', 8, 64) + ","
-		}
-		output[i] = fmt.Sprintf("%v", outData)
+func ketsToString(kets *mat.Dense) []string {
+	output := make([]string, kets.RawMatrix().Cols)
+	for i := 0; i < kets.RawMatrix().Rows; i++ {
+		ket := kets.ColView(i)
+		output[i] = fmt.Sprintf("%v", ket)
 	}
 	return output
 }

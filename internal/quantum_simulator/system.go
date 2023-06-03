@@ -101,7 +101,7 @@ func (s *System) InteractionAt(j int) float64 {
 }
 
 // Given an index j, return the Heisenberg term (0, j - interaction) of the hamiltonian
-func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
+func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.SymDense {
 	spin := s.PhysicsConfig.Spin
 	dim := len(s.Bath) + 1 // bc is the BathCount and the total amount of objects in our system is BathCount + 1
 	sm := hs.Sm(spin)
@@ -114,11 +114,11 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.Dense {
 	h2.Mul(h2, hs.ManyBodyOperator(sp, j, dim))
 	h.Add(h, h2)
 	h.Scale(f, h)
-	return h
+	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
 }
 
 // Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
-func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
+func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.SymDense {
 	dim := len(s.Bath) + 1
 	spin := s.PhysicsConfig.Spin
 	sz := hs.Sz(spin)
@@ -131,37 +131,57 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.Dense {
 		h2.Scale(b, h2)
 		h.Add(h, h2)
 	}
-	return h
+	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
 }
 
 // Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
-func (s *System) Hamiltonian(b0, b float64) *mat.Dense {
+func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	spinDim := int(2.0*s.PhysicsConfig.Spin + 1.0)
 	bc := len(s.Bath)
 	dim := int(math.Pow(float64(spinDim), float64(bc)+1.0)) // bc is the BathCount and the total amount of objects in our system is BathCount + 1
-	h := mat.NewDense(dim, dim, nil)
+	h := mat.NewSymDense(dim, nil)
 
 	for j := 0; j <= bc; j += 1 {
-		h.Add(h, s.hamiltonianHeisenbergTermAt(j))
+		h.AddSym(h, s.hamiltonianHeisenbergTermAt(j))
 	}
-	h.Add(h, s.hamiltonianMagneticTerm(b0, b))
+	h.AddSym(h, s.hamiltonianMagneticTerm(b0, b))
 
 	return h
 }
 
 // Given a hamiltinian matrix, return its eigenvectors and eigenvalues
-func (s *System) Diagonalize(hamiltonian *mat.Dense) ([]complex128, *mat.CDense) {
-	var eig mat.Eigen
-	if err := eig.Factorize(hamiltonian, mat.EigenRight); !err {
+func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) {
+	var eig mat.EigenSym
+	if err := eig.Factorize(hamiltonian, true); !err {
 		panic("cannot diagonalize")
 	}
 	dim, _ := hamiltonian.Caps()
-	evec := mat.NewCDense(dim, dim, nil)
-	eig.VectorsTo(evec)
+	eigenVectors := mat.NewDense(dim, dim, nil)
+	eig.VectorsTo(eigenVectors)
+	eigenValues := eig.Values(nil)
 
-	orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
-	orto.Orthonormalize()
-	return orto.OrthoToEigen()
+	// orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
+	// orto.Orthonormalize()
+	// return orto.OrthoToEigen()
+	if !isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors) {
+		panic("could not diagonalize properly")
+	}
+	return eigenValues, eigenVectors
+}
+
+func isDiagonalizedProperly(matrix *mat.SymDense, eig []float64, evec *mat.Dense) bool {
+	for i := 0; i < evec.RawMatrix().Rows; i++ {
+		left := mat.NewVecDense(len(eig), nil)
+		vec := evec.ColView(i)
+		left.MulVec(matrix, vec)
+		right := mat.NewVecDense(len(eig), nil)
+		right.ScaleVec(eig[i], vec)
+
+		if !mat.EqualApprox(left, right, 1e-8) {
+			return false
+		}
+	}
+	return true
 }
 
 func RealPart(m *mat.CDense) *mat.Dense {

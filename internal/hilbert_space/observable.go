@@ -1,8 +1,6 @@
 package hilbert_space
 
 import (
-	"math/cmplx"
-
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -10,12 +8,9 @@ type Observable struct {
 	mat.Dense
 }
 
-func (o *Observable) ExpectationValue(state *StateVec) float64 {
-	sum := complex(0.0, 0.0)
-	for a, stateA := range state.Data {
-		for b, stateB := range state.Data {
-			sum += cmplx.Conj(stateA) * complex(o.At(a, b), 0.0) * stateB
-		}
-	}
-	return real(sum)
+func (o *Observable) ExpectationValue(state *mat.VecDense) float64 {
+	oTimesState := mat.NewVecDense(state.Len(), nil)
+	oTimesState.MulVec(o, state)
+	expectationValue := mat.Dot(state, oTimesState)
+	return expectationValue
 }

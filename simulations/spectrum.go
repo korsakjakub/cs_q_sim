@@ -2,7 +2,6 @@ package simulations
 
 import (
 	"math"
-	"math/cmplx"
 	"sync"
 	"time"
 
@@ -12,13 +11,13 @@ import (
 )
 
 type spectrumInput struct {
-	hamiltonian   *mat.Dense
+	hamiltonian   *mat.SymDense
 	magneticField float64
 }
 
 type spectrumOutput struct {
-	eigenValues   []complex128
-	eigenVectors  *mat.CDense
+	eigenValues   []float64
+	eigenVectors  *mat.Dense
 	magneticField float64
 }
 
@@ -64,7 +63,7 @@ func Spectrum(conf qs.Config) {
 	for i := 0; i < fieldRange; i += 1 {
 		v := <-results
 		for _, ev := range v.eigenValues {
-			xys = append(xys, plotter.XY{X: v.magneticField, Y: cmplx.Abs(ev)})
+			xys = append(xys, plotter.XY{X: v.magneticField, Y: ev})
 		}
 	}
 	close(results)

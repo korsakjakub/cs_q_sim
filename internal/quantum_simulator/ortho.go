@@ -4,7 +4,6 @@ import (
 	"math"
 	"sort"
 
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -12,20 +11,20 @@ type Ortho []Eigen
 
 type Eigen struct {
 	Eigenvalue   float64
-	EigenVectors []*hs.StateVec
+	EigenVectors []*mat.VecDense
 }
 
-func NewOrtho(eigenvalues []float64, eigenvectors []*hs.StateVec) Ortho {
+func NewOrtho(eigenvalues []float64, eigenvectors []*mat.VecDense) Ortho {
 	o := Ortho{}
 	sl := make([]struct {
 		eval float64
-		evec *hs.StateVec
+		evec *mat.VecDense
 	}, len(eigenvalues))
 
 	for i, e := range eigenvalues {
 		sl[i] = struct {
 			eval float64
-			evec *hs.StateVec
+			evec *mat.VecDense
 		}{
 			eval: e,
 			evec: eigenvectors[i],
@@ -37,18 +36,18 @@ func NewOrtho(eigenvalues []float64, eigenvectors []*hs.StateVec) Ortho {
 	iOffset := 0
 	for i := 0; i < len(sl); i++ {
 		if len(sl) == 1 {
-			o = append(o, Eigen{Eigenvalue: sl[0].eval, EigenVectors: []*hs.StateVec{sl[0].evec}})
+			o = append(o, Eigen{Eigenvalue: sl[0].eval, EigenVectors: []*mat.VecDense{sl[0].evec}})
 			break
 		}
 		if i == len(sl)-1 {
-			o = append(o, Eigen{Eigenvalue: sl[i].eval, EigenVectors: []*hs.StateVec{sl[i].evec}})
+			o = append(o, Eigen{Eigenvalue: sl[i].eval, EigenVectors: []*mat.VecDense{sl[i].evec}})
 			break
 		}
 		if math.Abs(sl[i].eval-sl[i+1].eval) > 1e-10 {
-			o = append(o, Eigen{Eigenvalue: sl[i].eval, EigenVectors: []*hs.StateVec{sl[i].evec}})
+			o = append(o, Eigen{Eigenvalue: sl[i].eval, EigenVectors: []*mat.VecDense{sl[i].evec}})
 			continue
 		}
-		evecs := []*hs.StateVec{sl[i].evec}
+		evecs := []*mat.VecDense{sl[i].evec}
 
 		for j := 1; j < len(sl)-i; j++ {
 			if math.Abs(sl[i].eval-sl[i+j].eval) < 1e-10 {
@@ -65,6 +64,7 @@ func NewOrtho(eigenvalues []float64, eigenvectors []*hs.StateVec) Ortho {
 	return o
 }
 
+/*
 func (o Ortho) Orthonormalize() {
 	for _, eigen := range o {
 		if len(eigen.EigenVectors) > 1 {
@@ -97,3 +97,4 @@ func (o *Ortho) OrthoToEigen() ([]complex128, *mat.CDense) {
 	eigenvectors := hs.CMatrixFromKets(kets)
 	return eigenvalues, eigenvectors
 }
+*/

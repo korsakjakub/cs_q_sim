@@ -12,7 +12,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 		Dense mat.Dense
 	}
 	type args struct {
-		state StateVec
+		state *mat.VecDense
 	}
 	tests := []struct {
 		name   string
@@ -26,11 +26,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *mat.NewDense(2, 2, []float64{1.0, 0.0, 0.0, -1.0}),
 			},
 			args: args{
-				state: StateVec{
-					N:    2,
-					Inc:  1,
-					Data: []complex128{1.0, 0.0},
-				},
+				state: mat.NewVecDense(2, []float64{1.0, 0.0}),
 			},
 			want: 1.0,
 		},
@@ -40,11 +36,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *mat.NewDense(2, 2, []float64{1.0, 0.0, 0.0, -1.0}),
 			},
 			args: args{
-				state: StateVec{
-					N:    2,
-					Inc:  1,
-					Data: []complex128{0.0, 1.0},
-				},
+				state: mat.NewVecDense(2, []float64{0.0, 1.0}),
 			},
 			want: -1.0,
 		},
@@ -54,7 +46,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
 			},
 			args: args{
-				state: *NewKetReal(ManyBodyVector("uu", 2)),
+				state: mat.NewVecDense(4, ManyBodyVector("uu", 2)),
 			},
 			want: 0.5,
 		},
@@ -64,7 +56,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
 			},
 			args: args{
-				state: *NewKetReal(ManyBodyVector("pu", 2)),
+				state: mat.NewVecDense(4, ManyBodyVector("pu", 2)),
 			},
 			want: 0.0,
 		},
@@ -74,7 +66,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 			o := Observable{
 				Dense: tt.fields.Dense,
 			}
-			if got := o.ExpectationValue(&tt.args.state); math.Abs(got-tt.want) > 1e-14 {
+			if got := o.ExpectationValue(tt.args.state); math.Abs(got-tt.want) > 1e-14 {
 				t.Errorf("Observable.ExpectationValue() = %v, want %v", got, tt.want)
 			}
 		})
