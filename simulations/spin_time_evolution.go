@@ -69,7 +69,9 @@ func SpinTimeEvolution(conf qs.Config) {
 	hamiltonian := s.Hamiltonian(b0, b)
 
 	if conf.Verbosity == "debug" {
-		fmt.Println(hamiltonian)
+		if bc < 5 {
+			fmt.Println(mat.Formatted(hamiltonian))
+		}
 		fmt.Println("Diagonalizing...")
 	}
 	eigenValues, eigenVectors := s.Diagonalize(hamiltonian)

@@ -258,18 +258,15 @@ func TestSystem_diagonalize(t *testing.T) {
 			}
 			eigenValues, eigenVectors := s.Diagonalize(tt.args.hamiltonian)
 
-			for e := 0; e < eigenVectors.RawMatrix().Rows; e++ {
-				ket := eigenVectors.ColView(e)
-				for i := 0; i < ket.Len(); i++ {
-					el := ket.AtVec(i)
-					tmp := 0.0
-					for j := 0; j < ket.Len(); j++ {
-						ell := ket.AtVec(j)
-						tmp += tt.args.hamiltonian.At(i, j) * ell
-					}
-					if math.Abs(eigenValues[e]*el-tmp) > 1e-10 {
-						t.Errorf("Vector is not an eigenvector: \n%v\n with eigenvalue: \n%v\n", ket, eigenValues[e])
-					}
+			for i := 0; i < eigenVectors.RawMatrix().Rows; i++ {
+				left := mat.NewVecDense(len(eigenValues), nil)
+				vec := eigenVectors.ColView(i)
+				left.MulVec(tt.args.hamiltonian, vec)
+				right := mat.NewVecDense(len(eigenValues), nil)
+				right.ScaleVec(eigenValues[i], vec)
+
+				if !mat.EqualApprox(left, right, 1e-8) {
+					t.Errorf("Vector is not an eigenvector")
 				}
 			}
 		})

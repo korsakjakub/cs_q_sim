@@ -146,6 +146,10 @@ func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	}
 	h.AddSym(h, s.hamiltonianMagneticTerm(b0, b))
 
+	if !mat.EqualApprox(h, h.T(), 1e-8) {
+		panic("Hamiltonian is not symmetric.")
+	}
+
 	return h
 }
 
@@ -160,9 +164,6 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) 
 	eig.VectorsTo(eigenVectors)
 	eigenValues := eig.Values(nil)
 
-	// orto := NewOrtho(ComplexToFloats(eig.Values(nil)), hs.KetsFromCMatrix(evec))
-	// orto.Orthonormalize()
-	// return orto.OrthoToEigen()
 	if !isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors) {
 		panic("could not diagonalize properly")
 	}
