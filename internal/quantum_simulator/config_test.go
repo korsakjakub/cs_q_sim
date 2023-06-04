@@ -8,8 +8,8 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	type args struct {
-		filename      []string
-		lines          []string
+		filename []string
+		lines    []string
 	}
 	tests := []struct {
 		name string
@@ -27,9 +27,9 @@ func TestLoadConfig(t *testing.T) {
 				},
 			},
 			want: Config{
-				Physics: PhysicsConfig {
-					Spin:             1,
-					TiltAngle:        0.0,
+				Physics: PhysicsConfig{
+					Spin:      1,
+					TiltAngle: 0.0,
 				},
 			},
 		},
@@ -39,7 +39,12 @@ func TestLoadConfig(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		defer f.Close()
+		defer func(f *os.File) {
+			err := f.Close()
+			if err != nil {
+				panic("couldn't close file")
+			}
+		}(f)
 
 		for _, line := range tt.args.lines {
 			_, err := f.WriteString(line + "\n")

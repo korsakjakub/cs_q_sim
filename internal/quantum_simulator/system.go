@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -61,7 +60,7 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
 	} else if conf.Geometry == "sphere" { // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
 		bc := float64(conf.BathCount)
-		phi := math.Acos(1.0 - 2.0*(float64(j)+0.5)/float64(bc))
+		phi := math.Acos(1.0 - 2.0*(float64(j)+0.5)/bc)
 		theta := math.Pi * (1.0 + math.Sqrt(5.0)) * bc
 
 		y := math.Sin(theta) * math.Sin(phi)
@@ -72,7 +71,7 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 	return 0.0
 }
 
-// Given an index j, return force between the j-th bath molecule and the central spin
+// InteractionAt returns the interaction strength between the j-th bath molecule and the central spin, given an index j
 func (s *System) InteractionAt(j int) float64 {
 	if len(s.PhysicsConfig.InteractionCoefficients) > 0 {
 		cj := s.PhysicsConfig.InteractionCoefficients[j]
@@ -105,14 +104,14 @@ func (s *System) InteractionAt(j int) float64 {
 func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.SymDense {
 	spin := s.PhysicsConfig.Spin
 	dim := len(s.Bath) + 1 // bc is the BathCount and the total amount of objects in our system is BathCount + 1
-	sm := hs.Sm(spin)
-	sp := hs.Sp(spin)
+	sm := Sm(spin)
+	sp := Sp(spin)
 
 	f := s.InteractionAt(j)
-	h := hs.ManyBodyOperator(sp, 0, dim)
-	h.Mul(h, hs.ManyBodyOperator(sm, j, dim))
-	h2 := hs.ManyBodyOperator(sm, 0, dim)
-	h2.Mul(h2, hs.ManyBodyOperator(sp, j, dim))
+	h := ManyBodyOperator(sp, 0, dim)
+	h.Mul(h, ManyBodyOperator(sm, j, dim))
+	h2 := ManyBodyOperator(sm, 0, dim)
+	h2.Mul(h2, ManyBodyOperator(sp, j, dim))
 	h.Add(h, h2)
 	h.Scale(f, h)
 	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
@@ -122,20 +121,20 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.SymDense {
 func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.SymDense {
 	dim := len(s.Bath) + 1
 	spin := s.PhysicsConfig.Spin
-	sz := hs.Sz(spin)
+	sz := Sz(spin)
 
-	h := hs.ManyBodyOperator(sz, 0, dim)
+	h := ManyBodyOperator(sz, 0, dim)
 	h.Scale(b0, h)
 
 	for j := 1; j < dim; j++ {
-		h2 := hs.ManyBodyOperator(sz, j, dim)
+		h2 := ManyBodyOperator(sz, j, dim)
 		h2.Scale(b, h2)
 		h.Add(h, h2)
 	}
 	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
 }
 
-// Given values of magnetic fields b0, and b, return the whole hamiltonian H_XX
+// Hamiltonian returns the whole H_XX given values of magnetic fields b0, and b
 func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	spinDim := int(2.0*s.PhysicsConfig.Spin + 1.0)
 	bc := len(s.Bath)
@@ -154,7 +153,7 @@ func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	return h
 }
 
-// Given a hamiltinian matrix, return its eigenvectors and eigenvalues
+// Diagonalize returns eigenvectors and eigenvalues given a hamiltonian matrix
 func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) {
 	var eig mat.EigenSym
 	if err := eig.Factorize(hamiltonian, true); !err {
@@ -178,7 +177,7 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) 
 			}
 		}
 		if math.Abs(math.Abs(mat.Det(evec))-1.0) > 1e-8 {
-			return fmt.Errorf("The determinant of Eigenvector matrix isn't +-1. Det = %v", mat.Det(evec))
+			return fmt.Errorf("the determinant of Eigenvector matrix isn't +-1. Det = %v", mat.Det(evec))
 		}
 		return nil
 	}

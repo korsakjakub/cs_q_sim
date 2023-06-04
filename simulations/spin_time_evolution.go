@@ -7,14 +7,13 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
 
-func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
-	observables := make([]hs.Observable, len(conf.ObservablesConfig))
+func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
+	observables := make([]qs.Observable, len(conf.ObservablesConfig))
 	ketLength := len(conf.InitialKet)
 	for i, obs := range conf.ObservablesConfig {
 		if obs.Slot > ketLength {
@@ -23,15 +22,15 @@ func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
 		var operator *mat.Dense
 		switch obs.Operator {
 		case "Sz":
-			operator = hs.Sz(conf.Spin)
+			operator = qs.Sz(conf.Spin)
 		case "Sp":
-			operator = hs.Sp(conf.Spin)
+			operator = qs.Sp(conf.Spin)
 		case "Sm":
-			operator = hs.Sm(conf.Spin)
+			operator = qs.Sm(conf.Spin)
 		default:
-			operator = hs.Id(conf.Spin)
+			operator = qs.Id(conf.Spin)
 		}
-		observables[i] = hs.Observable{Dense: mat.Dense(*hs.ManyBodyOperator(operator, obs.Slot, ketLength))}
+		observables[i] = qs.Observable{Dense: *qs.ManyBodyOperator(operator, obs.Slot, ketLength)}
 	}
 	return observables
 }
@@ -43,8 +42,8 @@ func SpinTimeEvolution(conf qs.Config) {
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	spew.Dump(hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
-	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	spew.Dump(qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	observables := loadObservables(conf.Physics)
 
 	if conf.Verbosity == "debug" {
@@ -83,7 +82,7 @@ func SpinTimeEvolution(conf qs.Config) {
 		spew.Dump(eigenValues)
 	}
 
-	start_time := start.Format(time.RFC3339)
+	startTime := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
@@ -91,12 +90,12 @@ func SpinTimeEvolution(conf qs.Config) {
 	xyss := make([]plotter.XYs, len(observables))
 	for i, observable := range observables {
 		var xys plotter.XYs
-		for t := 0; t < timeRange; t += 1 {
-			time := conf.Physics.Dt * float64(t)
+		for t := 0; t < timeRange; t++ {
+			evolutionTime := conf.Physics.Dt * float64(t)
 			if conf.Verbosity == "debug" {
-				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
+				fmt.Printf("t= %v\t(%.2f%%)\n", evolutionTime, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(hs.Evolve(initialKet, time, eigenValues, eigenVectors))})
+			xys = append(xys, plotter.XY{X: evolutionTime / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigenValues, eigenVectors))})
 		}
 		xyss[i] = xys
 	}
@@ -104,15 +103,15 @@ func SpinTimeEvolution(conf qs.Config) {
 	if conf.Verbosity == "debug" {
 		fmt.Println("Wrapping up...")
 	}
-	elapsed_time := time.Since(start)
+	elapsedTime := time.Since(start)
 	r := qs.ResultsIO{
-		Filename: start_time,
+		Filename: startTime,
 		Metadata: qs.Metadata{
-			Date:           start_time,
+			Date:           startTime,
 			Simulation:     "Central spin expectation value time evolution",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
-			CompletionTime: elapsed_time.String(),
+			CompletionTime: elapsedTime.String(),
 		},
 		Values: struct {
 			System       qs.System "mapstructure:\"system\""

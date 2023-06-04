@@ -1,4 +1,4 @@
-package hilbert_space
+package quantum_simulator
 
 /*
 func TestStateVec_Evolve(t *testing.T) {

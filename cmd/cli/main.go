@@ -7,7 +7,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	sim "github.com/korsakjakub/cs_q_sim/simulations"
-	pflag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 )
 
 var conf qs.Config

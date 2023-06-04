@@ -307,9 +307,9 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
 			eigenValues, eigenVectors := s.Diagonalize(s.Hamiltonian(tt.args.b0, tt.args.b))
-			_, vecs_count := eigenVectors.Dims()
+			_, vecsCount := eigenVectors.Dims()
 
-			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eigenValues), vecs_count)
+			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eigenValues), vecsCount)
 		})
 	}
 }
