@@ -76,6 +76,13 @@ func SpinTimeEvolution(conf qs.Config) {
 	}
 	eigenValues, eigenVectors := s.Diagonalize(hamiltonian)
 
+	if conf.Verbosity == "debug" && bc < 5 {
+		fmt.Println("Eigenvectors:")
+		fmt.Println(mat.Formatted(eigenVectors))
+		fmt.Println("Eigenvalues:")
+		spew.Dump(eigenValues)
+	}
+
 	start_time := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {

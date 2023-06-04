@@ -2,7 +2,7 @@ package hilbert_space
 
 import (
 	"fmt"
-	"math/cmplx"
+	"math"
 	"strconv"
 
 	"gonum.org/v1/gonum/mat"
@@ -18,7 +18,7 @@ func Evolve(u *mat.VecDense, time float64, energies []float64, eigenBasis *mat.D
 	for k := range u.RawVector().Data { // iterate over slots of a vector
 		for j := 0; j < eigenBasis.RowView(0).Len(); j++ { // sum over eigenenergies
 			basisVector := eigenBasis.ColView(j)
-			out[k] += real(cmplx.Exp(complex(-energies[j]*time, 1))) * mat.Dot(basisVector, u) * basisVector.AtVec(k)
+			out[k] += math.Cos(energies[j]*time) * mat.Dot(basisVector, u) * basisVector.AtVec(k)
 		}
 	}
 	return mat.NewVecDense(dim, out)
