@@ -1,6 +1,7 @@
 package quantum_simulator
 
 import (
+	"fmt"
 	"math"
 
 	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
@@ -164,40 +165,26 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) 
 	eig.VectorsTo(eigenVectors)
 	eigenValues := eig.Values(nil)
 
-	if !isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors) {
-		panic("could not diagonalize properly")
+	isDiagonalizedProperly := func(matrix *mat.SymDense, eig []float64, evec *mat.Dense) error {
+		for i := 0; i < evec.RawMatrix().Rows; i++ {
+			left := mat.NewVecDense(len(eig), nil)
+			vec := evec.ColView(i)
+			left.MulVec(matrix, vec)
+			right := mat.NewVecDense(len(eig), nil)
+			right.ScaleVec(eig[i], vec)
+
+			if !mat.EqualApprox(left, right, 1e-8) {
+				return fmt.Errorf("A v = k v is not satisfied")
+			}
+		}
+		if math.Abs(math.Abs(mat.Det(evec))-1.0) > 1e-8 {
+			return fmt.Errorf("The determinant of Eigenvector matrix isn't +-1. Det = %v", mat.Det(evec))
+		}
+		return nil
+	}
+
+	if err := isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors); err != nil {
+		panic(err)
 	}
 	return eigenValues, eigenVectors
-}
-
-func isDiagonalizedProperly(matrix *mat.SymDense, eig []float64, evec *mat.Dense) bool {
-	for i := 0; i < evec.RawMatrix().Rows; i++ {
-		left := mat.NewVecDense(len(eig), nil)
-		vec := evec.ColView(i)
-		left.MulVec(matrix, vec)
-		right := mat.NewVecDense(len(eig), nil)
-		right.ScaleVec(eig[i], vec)
-
-		if !mat.EqualApprox(left, right, 1e-8) {
-			return false
-		}
-	}
-	return true
-}
-
-func RealPart(m *mat.CDense) *mat.Dense {
-	r, c := m.Dims()
-	out := mat.NewDense(r, c, nil)
-	for i, el := range m.RawCMatrix().Data {
-		out.RawMatrix().Data[i] = real(el)
-	}
-	return out
-}
-
-func ComplexToFloats(m []complex128) []float64 {
-	out := make([]float64, len(m))
-	for i, el := range m {
-		out[i] = real(el)
-	}
-	return out
 }
