@@ -40,9 +40,7 @@ func Interactions(conf qs.Config) {
 			CompletionTime: elapsed_time.String(),
 		},
 		Values: struct {
-			System       qs.System "mapstructure:\"system\""
-			EigenValues  []string  "mapstructure:\"evalues\""
-			EigenVectors []string  "mapstructure:\"evectors\""
+			System qs.System "mapstructure:\"system\""
 		}{
 			System: *s,
 		},
