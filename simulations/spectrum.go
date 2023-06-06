@@ -53,8 +53,8 @@ func Spectrum(conf qs.Config) {
 	for _, job := range jobs {
 		go func(j spectrumInput) {
 			defer wg.Done()
-			eval, evec := s.Diagonalize(j.hamiltonian)
-			results <- spectrumOutput{eigenValues: eval, eigenVectors: evec, magneticField: j.magneticField}
+			eigen := s.Diagonalize(j.hamiltonian)
+			results <- spectrumOutput{eigenValues: eigen.EigenValues, eigenVectors: eigen.EigenVectors, magneticField: j.magneticField}
 		}(job)
 	}
 

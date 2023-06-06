@@ -1,5 +1,7 @@
 simulation: spin-evolution
 verbosity: debug
+# files:
+  # diagonalizationdir: outputs/diag-
 physics:
   units: atomic
   bathdipolemoment: 1.77

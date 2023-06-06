@@ -43,7 +43,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	if conf.Verbosity == "debug" {
 		fmt.Println("Diagonalizing...")
 	}
-	eigenValues, eigenVectors := s.Diagonalize(s.Hamiltonian(b0, b))
+	eigen := s.Diagonalize(s.Hamiltonian(b0, b))
 
 	start_time := start.Format(time.RFC3339)
 
@@ -58,7 +58,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigenValues, eigenVectors))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigen.EigenValues, eigen.EigenVectors))})
 		}
 		xyss[i] = xys
 	}
@@ -82,8 +82,8 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			EigenVectors []string  "mapstructure:\"evectors\""
 		}{
 			System:       *s,
-			EigenValues:  eValsToString(eigenValues),
-			EigenVectors: ketsToString(eigenVectors),
+			EigenValues:  []string{""},
+			EigenVectors: []string{""},
 		},
 		XYs: xyss,
 	}
