@@ -22,14 +22,13 @@ type ResultsIO struct {
 	Filename string   `mapstructure:"filename"`
 	Metadata Metadata `mapstructure:"metadata"`
 	Values   struct {
-		System       System   `mapstructure:"system"`
-		EigenValues  []string `mapstructure:"evalues"`
-		EigenVectors []string `mapstructure:"evectors"`
+		System System `mapstructure:"system"`
 	} `mapstructure:"values"`
 	XYs []plotter.XYs `mapstructure:"xyss"`
 }
 
 type DiagonalizationResultsIO struct {
+	System       System    `mapstructure:"system"`
 	EigenValues  []float64 `mapstructure:"evalues"`
 	EigenVectors []float64 `mapstructure:"evectors"`
 }
@@ -99,7 +98,7 @@ func LoadDiagonalizationSolutions(path string) Eigen {
 	}
 }
 
-func SaveDiagonalizationSolutions(eigen Eigen, path string) {
+func SaveDiagonalizationSolutions(eigen Eigen, s System, path string) {
 	file, err := os.Create(path)
 	if err != nil {
 		panic(err)
@@ -115,6 +114,7 @@ func SaveDiagonalizationSolutions(eigen Eigen, path string) {
 	diagResults := DiagonalizationResultsIO{
 		EigenValues:  eigen.EigenValues,
 		EigenVectors: eigen.EigenVectors.RawMatrix().Data,
+		System:       s,
 	}
 
 	if b, err := yaml.Marshal(diagResults); err != nil {

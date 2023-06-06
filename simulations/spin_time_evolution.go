@@ -74,7 +74,7 @@ func SpinTimeEvolution(conf qs.Config) {
 	} else {
 		fmt.Println("Diagonalizing...")
 		eigen = solveEigenProblem(s)
-		qs.SaveDiagonalizationSolutions(eigen, conf.Files.OutputsDir+"diag-"+startTime)
+		qs.SaveDiagonalizationSolutions(eigen, *s, conf.Files.OutputsDir+"diag-"+startTime)
 	}
 
 	if conf.Verbosity == "debug" {
@@ -138,13 +138,9 @@ func SpinTimeEvolution(conf qs.Config) {
 			CompletionTime: elapsedTime.String(),
 		},
 		Values: struct {
-			System       qs.System "mapstructure:\"system\""
-			EigenValues  []string  "mapstructure:\"evalues\""
-			EigenVectors []string  "mapstructure:\"evectors\""
+			System qs.System "mapstructure:\"system\""
 		}{
-			System:       *s,
-			EigenValues:  []string{""}, // eValsToString(eigenValues),
-			EigenVectors: []string{""}, // ketsToString(eigenVectors),
+			System: *s,
 		},
 		XYs: xyss,
 	}
