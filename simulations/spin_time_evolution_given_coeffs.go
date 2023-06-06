@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
+	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
 
@@ -17,7 +17,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	initialKet := mat.NewVecDense(len(conf.Physics.InitialKet), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	observables := loadObservables(conf.Physics)
 
 	if conf.Verbosity == "debug" {
@@ -58,7 +58,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, eigenValues, hs.KetsFromCMatrix(eigenVectors)))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigenValues, eigenVectors))})
 		}
 		xyss[i] = xys
 	}
@@ -83,7 +83,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 		}{
 			System:       *s,
 			EigenValues:  eValsToString(eigenValues),
-			EigenVectors: ketsToString(hs.KetsFromCMatrix(eigenVectors)), //eValsToString(diag.EigenVectors.RawCMatrix().Data),
+			EigenVectors: ketsToString(eigenVectors),
 		},
 		XYs: xyss,
 	}

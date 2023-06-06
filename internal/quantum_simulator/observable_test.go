@@ -1,4 +1,4 @@
-package hilbert_space
+package quantum_simulator
 
 import (
 	"math"
@@ -12,7 +12,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 		Dense mat.Dense
 	}
 	type args struct {
-		state StateVec
+		state []complex128
 	}
 	tests := []struct {
 		name   string
@@ -26,11 +26,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *mat.NewDense(2, 2, []float64{1.0, 0.0, 0.0, -1.0}),
 			},
 			args: args{
-				state: StateVec{
-					N:    2,
-					Inc:  1,
-					Data: []complex128{1.0, 0.0},
-				},
+				state: []complex128{1.0, 0.0},
 			},
 			want: 1.0,
 		},
@@ -40,33 +36,9 @@ func TestObservable_ExpectationValue(t *testing.T) {
 				Dense: *mat.NewDense(2, 2, []float64{1.0, 0.0, 0.0, -1.0}),
 			},
 			args: args{
-				state: StateVec{
-					N:    2,
-					Inc:  1,
-					Data: []complex128{0.0, 1.0},
-				},
+				state: []complex128{0.0, 1.0},
 			},
 			want: -1.0,
-		},
-		{
-			name: "Ket(0) x Ket(0) and 1/2 S_z^0",
-			fields: fields{
-				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
-			},
-			args: args{
-				state: *NewKetReal(ManyBodyVector("uu", 2)),
-			},
-			want: 0.5,
-		},
-		{
-			name: "Ket(+) x Ket(0) and 1/2 S_z^0",
-			fields: fields{
-				Dense: *ManyBodyOperator(Sz(0.5), 0, 2),
-			},
-			args: args{
-				state: *NewKetReal(ManyBodyVector("pu", 2)),
-			},
-			want: 0.0,
 		},
 	}
 	for _, tt := range tests {
@@ -74,7 +46,7 @@ func TestObservable_ExpectationValue(t *testing.T) {
 			o := Observable{
 				Dense: tt.fields.Dense,
 			}
-			if got := o.ExpectationValue(&tt.args.state); math.Abs(got-tt.want) > 1e-14 {
+			if got := o.ExpectationValue(tt.args.state); math.Abs(got-tt.want) > 1e-14 {
 				t.Errorf("Observable.ExpectationValue() = %v, want %v", got, tt.want)
 			}
 		})

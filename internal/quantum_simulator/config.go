@@ -84,7 +84,7 @@ func Validate(conf interface{}, fields []string) error {
 		if !confValues.FieldByName(field).IsZero() {
 			continue
 		}
-		return fmt.Errorf("Failed to validate the struct. The field %s is required and not provided.", field)
+		return fmt.Errorf("failed to validate the struct. The field %s is required and not provided", field)
 	}
 	return nil
 }

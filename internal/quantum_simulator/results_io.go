@@ -35,7 +35,12 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 		parse(err)
 	}
 
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			panic("couldn't close the file")
+		}
+	}(file)
 
 	if b, err := yaml.Marshal(r); err != nil {
 		parse(err)

@@ -1,4 +1,4 @@
-package hilbert_space
+package quantum_simulator
 
 import (
 	"math"
@@ -14,7 +14,7 @@ func delta(a, b float64) float64 {
 }
 
 func elSz(row, col float64) float64 {
-	return delta(row, col) * float64(col)
+	return delta(row, col) * col
 }
 
 func elSp(row, col, spin float64) float64 {
@@ -44,7 +44,7 @@ func Sm(spin float64) *mat.Dense {
 			i += 1
 		}
 	}
-	return mat.NewDense(int(dim), int(dim), data)
+	return mat.NewDense(dim, dim, data)
 }
 
 func Sp(spin float64) *mat.Dense {
@@ -57,7 +57,7 @@ func Sp(spin float64) *mat.Dense {
 			i += 1
 		}
 	}
-	return mat.NewDense(int(dim), int(dim), data)
+	return mat.NewDense(dim, dim, data)
 }
 
 func Sz(spin float64) *mat.Dense {
@@ -70,5 +70,5 @@ func Sz(spin float64) *mat.Dense {
 			i += 1
 		}
 	}
-	return mat.NewDense(int(dim), int(dim), data)
+	return mat.NewDense(dim, dim, data)
 }

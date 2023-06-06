@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"time"
 
-	hs "github.com/korsakjakub/cs_q_sim/internal/hilbert_space"
+	"github.com/davecgh/go-spew/spew"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
 
-func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
-	observables := make([]hs.Observable, len(conf.ObservablesConfig))
+func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
+	observables := make([]qs.Observable, len(conf.ObservablesConfig))
 	ketLength := len(conf.InitialKet)
 	for i, obs := range conf.ObservablesConfig {
 		if obs.Slot > ketLength {
@@ -22,15 +22,15 @@ func loadObservables(conf qs.PhysicsConfig) []hs.Observable {
 		var operator *mat.Dense
 		switch obs.Operator {
 		case "Sz":
-			operator = hs.Sz(conf.Spin)
+			operator = qs.Sz(conf.Spin)
 		case "Sp":
-			operator = hs.Sp(conf.Spin)
+			operator = qs.Sp(conf.Spin)
 		case "Sm":
-			operator = hs.Sm(conf.Spin)
+			operator = qs.Sm(conf.Spin)
 		default:
-			operator = hs.Id(conf.Spin)
+			operator = qs.Id(conf.Spin)
 		}
-		observables[i] = hs.Observable{Dense: mat.Dense(*hs.ManyBodyOperator(operator, obs.Slot, ketLength))}
+		observables[i] = qs.Observable{Dense: *qs.ManyBodyOperator(operator, obs.Slot, ketLength)}
 	}
 	return observables
 }
@@ -42,7 +42,8 @@ func SpinTimeEvolution(conf qs.Config) {
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	initialKet := hs.NewKetReal(hs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	spew.Dump(qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	observables := loadObservables(conf.Physics)
 
 	if conf.Verbosity == "debug" {
@@ -67,12 +68,21 @@ func SpinTimeEvolution(conf qs.Config) {
 	hamiltonian := s.Hamiltonian(b0, b)
 
 	if conf.Verbosity == "debug" {
-		fmt.Println(hamiltonian)
+		if bc < 5 {
+			fmt.Println(mat.Formatted(hamiltonian))
+		}
 		fmt.Println("Diagonalizing...")
 	}
 	eigenValues, eigenVectors := s.Diagonalize(hamiltonian)
 
-	start_time := start.Format(time.RFC3339)
+	if conf.Verbosity == "debug" && bc < 5 {
+		fmt.Println("Eigenvectors:")
+		fmt.Println(mat.Formatted(eigenVectors))
+		fmt.Println("Eigenvalues:")
+		spew.Dump(eigenValues)
+	}
+
+	startTime := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
@@ -80,12 +90,12 @@ func SpinTimeEvolution(conf qs.Config) {
 	xyss := make([]plotter.XYs, len(observables))
 	for i, observable := range observables {
 		var xys plotter.XYs
-		for t := 0; t < timeRange; t += 1 {
-			time := conf.Physics.Dt * float64(t)
+		for t := 0; t < timeRange; t++ {
+			evolutionTime := conf.Physics.Dt * float64(t)
 			if conf.Verbosity == "debug" {
-				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
+				fmt.Printf("t= %v\t(%.2f%%)\n", evolutionTime, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(initialKet.Evolve(time, eigenValues, hs.KetsFromCMatrix(eigenVectors)))})
+			xys = append(xys, plotter.XY{X: evolutionTime / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigenValues, eigenVectors))})
 		}
 		xyss[i] = xys
 	}
@@ -93,15 +103,15 @@ func SpinTimeEvolution(conf qs.Config) {
 	if conf.Verbosity == "debug" {
 		fmt.Println("Wrapping up...")
 	}
-	elapsed_time := time.Since(start)
+	elapsedTime := time.Since(start)
 	r := qs.ResultsIO{
-		Filename: start_time,
+		Filename: startTime,
 		Metadata: qs.Metadata{
-			Date:           start_time,
+			Date:           startTime,
 			Simulation:     "Central spin expectation value time evolution",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
-			CompletionTime: elapsed_time.String(),
+			CompletionTime: elapsedTime.String(),
 		},
 		Values: struct {
 			System       qs.System "mapstructure:\"system\""
@@ -109,31 +119,27 @@ func SpinTimeEvolution(conf qs.Config) {
 			EigenVectors []string  "mapstructure:\"evectors\""
 		}{
 			System:       *s,
-			EigenValues:  eValsToString(eigenValues),
-			EigenVectors: ketsToString(hs.KetsFromCMatrix(eigenVectors)),
+			EigenValues:  []string{""}, // eValsToString(eigenValues),
+			EigenVectors: []string{""}, // ketsToString(eigenVectors),
 		},
 		XYs: xyss,
 	}
 	r.Write(conf.Files)
 }
 
-func eValsToString(evals []complex128) []string {
+func eValsToString(evals []float64) []string {
 	output := make([]string, len(evals))
 	for i, e := range evals {
-		output[i] = strconv.FormatFloat(real(e), 'e', 8, 64)
+		output[i] = strconv.FormatFloat(e, 'e', 8, 64)
 	}
 	return output
 }
 
-func ketsToString(kets []*hs.StateVec) []string {
-	output := make([]string, len(kets))
-	for i, ket := range kets {
-		// outData := "[]complex128{"
-		outData := ""
-		for _, d := range ket.Data {
-			outData = outData + strconv.FormatFloat(real(d), 'e', 8, 64) + ","
-		}
-		output[i] = fmt.Sprintf("%v", outData)
+func ketsToString(kets *mat.Dense) []string {
+	output := make([]string, kets.RawMatrix().Cols)
+	for i := 0; i < kets.RawMatrix().Rows; i++ {
+		ket := kets.ColView(i)
+		output[i] = fmt.Sprintf("%v", ket)
 	}
 	return output
 }
