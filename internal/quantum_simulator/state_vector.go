@@ -2,7 +2,7 @@ package quantum_simulator
 
 import (
 	"fmt"
-	"math"
+	"math/cmplx"
 	"strconv"
 
 	"gonum.org/v1/gonum/mat"
@@ -12,17 +12,17 @@ import (
 // |Ψ(t)> = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
 // Thus for k-th element we have
 // (|Ψ(t)>)^k = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
-func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense) *mat.VecDense {
+func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense) []complex128 {
 	dim := eigenBasis.ColView(0).Len()
-	out := make([]float64, dim)
+	out := make([]complex128, dim)
 
 	for k := range initialVector.RawVector().Data { // iterate over slots of a vector
 		for j := 0; j < eigenBasis.RowView(0).Len(); j++ { // sum over energies
 			basisVector := eigenBasis.ColView(j)
-			out[k] += math.Cos(energies[j]*time) * mat.Dot(basisVector, initialVector) * basisVector.AtVec(k)
+			out[k] += cmplx.Exp(complex(energies[j], 0)*complex(0, time)) * complex(mat.Dot(basisVector, initialVector)*basisVector.AtVec(k), 0.0)
 		}
 	}
-	return mat.NewVecDense(dim, out)
+	return out
 }
 
 func GetInitialBasis(particlesCount, downCount int) [][]int {
