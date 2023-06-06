@@ -3,7 +3,9 @@ package simulations
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
@@ -70,6 +72,7 @@ func SpinTimeEvolution(conf qs.Config) {
 		fmt.Printf("\nLoading diagonalization results from %v\n", diagDir)
 		eigen = qs.LoadDiagonalizationSolutions(diagDir)
 	} else {
+		fmt.Println("Diagonalizing...")
 		eigen = solveEigenProblem(s)
 		qs.SaveDiagonalizationSolutions(eigen, conf.Files.OutputsDir+"diag-"+startTime)
 	}
@@ -77,15 +80,46 @@ func SpinTimeEvolution(conf qs.Config) {
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
 	}
+
+	type expVal struct {
+		exp   float64
+		index int
+	}
+
 	xyss := make([]plotter.XYs, len(observables))
 	for i, observable := range observables {
 		var xys plotter.XYs
+		expValChannel := make(chan expVal, timeRange)
+		var wg sync.WaitGroup
+
 		for t := 0; t < timeRange; t++ {
 			evolutionTime := conf.Physics.Dt * float64(t)
-			if conf.Verbosity == "debug" {
-				fmt.Printf("t= %v\t(%.2f%%)\n", evolutionTime, 100.0*float64(t)/float64(timeRange))
-			}
-			xys = append(xys, plotter.XY{X: evolutionTime / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors))})
+			wg.Add(1)
+			go func(ch chan expVal, time int) {
+				ch <- expVal{exp: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors)), index: time}
+				if conf.Verbosity == "debug" {
+					fmt.Printf("t= %v\n", evolutionTime)
+				}
+				wg.Done()
+			}(expValChannel, t)
+		}
+
+		wg.Wait()
+		expValues := make([]expVal, 0, timeRange)
+		close(expValChannel)
+
+		j := 0
+		for e := range expValChannel {
+			expValues = append(expValues, e)
+			j++
+		}
+
+		sort.Slice(expValues, func(i, j int) bool {
+			return expValues[i].index < expValues[j].index
+		})
+
+		for t := 0; t < timeRange; t++ {
+			xys = append(xys, plotter.XY{X: float64(expValues[t].index) / (2.0 * math.Pi), Y: expValues[t].exp})
 		}
 		xyss[i] = xys
 	}
