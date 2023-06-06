@@ -12,14 +12,14 @@ import (
 // |Ψ(t)> = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
 // Thus for k-th element we have
 // (|Ψ(t)>)^k = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
-func Evolve(u *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense) *mat.VecDense {
+func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense) *mat.VecDense {
 	dim := eigenBasis.ColView(0).Len()
 	out := make([]float64, dim)
 
-	for k := range u.RawVector().Data { // iterate over slots of a vector
+	for k := range initialVector.RawVector().Data { // iterate over slots of a vector
 		for j := 0; j < eigenBasis.RowView(0).Len(); j++ { // sum over energies
 			basisVector := eigenBasis.ColView(j)
-			out[k] += math.Cos(energies[j]*time) * mat.Dot(basisVector, u) * basisVector.AtVec(k)
+			out[k] += math.Cos(energies[j]*time) * mat.Dot(basisVector, initialVector) * basisVector.AtVec(k)
 		}
 	}
 	return mat.NewVecDense(dim, out)
