@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
@@ -35,54 +34,45 @@ func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
 	return observables
 }
 
+func solveEigenProblem(s *qs.System) qs.Eigen {
+	b := s.PhysicsConfig.BathMagneticField
+	b0 := s.PhysicsConfig.CentralMagneticField
+	hamiltonian := s.Hamiltonian(b0, b)
+
+	return s.Diagonalize(hamiltonian)
+}
+
 func SpinTimeEvolution(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
-	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	spew.Dump(qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	observables := loadObservables(conf.Physics)
+	start := time.Now()
+	startTime := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating initial states...")
 	}
-	start := time.Now()
-	for i := 0; i < bc; i += 1 {
+	for i := 0; i < conf.Physics.BathCount; i += 1 {
 		bath = append(bath, qs.State{Angle: qs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
 	}
-
 	s := &qs.System{
 		CentralSpin:   cs,
 		Bath:          bath,
 		PhysicsConfig: conf.Physics,
 	}
 
-	if conf.Verbosity == "debug" {
-		fmt.Println("Preparing the Hamiltonian...")
+	var eigen qs.Eigen
+	if diagDir := conf.Files.DiagonalizationDir; diagDir != "" {
+		fmt.Printf("\nLoading diagonalization results from %v\n", diagDir)
+		eigen = qs.LoadDiagonalizationSolutions(diagDir)
+	} else {
+		eigen = solveEigenProblem(s)
+		qs.SaveDiagonalizationSolutions(eigen, conf.Files.OutputsDir+"diag-"+startTime)
 	}
-	b := conf.Physics.BathMagneticField
-	b0 := conf.Physics.CentralMagneticField
-	hamiltonian := s.Hamiltonian(b0, b)
-
-	if conf.Verbosity == "debug" {
-		if bc < 5 {
-			fmt.Println(mat.Formatted(hamiltonian))
-		}
-		fmt.Println("Diagonalizing...")
-	}
-	eigenValues, eigenVectors := s.Diagonalize(hamiltonian)
-
-	if conf.Verbosity == "debug" && bc < 5 {
-		fmt.Println("Eigenvectors:")
-		fmt.Println(mat.Formatted(eigenVectors))
-		fmt.Println("Eigenvalues:")
-		spew.Dump(eigenValues)
-	}
-
-	startTime := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
@@ -95,7 +85,7 @@ func SpinTimeEvolution(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %v\t(%.2f%%)\n", evolutionTime, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: evolutionTime / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigenValues, eigenVectors))})
+			xys = append(xys, plotter.XY{X: evolutionTime / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors))})
 		}
 		xyss[i] = xys
 	}

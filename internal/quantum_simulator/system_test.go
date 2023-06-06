@@ -256,14 +256,14 @@ func TestSystem_diagonalize(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			eigenValues, eigenVectors := s.Diagonalize(tt.args.hamiltonian)
+			eigen := s.Diagonalize(tt.args.hamiltonian)
 
-			for i := 0; i < eigenVectors.RawMatrix().Rows; i++ {
-				left := mat.NewVecDense(len(eigenValues), nil)
-				vec := eigenVectors.ColView(i)
+			for i := 0; i < eigen.EigenVectors.RawMatrix().Rows; i++ {
+				left := mat.NewVecDense(len(eigen.EigenValues), nil)
+				vec := eigen.EigenVectors.ColView(i)
 				left.MulVec(tt.args.hamiltonian, vec)
-				right := mat.NewVecDense(len(eigenValues), nil)
-				right.ScaleVec(eigenValues[i], vec)
+				right := mat.NewVecDense(len(eigen.EigenValues), nil)
+				right.ScaleVec(eigen.EigenValues[i], vec)
 
 				if !mat.EqualApprox(left, right, 1e-8) {
 					t.Errorf("Vector is not an eigenvector")
@@ -306,10 +306,10 @@ func TestSystem_diagonalize_benchmark(t *testing.T) {
 				Bath:          tt.fields.Bath,
 				PhysicsConfig: tt.fields.PhysicsConfig,
 			}
-			eigenValues, eigenVectors := s.Diagonalize(s.Hamiltonian(tt.args.b0, tt.args.b))
-			_, vecsCount := eigenVectors.Dims()
+			eigen := s.Diagonalize(s.Hamiltonian(tt.args.b0, tt.args.b))
+			_, vecsCount := eigen.EigenVectors.Dims()
 
-			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eigenValues), vecsCount)
+			t.Logf("num of eigvals: %v, num of eigvecs: %v", len(eigen.EigenValues), vecsCount)
 		})
 	}
 }

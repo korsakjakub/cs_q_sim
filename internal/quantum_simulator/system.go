@@ -27,6 +27,11 @@ type point struct {
 	z float64
 }
 
+type Eigen struct {
+	EigenValues  []float64
+	EigenVectors *mat.Dense
+}
+
 func (s *System) DistanceGivenInteractionAt(j int) float64 {
 	rj := math.Pow(math.Abs(s.PhysicsConfig.BathDipoleMoment*s.PhysicsConfig.AtomDipoleMoment/(4*math.Pi*e0)*0.5/s.Bath[j-1].InteractionStrength*(1.0-3.0*math.Pow(s.Bath[j-1].Angle, 2))), 1.0/3.0)
 	s.Bath[j-1].Distance = rj
@@ -154,7 +159,7 @@ func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 }
 
 // Diagonalize returns eigenvectors and eigenvalues given a hamiltonian matrix
-func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) {
+func (s *System) Diagonalize(hamiltonian *mat.SymDense) Eigen {
 	var eig mat.EigenSym
 	if err := eig.Factorize(hamiltonian, true); !err {
 		panic("cannot diagonalize")
@@ -185,5 +190,5 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) ([]float64, *mat.Dense) 
 	if err := isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors); err != nil {
 		panic(err)
 	}
-	return eigenValues, eigenVectors
+	return Eigen{eigenValues, eigenVectors}
 }

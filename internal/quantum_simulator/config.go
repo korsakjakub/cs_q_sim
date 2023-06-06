@@ -34,9 +34,10 @@ type ObservableConfig struct {
 }
 
 type FilesConfig struct {
-	FigDir        string        `mapstructure:"figdir"`
-	OutputsDir    string        `mapstructure:"outputsdir"`
-	ResultsConfig ResultsConfig `mapstructure:"results"`
+	FigDir             string        `mapstructure:"figdir"`
+	OutputsDir         string        `mapstructure:"outputsdir"`
+	DiagonalizationDir string        `mapstructure:"diagonalizationdir"`
+	ResultsConfig      ResultsConfig `mapstructure:"results"`
 }
 
 type ResultsConfig struct {
