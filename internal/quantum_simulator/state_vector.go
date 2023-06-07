@@ -1,9 +1,7 @@
 package quantum_simulator
 
 import (
-	"fmt"
 	"math/cmplx"
-	"strconv"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -25,31 +23,60 @@ func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigen
 	return out
 }
 
-func GetInitialBasis(particlesCount, downCount int) [][]int {
-
-	countOnes := func(num int) int {
-		count := 0
-		for num != 0 {
-			count += num & 1
-			num >>= 1
-		}
-		return count
+func countOnes(num int) int {
+	count := 0
+	for num != 0 {
+		count += num & 1
+		num >>= 1
 	}
+	return count
+}
 
-	var arrays [][]int
+/*
+	BasisIndices generates a list of indices of vectors that have a specific number of "downspins"
+	The length of such basis is particlesCount choose downCount
+*/
+func BasisIndices(particlesCount, downCount int) []int {
+	var indices []int
 	maxNum := (1 << particlesCount) - 1 // Maximum value for n bits
 
 	for i := 0; i <= maxNum; i++ {
 		if countOnes(i) == downCount {
-			array := make([]int, particlesCount)
-			binaryStr := strconv.FormatInt(int64(i), 2)
-			binaryStr = fmt.Sprintf("%0*s", particlesCount, binaryStr) // Pad with leading zeros
-			for j, bit := range binaryStr {
-				array[j], _ = strconv.Atoi(string(bit))
-			}
-			arrays = append(arrays, array)
+			indices = append(indices, i)
 		}
 	}
+	return indices
+}
 
-	return arrays
+/*
+	RestrictMatrixToSubspace takes a matrix, and a list of indices and returns a matrix that has only blocks intersecting from the list of indices.
+
+	Example:
+	matrix = 1, 2, 3, 4,
+			 5, 6, 7, 8,
+			 9, 10, 11, 12,
+			 13, 14, 15, 16
+	indices = {0, 2}
+
+	yields:
+			 1, 3,
+			 9, 11
+*/
+func RestrictMatrixToSubspace(matrix *mat.Dense, indices []int) *mat.Dense {
+	dim := len(indices)
+
+	selectedRows := make([]mat.Vector, dim)
+	selectedCols := make([]mat.Vector, dim)
+	for i, index := range indices {
+		selectedRows[i] = matrix.RowView(index)
+		selectedCols[i] = matrix.ColView(index)
+	}
+
+	h := mat.NewDense(dim, dim, nil)
+	for i := 0; i < dim; i++ {
+		for j := 0; j < dim; j++ {
+			h.Set(i, j, selectedRows[i].AtVec(indices[j]))
+		}
+	}
+	return h
 }

@@ -18,7 +18,8 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
 	initialKet := mat.NewVecDense(len(conf.Physics.InitialKet), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
-	observables := loadObservables(conf.Physics)
+	downSpins := downSpins(conf.Physics.InitialKet)
+	observables := prepareObservables(conf.Physics, downSpins)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating initial states...")
