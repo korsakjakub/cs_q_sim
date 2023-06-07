@@ -119,7 +119,7 @@ func SpinTimeEvolution(conf qs.Config) {
 		})
 
 		for t := 0; t < timeRange; t++ {
-			xys = append(xys, plotter.XY{X: float64(expValues[t].index) / (2.0 * math.Pi), Y: expValues[t].exp})
+			xys = append(xys, plotter.XY{X: float64(expValues[t].index) * conf.Physics.Dt / (2.0 * math.Pi), Y: expValues[t].exp})
 		}
 		xyss[i] = xys
 	}
