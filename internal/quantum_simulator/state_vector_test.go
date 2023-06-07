@@ -1,5 +1,12 @@
 package quantum_simulator
 
+import (
+	"reflect"
+	"testing"
+
+	"gonum.org/v1/gonum/mat"
+)
+
 /*
 func TestStateVec_Evolve(t *testing.T) {
 	type args struct {
@@ -55,3 +62,100 @@ func TestStateVec_Evolve(t *testing.T) {
 	}
 }
 */
+
+func TestBasisIndices(t *testing.T) {
+	type args struct {
+		particlesCount int
+		downCount      int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{
+			name: "4 and 0",
+			args: args{
+				particlesCount: 4,
+				downCount:      0,
+			},
+			want: []int{0},
+		},
+		{
+			name: "4 and 1",
+			args: args{
+				particlesCount: 4,
+				downCount:      1,
+			},
+			want: []int{1, 2, 4, 8},
+		},
+		{
+			name: "4 and 2",
+			args: args{
+				particlesCount: 4,
+				downCount:      2,
+			},
+			want: []int{3, 5, 6, 9, 10, 12},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := BasisIndices(tt.args.particlesCount, tt.args.downCount); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BasisIndices() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRestrictMatrixToSubspace(t *testing.T) {
+	type args struct {
+		matrix  *mat.Dense
+		indices []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want *mat.Dense
+	}{
+		{
+			name: "3x3 -> 2x2",
+			args: args{
+				matrix: mat.NewDense(3, 3, []float64{
+					1, 2, 3,
+					4, 5, 6,
+					7, 8, 9,
+				}),
+				indices: []int{0, 2},
+			},
+			want: mat.NewDense(2, 2, []float64{
+				1, 3,
+				7, 9,
+			}),
+		},
+		{
+			name: "5x5 -> 3x3",
+			args: args{
+				matrix: mat.NewDense(5, 5, []float64{
+					1, 2, 3, 4, 5,
+					6, 7, 8, 9, 10,
+					11, 12, 13, 14, 15,
+					16, 17, 18, 19, 20,
+					21, 22, 23, 24, 25,
+				}),
+				indices: []int{1, 2, 4},
+			},
+			want: mat.NewDense(3, 3, []float64{
+				7, 8, 10,
+				12, 13, 15,
+				22, 23, 25,
+			}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RestrictMatrixToSubspace(tt.args.matrix, tt.args.indices); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RestrictMatrixToSubspace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

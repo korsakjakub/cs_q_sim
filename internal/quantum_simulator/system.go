@@ -13,6 +13,7 @@ type System struct {
 	CentralSpin   State
 	Bath          []State
 	PhysicsConfig PhysicsConfig
+	DownSpins     int
 }
 
 type State struct {
@@ -158,6 +159,21 @@ func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	return h
 }
 
+func (s *System) HamiltonianInBase(b0, b float64, indices []int) *mat.SymDense {
+	if len(indices) < 2 {
+		panic("Only 1 dimension remained")
+	}
+	fullHamiltonian := s.Hamiltonian(b0, b)
+	hDim := fullHamiltonian.SymmetricDim()
+	dim := len(indices)
+
+	dFullHamiltonian := mat.NewDense(hDim, hDim, fullHamiltonian.RawSymmetric().Data)
+
+	h := RestrictMatrixToSubspace(dFullHamiltonian, indices)
+
+	return mat.NewSymDense(dim, h.RawMatrix().Data)
+}
+
 // Diagonalize returns eigenvectors and eigenvalues given a hamiltonian matrix
 func (s *System) Diagonalize(hamiltonian *mat.SymDense) Eigen {
 	var eig mat.EigenSym
@@ -178,7 +194,7 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) Eigen {
 			right.ScaleVec(eig[i], vec)
 
 			if !mat.EqualApprox(left, right, 1e-8) {
-				return fmt.Errorf("A v = k v is not satisfied")
+				return fmt.Errorf("the restriction A v = k v is not satisfied")
 			}
 		}
 		if math.Abs(math.Abs(mat.Det(evec))-1.0) > 1e-8 {

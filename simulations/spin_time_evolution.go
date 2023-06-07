@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 )
 
-func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
+func prepareObservables(conf qs.PhysicsConfig, downSpins int) []qs.Observable {
 	observables := make([]qs.Observable, len(conf.ObservablesConfig))
 	ketLength := len(conf.InitialKet)
 	for i, obs := range conf.ObservablesConfig {
@@ -31,7 +30,13 @@ func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
 		default:
 			operator = qs.Id(conf.Spin)
 		}
-		observables[i] = qs.Observable{Dense: *qs.ManyBodyOperator(operator, obs.Slot, ketLength)}
+		fullObservable := qs.ManyBodyOperator(operator, obs.Slot, ketLength)
+		if downSpins < 2 {
+			observables[i] = qs.Observable{Dense: *fullObservable}
+		} else {
+			indices := qs.BasisIndices(conf.BathCount+1, downSpins)
+			observables[i] = qs.Observable{Dense: *qs.RestrictMatrixToSubspace(fullObservable, indices)}
+		}
 	}
 	return observables
 }
@@ -39,19 +44,46 @@ func loadObservables(conf qs.PhysicsConfig) []qs.Observable {
 func solveEigenProblem(s *qs.System) qs.Eigen {
 	b := s.PhysicsConfig.BathMagneticField
 	b0 := s.PhysicsConfig.CentralMagneticField
-	hamiltonian := s.Hamiltonian(b0, b)
+	if s.DownSpins < 1 {
+		hamiltonian := s.Hamiltonian(b0, b)
+		return s.Diagonalize(hamiltonian)
+	}
+	indices := qs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
+	hamiltonian := s.HamiltonianInBase(b0, b, indices)
 
 	return s.Diagonalize(hamiltonian)
+}
+
+func prepareInitialKet(s *qs.System) *mat.VecDense {
+	fullKet := mat.NewVecDense(int(math.Pow(2*s.PhysicsConfig.Spin+1, float64(len(s.PhysicsConfig.InitialKet)))), qs.ManyBodyVector(s.PhysicsConfig.InitialKet, int(2*s.PhysicsConfig.Spin+1)))
+	if s.DownSpins < 1 {
+		return fullKet
+	}
+	indices := qs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
+	ketData := make([]float64, len(indices))
+	for i, index := range indices {
+		ketData[i] = fullKet.AtVec(index)
+	}
+	return mat.NewVecDense(len(indices), ketData)
+}
+
+func downSpins(ket string) int {
+	downSpins := 0
+	for s := range ket {
+		if ket[s] == 'd' {
+			downSpins++
+		}
+	}
+	return downSpins
 }
 
 func SpinTimeEvolution(conf qs.Config) {
 	cs := qs.State{Angle: 0.0, Distance: 0.0}
 	var bath []qs.State
 	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
+	downSpins := downSpins(conf.Physics.InitialKet)
 	timeRange := conf.Physics.TimeRange
-	spin := conf.Physics.Spin
-	initialKet := mat.NewVecDense(int(math.Pow(2*spin+1, float64(len(conf.Physics.InitialKet)))), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
-	observables := loadObservables(conf.Physics)
+	observables := prepareObservables(conf.Physics, downSpins)
 	start := time.Now()
 	startTime := start.Format(time.RFC3339)
 
@@ -65,6 +97,12 @@ func SpinTimeEvolution(conf qs.Config) {
 		CentralSpin:   cs,
 		Bath:          bath,
 		PhysicsConfig: conf.Physics,
+		DownSpins:     downSpins,
+	}
+	initialKet := prepareInitialKet(s)
+
+	if conf.Verbosity == "debug" && s.DownSpins > 0 {
+		fmt.Printf("Reduced the dimension: %v -> %v\n\n", math.Pow(2.0, float64(conf.Physics.BathCount+1)), len(initialKet.RawVector().Data))
 	}
 
 	var eigen qs.Eigen
@@ -145,21 +183,4 @@ func SpinTimeEvolution(conf qs.Config) {
 		XYs: xyss,
 	}
 	r.Write(conf.Files)
-}
-
-func eValsToString(evals []float64) []string {
-	output := make([]string, len(evals))
-	for i, e := range evals {
-		output[i] = strconv.FormatFloat(e, 'e', 8, 64)
-	}
-	return output
-}
-
-func ketsToString(kets *mat.Dense) []string {
-	output := make([]string, kets.RawMatrix().Cols)
-	for i := 0; i < kets.RawMatrix().Rows; i++ {
-		ket := kets.ColView(i)
-		output[i] = fmt.Sprintf("%v", ket)
-	}
-	return output
 }
