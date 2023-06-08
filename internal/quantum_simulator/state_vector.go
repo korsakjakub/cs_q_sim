@@ -10,14 +10,14 @@ import (
 // |Ψ(t)> = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * |E_j>
 // Thus for k-th element we have
 // (|Ψ(t)>)^k = Σ_j exp(-i E_j t) * <E_j | Ψ(0) > * (|E_j>)^k
-func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense) []complex128 {
+func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigenBasis *mat.Dense, grammian *mat.Dense) []complex128 {
 	dim := eigenBasis.ColView(0).Len()
 	out := make([]complex128, dim)
 
 	for k := range initialVector.RawVector().Data { // iterate over slots of a vector
 		for j := 0; j < eigenBasis.RowView(0).Len(); j++ { // sum over energies
 			basisVector := eigenBasis.ColView(j)
-			out[k] += cmplx.Exp(complex(energies[j], 0)*complex(0, time)) * complex(mat.Dot(basisVector, initialVector)*basisVector.AtVec(k), 0.0)
+			out[k] += cmplx.Exp(complex(energies[j], 0)*complex(0, time)) * complex(grammian.At(0, j)*basisVector.AtVec(k), 0.0)
 		}
 	}
 	return out
@@ -30,6 +30,15 @@ func countOnes(num int) int {
 		num >>= 1
 	}
 	return count
+}
+
+func Grammian(v *mat.VecDense, m *mat.Dense) *mat.Dense {
+	var gram mat.Dense
+	if v.Len() != m.RawMatrix().Cols {
+		panic("dimensions mismatch")
+	}
+	gram.Mul(v.T(), m)
+	return &gram
 }
 
 /*
