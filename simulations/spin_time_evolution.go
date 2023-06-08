@@ -116,6 +116,12 @@ func SpinTimeEvolution(conf qs.Config) {
 	}
 
 	if conf.Verbosity == "debug" {
+		fmt.Println("Calculating the inner product matrix...")
+	}
+
+	gramMatrix := qs.Grammian(initialKet, eigen.EigenVectors)
+
+	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
 	}
 
@@ -134,7 +140,7 @@ func SpinTimeEvolution(conf qs.Config) {
 			evolutionTime := conf.Physics.Dt * float64(t)
 			wg.Add(1)
 			go func(ch chan expVal, time int) {
-				ch <- expVal{exp: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors)), index: time}
+				ch <- expVal{exp: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors, gramMatrix)), index: time}
 				if conf.Verbosity == "debug" {
 					fmt.Printf("t= %v\n", evolutionTime)
 				}

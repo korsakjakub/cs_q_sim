@@ -46,6 +46,8 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	}
 	eigen := s.Diagonalize(s.Hamiltonian(b0, b))
 
+	gramMatrix := qs.Grammian(initialKet, eigen.EigenVectors)
+
 	start_time := start.Format(time.RFC3339)
 
 	if conf.Verbosity == "debug" {
@@ -59,7 +61,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigen.EigenValues, eigen.EigenVectors))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigen.EigenValues, eigen.EigenVectors, gramMatrix))})
 		}
 		xyss[i] = xys
 	}
