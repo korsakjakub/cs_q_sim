@@ -363,3 +363,51 @@ func TestSystem_HamiltonianInBase(t *testing.T) {
 		})
 	}
 }
+
+func TestSystem_HamiltonianInBasePanic(t *testing.T) {
+	type fields struct {
+		CentralSpin   State
+		Bath          []State
+		PhysicsConfig PhysicsConfig
+		DownSpins     int
+	}
+	type args struct {
+		b0      float64
+		b       float64
+		indices []int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "Should panic 3 -> 0",
+			fields: fields{
+				CentralSpin:   State{0.0, 1.0, 0.0},
+				Bath:          []State{{0.0, 1.0, 0.0}, {0.0, 2.0, 0.0}},
+				PhysicsConfig: PhysicsConfig{BathDipoleMoment: 1.1e-10, AtomDipoleMoment: 1.0, Spin: 0.5},
+				DownSpins:     2,
+			},
+			args: args{
+				b0:      1.0,
+				b:       3.0,
+				indices: []int{0},
+			},
+		},
+	}
+	for _, tt := range tests {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("The code did not panic")
+			}
+		}()
+		s := &System{
+			CentralSpin:   tt.fields.CentralSpin,
+			Bath:          tt.fields.Bath,
+			PhysicsConfig: tt.fields.PhysicsConfig,
+			DownSpins:     tt.fields.DownSpins,
+		}
+		_ = s.HamiltonianInBase(tt.args.b0, tt.args.b, tt.args.indices)
+	}
+}
