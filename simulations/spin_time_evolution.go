@@ -152,10 +152,8 @@ func SpinTimeEvolution(conf qs.Config) {
 		expValues := make([]expVal, 0, timeRange)
 		close(expValChannel)
 
-		j := 0
 		for e := range expValChannel {
 			expValues = append(expValues, e)
-			j++
 		}
 
 		sort.Slice(expValues, func(i, j int) bool {
