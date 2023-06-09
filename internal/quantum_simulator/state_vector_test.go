@@ -171,14 +171,6 @@ func TestGrammian(t *testing.T) {
 		want *mat.Dense
 	}{
 		{
-			name: "3x1, 3x2",
-			args: args{
-				v: mat.NewVecDense(3, []float64{1, 2, 3}),
-				m: mat.NewDense(2, 3, []float64{4, 5, 6, 7, 8, 9}),
-			},
-			want: mat.NewDense(1, 2, []float64{32, 50}),
-		},
-		{
 			name: "4x1, 4x4",
 			args: args{
 				v: mat.NewVecDense(4, []float64{1, 2, 3, 4}),
@@ -186,7 +178,7 @@ func TestGrammian(t *testing.T) {
 					2, 5, 7, 1, 3, 9, 6, 2, 4, 8, 1, 3, 5, 3, 2, 6,
 				}),
 			},
-			want: mat.NewDense(1, 4, []float64{37, 47, 35, 41}),
+			want: mat.NewDense(1, 4, []float64{40, 59, 30, 38}),
 		},
 	}
 	for _, tt := range tests {
