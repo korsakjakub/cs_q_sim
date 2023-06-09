@@ -22,3 +22,8 @@ jobs:
         run: go test -v -coverpkg=./internal/... -coverprofile=coverage.out ./internal/...
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.out
+          fail_ci_if_error: true
+          verbose: true
