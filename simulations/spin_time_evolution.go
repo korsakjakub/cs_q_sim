@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
+	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
 
-func prepareObservables(conf qs.PhysicsConfig, downSpins int) []qs.Observable {
-	observables := make([]qs.Observable, len(conf.ObservablesConfig))
+func prepareObservables(conf cs.PhysicsConfig, downSpins int) []cs.Observable {
+	observables := make([]cs.Observable, len(conf.ObservablesConfig))
 	ketLength := len(conf.InitialKet)
 	for i, obs := range conf.ObservablesConfig {
 		if obs.Slot > ketLength {
@@ -22,44 +22,44 @@ func prepareObservables(conf qs.PhysicsConfig, downSpins int) []qs.Observable {
 		var operator *mat.Dense
 		switch obs.Operator {
 		case "Sz":
-			operator = qs.Sz(conf.Spin)
+			operator = cs.Sz(conf.Spin)
 		case "Sp":
-			operator = qs.Sp(conf.Spin)
+			operator = cs.Sp(conf.Spin)
 		case "Sm":
-			operator = qs.Sm(conf.Spin)
+			operator = cs.Sm(conf.Spin)
 		default:
-			operator = qs.Id(conf.Spin)
+			operator = cs.Id(conf.Spin)
 		}
-		fullObservable := qs.ManyBodyOperator(operator, obs.Slot, ketLength)
+		fullObservable := cs.ManyBodyOperator(operator, obs.Slot, ketLength)
 		if downSpins < 2 {
-			observables[i] = qs.Observable{Dense: *fullObservable}
+			observables[i] = cs.Observable{Dense: *fullObservable}
 		} else {
-			indices := qs.BasisIndices(conf.BathCount+1, downSpins)
-			observables[i] = qs.Observable{Dense: *qs.RestrictMatrixToSubspace(fullObservable, indices)}
+			indices := cs.BasisIndices(conf.BathCount+1, downSpins)
+			observables[i] = cs.Observable{Dense: *cs.RestrictMatrixToSubspace(fullObservable, indices)}
 		}
 	}
 	return observables
 }
 
-func solveEigenProblem(s *qs.System) qs.Eigen {
+func solveEigenProblem(s *cs.System) cs.Eigen {
 	b := s.PhysicsConfig.BathMagneticField
 	b0 := s.PhysicsConfig.CentralMagneticField
 	if s.DownSpins < 1 {
 		hamiltonian := s.Hamiltonian(b0, b)
 		return s.Diagonalize(hamiltonian)
 	}
-	indices := qs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
+	indices := cs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
 	hamiltonian := s.HamiltonianInBase(b0, b, indices)
 
 	return s.Diagonalize(hamiltonian)
 }
 
-func prepareInitialKet(s *qs.System) *mat.VecDense {
-	fullKet := mat.NewVecDense(int(math.Pow(2*s.PhysicsConfig.Spin+1, float64(len(s.PhysicsConfig.InitialKet)))), qs.ManyBodyVector(s.PhysicsConfig.InitialKet, int(2*s.PhysicsConfig.Spin+1)))
+func prepareInitialKet(s *cs.System) *mat.VecDense {
+	fullKet := mat.NewVecDense(int(math.Pow(2*s.PhysicsConfig.Spin+1, float64(len(s.PhysicsConfig.InitialKet)))), cs.ManyBodyVector(s.PhysicsConfig.InitialKet, int(2*s.PhysicsConfig.Spin+1)))
 	if s.DownSpins < 1 {
 		return fullKet
 	}
-	indices := qs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
+	indices := cs.BasisIndices(s.PhysicsConfig.BathCount+1, s.DownSpins)
 	ketData := make([]float64, len(indices))
 	for i, index := range indices {
 		ketData[i] = fullKet.AtVec(index)
@@ -77,9 +77,8 @@ func downSpins(ket string) int {
 	return downSpins
 }
 
-func SpinTimeEvolution(conf qs.Config) {
-	cs := qs.State{Angle: 0.0, Distance: 0.0}
-	var bath []qs.State
+func SpinTimeEvolution(conf cs.Config) {
+	var bath []cs.State
 	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
 	downSpins := downSpins(conf.Physics.InitialKet)
 	timeRange := conf.Physics.TimeRange
@@ -91,10 +90,10 @@ func SpinTimeEvolution(conf qs.Config) {
 		fmt.Println("Calculating initial states...")
 	}
 	for i := 0; i < conf.Physics.BathCount; i += 1 {
-		bath = append(bath, qs.State{Angle: qs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
+		bath = append(bath, cs.State{Angle: cs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
 	}
-	s := &qs.System{
-		CentralSpin:   cs,
+	s := &cs.System{
+		CentralSpin:   cs.State{Angle: 0.0, Distance: 0.0},
 		Bath:          bath,
 		PhysicsConfig: conf.Physics,
 		DownSpins:     downSpins,
@@ -105,21 +104,21 @@ func SpinTimeEvolution(conf qs.Config) {
 		fmt.Printf("Reduced the dimension: %v -> %v\n\n", math.Pow(2.0, float64(conf.Physics.BathCount+1)), len(initialKet.RawVector().Data))
 	}
 
-	var eigen qs.Eigen
+	var eigen cs.Eigen
 	if diagDir := conf.Files.DiagonalizationDir; diagDir != "" {
 		fmt.Printf("\nLoading diagonalization results from %v\n", diagDir)
-		eigen = qs.LoadDiagonalizationSolutions(diagDir)
+		eigen = cs.LoadDiagonalizationSolutions(diagDir)
 	} else {
 		fmt.Println("Diagonalizing...")
 		eigen = solveEigenProblem(s)
-		qs.SaveDiagonalizationSolutions(eigen, *s, conf.Files.OutputsDir+"diag-"+startTime)
+		cs.SaveDiagonalizationSolutions(eigen, *s, conf.Files.OutputsDir+"diag-"+startTime)
 	}
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating the inner product matrix...")
 	}
 
-	gramMatrix := qs.Grammian(initialKet, eigen.EigenVectors)
+	gramMatrix := cs.Grammian(initialKet, eigen.EigenVectors)
 
 	if conf.Verbosity == "debug" {
 		fmt.Println("Calculating time evolution...")
@@ -140,7 +139,7 @@ func SpinTimeEvolution(conf qs.Config) {
 			evolutionTime := conf.Physics.Dt * float64(t)
 			wg.Add(1)
 			go func(ch chan expVal, time int) {
-				ch <- expVal{exp: observable.ExpectationValue(qs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors, gramMatrix)), index: time}
+				ch <- expVal{exp: observable.ExpectationValue(cs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors, gramMatrix)), index: time}
 				if conf.Verbosity == "debug" {
 					fmt.Printf("t= %v\n", evolutionTime)
 				}
@@ -170,9 +169,9 @@ func SpinTimeEvolution(conf qs.Config) {
 		fmt.Println("Wrapping up...")
 	}
 	elapsedTime := time.Since(start)
-	r := qs.ResultsIO{
+	r := cs.ResultsIO{
 		Filename: startTime,
-		Metadata: qs.Metadata{
+		Metadata: cs.Metadata{
 			Date:           startTime,
 			Simulation:     "Central spin expectation value time evolution",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
@@ -180,7 +179,7 @@ func SpinTimeEvolution(conf qs.Config) {
 			CompletionTime: elapsedTime.String(),
 		},
 		Values: struct {
-			System qs.System "mapstructure:\"system\""
+			System cs.System "mapstructure:\"system\""
 		}{
 			System: *s,
 		},

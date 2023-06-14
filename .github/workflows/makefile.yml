@@ -1,8 +1,7 @@
-name: Build, test and run
+name: Build and test
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
     paths-ignore:
       - '**.md'
       - '**.yml'
@@ -10,12 +9,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - name: Build
       run: make build
     - name: Test
