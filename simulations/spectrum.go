@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
+	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
@@ -21,18 +21,17 @@ type spectrumOutput struct {
 	magneticField float64
 }
 
-func Spectrum(conf qs.Config) {
-	cs := qs.State{Angle: 0.0, Distance: 0.0}
-	var bath []qs.State
+func Spectrum(conf cs.Config) {
+	var bath []cs.State
 	bc := conf.Physics.BathCount
 	fieldRange := conf.Physics.MagneticFieldRange
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
-		bath = append(bath, qs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
+		bath = append(bath, cs.State{Angle: float64(i) * math.Pi / float64(bc), Distance: 1e3})
 	}
 
-	s := &qs.System{
-		CentralSpin:   cs,
+	s := &cs.System{
+		CentralSpin:   cs.State{Angle: 0.0, Distance: 0.0},
 		Bath:          bath,
 		PhysicsConfig: conf.Physics,
 	}
@@ -70,9 +69,9 @@ func Spectrum(conf qs.Config) {
 	elapsed_time := time.Since(start)
 	start_time := start.Format(time.RFC3339)
 
-	r := qs.ResultsIO{
+	r := cs.ResultsIO{
 		Filename: start_time,
-		Metadata: qs.Metadata{
+		Metadata: cs.Metadata{
 			Date:           start_time,
 			Simulation:     "burst spectrum vs. mag. field",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
@@ -80,7 +79,7 @@ func Spectrum(conf qs.Config) {
 			CompletionTime: elapsed_time.String(),
 		},
 		Values: struct {
-			System qs.System "mapstructure:\"system\""
+			System cs.System "mapstructure:\"system\""
 		}{System: *s},
 		XYs: []plotter.XYs{xys},
 	}

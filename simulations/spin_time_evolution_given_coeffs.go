@@ -5,19 +5,18 @@ import (
 	"math"
 	"time"
 
-	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
+	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
 
-func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
-	cs := qs.State{Angle: 0.0, Distance: 0.0}
-	var bath []qs.State
+func SpinTimeEvolutionSelectedCoeffs(conf cs.Config) {
+	var bath []cs.State
 	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
 	bc := conf.Physics.BathCount
 	timeRange := conf.Physics.TimeRange
 	spin := conf.Physics.Spin
-	initialKet := mat.NewVecDense(len(conf.Physics.InitialKet), qs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
+	initialKet := mat.NewVecDense(len(conf.Physics.InitialKet), cs.ManyBodyVector(conf.Physics.InitialKet, int(2*spin+1)))
 	downSpins := downSpins(conf.Physics.InitialKet)
 	observables := prepareObservables(conf.Physics, downSpins)
 
@@ -26,11 +25,11 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	}
 	start := time.Now()
 	for i := 0; i < bc; i += 1 {
-		bath = append(bath, qs.State{Angle: qs.PolarAngleCos(i, conf.Physics), Distance: 1e3})
+		bath = append(bath, cs.State{Angle: cs.PolarAngleCos(i, conf.Physics), Distance: 1e3})
 	}
 
-	s := &qs.System{
-		CentralSpin:   cs,
+	s := &cs.System{
+		CentralSpin:   cs.State{Angle: 0.0, Distance: 0.0},
 		Bath:          bath,
 		PhysicsConfig: conf.Physics,
 	}
@@ -46,7 +45,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 	}
 	eigen := s.Diagonalize(s.Hamiltonian(b0, b))
 
-	gramMatrix := qs.Grammian(initialKet, eigen.EigenVectors)
+	gramMatrix := cs.Grammian(initialKet, eigen.EigenVectors)
 
 	start_time := start.Format(time.RFC3339)
 
@@ -61,7 +60,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			if conf.Verbosity == "debug" {
 				fmt.Printf("t= %.4f\t(%.2f%%)\n", time, 100.0*float64(t)/float64(timeRange))
 			}
-			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(qs.Evolve(initialKet, time, eigen.EigenValues, eigen.EigenVectors, gramMatrix))})
+			xys = append(xys, plotter.XY{X: time / (2.0 * math.Pi), Y: observable.ExpectationValue(cs.Evolve(initialKet, time, eigen.EigenValues, eigen.EigenVectors, gramMatrix))})
 		}
 		xyss[i] = xys
 	}
@@ -70,9 +69,9 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 		fmt.Println("Wrapping up...")
 	}
 	elapsed_time := time.Since(start)
-	r := qs.ResultsIO{
+	r := cs.ResultsIO{
 		Filename: start_time,
-		Metadata: qs.Metadata{
+		Metadata: cs.Metadata{
 			Date:           start_time,
 			Simulation:     "Central spin expectation value time evolution",
 			Cpu:            conf.Files.ResultsConfig.Cpu,
@@ -80,7 +79,7 @@ func SpinTimeEvolutionSelectedCoeffs(conf qs.Config) {
 			CompletionTime: elapsed_time.String(),
 		},
 		Values: struct {
-			System qs.System "mapstructure:\"system\""
+			System cs.System "mapstructure:\"system\""
 		}{
 			System: *s,
 		},

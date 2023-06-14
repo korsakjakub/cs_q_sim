@@ -1,4 +1,4 @@
-package quantum_simulator
+package cs_q_sim
 
 import (
 	"reflect"

@@ -5,12 +5,12 @@ import (
 	"os"
 
 	"github.com/davecgh/go-spew/spew"
-	qs "github.com/korsakjakub/cs_q_sim/internal/quantum_simulator"
+	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	sim "github.com/korsakjakub/cs_q_sim/simulations"
 	"github.com/spf13/pflag"
 )
 
-var conf qs.Config
+var conf cs.Config
 
 func printHeader(name string) {
 	fmt.Printf("Starting the simulation: %s...\n", name)
@@ -26,13 +26,13 @@ func main() {
 		}
 	}
 	fmt.Println(configFiles)
-	conf = qs.LoadConfig(configFiles)
+	conf = cs.LoadConfig(configFiles)
 	if conf.Verbosity == "debug" {
 		fmt.Println("Config:")
 		spew.Dump(conf)
 	}
 
-	if err := qs.Validate(conf.Files, []string{
+	if err := cs.Validate(conf.Files, []string{
 		"FigDir",
 		"OutputsDir",
 		"ResultsConfig",
@@ -43,7 +43,7 @@ func main() {
 	switch conf.Simulation {
 	case "spin-evolution":
 		printHeader("spin evolution")
-		if err := qs.Validate(conf.Physics, []string{
+		if err := cs.Validate(conf.Physics, []string{
 			"BathDipoleMoment",
 			"AtomDipoleMoment",
 			"Spin",
@@ -64,7 +64,7 @@ func main() {
 		printHeader("spectrum")
 		sim.Spectrum(conf)
 	case "interactions":
-		if err := qs.Validate(conf.Physics, []string{
+		if err := cs.Validate(conf.Physics, []string{
 			"BathDipoleMoment",
 			"AtomDipoleMoment",
 			"Spin",
@@ -78,7 +78,7 @@ func main() {
 		printHeader("interactions")
 		sim.Interactions(conf)
 	case "time-evolution-selected-coeffs":
-		if err := qs.Validate(conf.Physics, []string{
+		if err := cs.Validate(conf.Physics, []string{
 			"Spin",
 			"InteractionCoefficients",
 			"BathMagneticField",
@@ -101,7 +101,7 @@ func main() {
 			"BathMagneticField",
 			"CentralMagneticField",
 		}
-		if err := qs.Validate(conf.Physics, s); err != nil {
+		if err := cs.Validate(conf.Physics, s); err != nil {
 			panic(err)
 		}
 		printHeader("Find geometry for specified interactions")
