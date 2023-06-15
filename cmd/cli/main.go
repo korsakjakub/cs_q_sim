@@ -60,6 +60,23 @@ func main() {
 			panic(err)
 		}
 		sim.SpinTimeEvolution(conf)
+	case "spread-of-couplings":
+		printHeader("spread of couplings")
+		if err := cs.Validate(conf.Physics, []string{
+			"BathDipoleMoment",
+			"AtomDipoleMoment",
+			"BathCount",
+			"Spin",
+			"TiltAngleRange",
+			"ConstantDistance",
+			"Geometry",
+			"BathMagneticField",
+			"CentralMagneticField",
+			"Dt",
+		}); err != nil {
+			panic(err)
+		}
+		sim.SpreadOfCouplingsVsTiltAngle(conf)
 	case "spectrum":
 		printHeader("spectrum")
 		sim.Spectrum(conf)

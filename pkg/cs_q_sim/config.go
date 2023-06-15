@@ -15,6 +15,7 @@ type PhysicsConfig struct {
 	BathCount               int                `mapstructure:"bathcount"`
 	Spin                    float64            `mapstructure:"spin"`
 	TiltAngle               float64            `mapstructure:"tiltangle"`
+	TiltAngleRange          []float64          `mapstructure:"tiltanglerange"`
 	ConstantDistance        float64            `mapstructure:"constantdistance"`
 	Geometry                string             `mapstructure:"geometry"`
 	InteractionCoefficients []float64          `mapstructure:"interactioncoefficients"`
