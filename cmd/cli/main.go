@@ -77,6 +77,23 @@ func main() {
 			panic(err)
 		}
 		sim.SpreadOfCouplingsVsTiltAngle(conf)
+	case "decay-time":
+		printHeader("decay time")
+		if err := cs.Validate(conf.Physics, []string{
+			"BathDipoleMoment",
+			"AtomDipoleMoment",
+			"BathCount",
+			"Spin",
+			"TiltAngleRange",
+			"ConstantDistance",
+			"Geometry",
+			"BathMagneticField",
+			"CentralMagneticField",
+			"Dt",
+		}); err != nil {
+			panic(err)
+		}
+		sim.DecayTimeVsTiltAngle(conf)
 	case "spectrum":
 		printHeader("spectrum")
 		sim.Spectrum(conf)

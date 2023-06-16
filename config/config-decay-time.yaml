@@ -1,0 +1,14 @@
+simulation: decay-time
+verbosity: debug
+physics:
+  units: atomic
+  bathcount: 12
+  bathdipolemoment: 1.77
+  atomdipolemoment: 3626.87
+  spin: 0.5
+  tiltanglerange: [0.0, 0.5]
+  constantdistance: 1.5
+  geometry: icosahedron
+  bathmagneticfield: 10000
+  centralmagneticfield: 10100
+  dt: 1e-2
