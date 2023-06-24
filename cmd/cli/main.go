@@ -6,7 +6,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
-	sim "github.com/korsakjakub/cs_q_sim/simulations"
+	sim "github.com/korsakjakub/cs_q_sim/pkg/simulations"
 	"github.com/spf13/pflag"
 )
 
