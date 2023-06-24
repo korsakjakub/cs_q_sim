@@ -6,20 +6,8 @@ import (
 	"time"
 
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
-	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/plot/plotter"
 )
-
-type spectrumInput struct {
-	hamiltonian   *mat.SymDense
-	magneticField float64
-}
-
-type spectrumOutput struct {
-	eigenValues   []float64
-	eigenVectors  *mat.Dense
-	magneticField float64
-}
 
 func Spectrum(conf cs.Config) {
 	var bath []cs.State

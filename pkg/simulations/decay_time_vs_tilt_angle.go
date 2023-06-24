@@ -27,7 +27,7 @@ func DecayTimeVsTiltAngle(conf cs.Config) {
 		if spread < 1e-8 {
 			spread = 1e-8
 		}
-		decayTime := 1/(spread*1e-3)
+		decayTime := 1 / (spread * 1e-3)
 		xys = append(xys, plotter.XY{X: tiltAngle / math.Pi, Y: decayTime})
 
 		tiltAngle += conf.Physics.Dt

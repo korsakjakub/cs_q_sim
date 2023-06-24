@@ -8,40 +8,6 @@ import (
 	"gonum.org/v1/plot/plotter"
 )
 
-func spread(states []cs.State) float64 {
-	max := math.Abs(states[0].InteractionStrength)
-	min := math.Abs(states[0].InteractionStrength)
-	for i := range states {
-		strength := math.Abs(states[i].InteractionStrength)
-		if strength > max {
-			max = strength
-		} else if strength < min {
-			min = strength
-		}
-	}
-	return max - min
-}
-
-func prepareStates(conf cs.Config) []cs.State {
-	var bath []cs.State
-	bc := conf.Physics.BathCount
-
-	for i := 0; i < bc; i += 1 {
-		bath = append(bath, cs.State{Angle: cs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
-	}
-
-	s := &cs.System{
-		CentralSpin:   cs.State{Angle: 0.0, Distance: 0.0},
-		Bath:          bath,
-		PhysicsConfig: conf.Physics,
-	}
-
-	for j := 0; j <= bc; j += 1 {
-		s.InteractionAt(j)
-	}
-	return s.Bath
-}
-
 func SpreadOfCouplingsVsTiltAngle(conf cs.Config) {
 	start := time.Now()
 
