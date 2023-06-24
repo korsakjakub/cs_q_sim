@@ -16,7 +16,7 @@ build: ${binary_dir}${package}/main.go
 	# run ${binary_path}
 
 test:
-	go test -v ./pkg/*** -cover
+	go test -v ./pkg/cs_q_sim/*** -cover
 
 clean:
 	go clean
