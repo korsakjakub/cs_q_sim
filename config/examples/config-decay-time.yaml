@@ -9,6 +9,6 @@ physics:
   tiltanglerange: [0.0, 0.5]
   constantdistance: 1.5
   geometry: icosahedron
-  bathmagneticfield: 10000
-  centralmagneticfield: 10100
+  bathmagneticfield: 20532.001e6
+  centralmagneticfield: 20532.020e6
   dt: 1e-2
