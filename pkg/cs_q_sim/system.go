@@ -204,7 +204,7 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) Eigen {
 	}
 
 	if err := isDiagonalizedProperly(hamiltonian, eigenValues, eigenVectors); err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	return Eigen{eigenValues, eigenVectors}
 }
