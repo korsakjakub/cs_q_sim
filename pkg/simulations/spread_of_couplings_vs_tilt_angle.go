@@ -40,6 +40,7 @@ func SpreadOfCouplingsVsTiltAngle(conf cs.Config) {
 		Metadata: cs.Metadata{
 			Date:           start_time,
 			Simulation:     "Spread of couplings vs tilt angle",
+			SimulationId:   conf.Simulation,
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),

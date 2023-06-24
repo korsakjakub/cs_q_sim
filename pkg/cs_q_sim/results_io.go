@@ -13,6 +13,7 @@ import (
 type Metadata struct {
 	Date           string `mapstructure:"date"`
 	Simulation     string `mapstructure:"simulation"`
+	SimulationId   string `mapstructure:"simulationid"`
 	Cpu            string `mapstructure:"cpu"`
 	Ram            string `mapstructure:"ram"`
 	CompletionTime string `mapstructure:"completiontime"`
