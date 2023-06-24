@@ -41,6 +41,7 @@ func DecayTimeVsTiltAngle(conf cs.Config) {
 		Metadata: cs.Metadata{
 			Date:           start_time,
 			Simulation:     "Decay time vs tilt angle",
+			SimulationId:   conf.Simulation,
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsed_time.String(),

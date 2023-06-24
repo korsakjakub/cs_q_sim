@@ -108,6 +108,7 @@ func SpinTimeEvolution(conf cs.Config) {
 		Metadata: cs.Metadata{
 			Date:           startTime,
 			Simulation:     "Central spin expectation value time evolution",
+			SimulationId:   conf.Simulation,
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsedTime.String(),
