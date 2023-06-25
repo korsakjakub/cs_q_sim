@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gosuri/uiprogress"
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/plot/plotter"
 )
@@ -68,6 +69,8 @@ func SpinTimeEvolution(conf cs.Config) {
 		var xys plotter.XYs
 		expValChannel := make(chan expVal, timeRange)
 		var wg sync.WaitGroup
+		uiprogress.Start()
+		progressBar := uiprogress.AddBar(timeRange).AppendCompleted().PrependElapsed()
 
 		for t := 0; t < timeRange; t++ {
 			evolutionTime := conf.Physics.Dt * float64(t)
@@ -75,7 +78,7 @@ func SpinTimeEvolution(conf cs.Config) {
 			go func(ch chan expVal, time int) {
 				ch <- expVal{exp: observable.ExpectationValue(cs.Evolve(initialKet, evolutionTime, eigen.EigenValues, eigen.EigenVectors, gramMatrix)), index: time}
 				if conf.Verbosity == "debug" {
-					fmt.Printf("t= %v\n", evolutionTime)
+					progressBar.Incr()
 				}
 				wg.Done()
 			}(expValChannel, t)

@@ -40,6 +40,7 @@ func (s *System) DistanceGivenInteractionAt(j int) float64 {
 }
 
 func PolarAngleCos(j int, conf PhysicsConfig) float64 {
+	conf.TiltAngle *= math.Pi
 	if conf.Geometry == "ring" {
 		return math.Cos(float64(2*j)*math.Pi/float64(conf.BathCount)) * math.Sin(conf.TiltAngle)
 	} else if conf.Geometry == "cube" && j < 8 {
@@ -194,7 +195,9 @@ func (s *System) Diagonalize(hamiltonian *mat.SymDense) Eigen {
 			right.ScaleVec(eig[i], vec)
 
 			if !mat.EqualApprox(left, right, 1e-8) {
-				return fmt.Errorf("the restriction A v = k v is not satisfied")
+				dVec := mat.NewVecDense(len(eig), nil)
+				dVec.SubVec(left, right)
+				return fmt.Errorf("the restriction A v = k v is not satisfied\nd = %f", dVec.Norm(2))
 			}
 		}
 		if math.Abs(math.Abs(mat.Det(evec))-1.0) > 1e-8 {
