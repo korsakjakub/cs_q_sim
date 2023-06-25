@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/davecgh/go-spew v1.1.1
+	github.com/gosuri/uiprogress v0.0.1
 	github.com/spf13/viper v1.14.0
 )
 
@@ -14,6 +15,8 @@ require (
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/go-pdf/fpdf v0.6.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/gosuri/uilive v0.0.4 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	golang.org/x/image v0.5.0 // indirect
 )
 
@@ -29,7 +32,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/subosito/gotenv v1.4.1 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	gonum.org/v1/gonum v0.12.0
 	gonum.org/v1/plot v0.12.0

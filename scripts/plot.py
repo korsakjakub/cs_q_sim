@@ -66,7 +66,7 @@ if __name__ == '__main__':
         filename = filename.split("/")[1]
     with open(f"{outdir}/{filename}") as res_file:
         contents = yaml.safe_load(res_file)
-        s = contents["metadata"]["simulation"]
+        s = contents["metadata"]["simulationid"]
         match s:
             case "spin-evolution":
                 time_evolution(contents, "figures", paths[0])
