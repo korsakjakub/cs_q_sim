@@ -101,6 +101,8 @@ func main() {
 		if err := cs.Validate(conf.Physics, []string{
 			"BathDipoleMoment",
 			"AtomDipoleMoment",
+			"BathCount",
+			"ConstantDistance",
 			"Spin",
 			"TiltAngle",
 			"Geometry",
