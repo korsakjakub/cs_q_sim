@@ -9,13 +9,14 @@ def ket_to_arrows(ket: str) -> str:
 
 def decay(contents, figdir, filenames):
     metadata = contents["metadata"]
+    pc = contents['values']['system']['physicsconfig']
     for xys in contents["xys"]:
         xs = []
         ys = []
         for xy in xys:
             xs.append(xy["x"])
             ys.append(xy["y"])
-    plt.plot(xs, ys, label=f"Geometry: {contents['values']['system']['physicsconfig']['geometry']}\nN: {contents['values']['system']['physicsconfig']['bathcount']}")
+    plt.plot(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}")
     p = filename.split("/")[-1]
     plt.title(metadata["simulation"] + "\n" + r"$\tau(\beta) = A^{-1}(\beta) = \frac{1}{\underset{k}{\max}\,|C_k|-\underset{k}{\min}\,|C_k|}$")
     plt.xlabel(r"$\beta / \pi$")
@@ -25,13 +26,14 @@ def decay(contents, figdir, filenames):
 
 def spread(contents, figdir, filenames):
     metadata = contents["metadata"]
+    pc = contents['values']['system']['physicsconfig']
     for xys in contents["xys"]:
         xs = []
         ys = []
         for xy in xys:
             xs.append(xy["x"])
             ys.append(xy["y"])
-    plt.plot(xs, ys, label=f"Geometry: {contents['values']['system']['physicsconfig']['geometry']}\nN: {contents['values']['system']['physicsconfig']['bathcount']}")
+    plt.plot(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}")
     p = filename.split("/")[-1]
     plt.title(metadata["simulation"] + "\n" + r"$A(\beta) = \underset{k}{\max}\,|C_k|-\underset{k}{\min}\,|C_k|$")
     plt.xlabel(r"$\beta / \pi$")
@@ -41,6 +43,7 @@ def spread(contents, figdir, filenames):
 
 def time_evolution(contents, figdir, filename):
     metadata = contents["metadata"]
+    pc = contents['values']['system']['physicsconfig']
     i = 0
     for xys in contents["xys"]:
         xs = []
@@ -48,15 +51,33 @@ def time_evolution(contents, figdir, filename):
         for xy in xys:
             xs.append(xy["x"])
             ys.append(xy["y"])
-        slot = contents["values"]["system"]["physicsconfig"]["observablesconfig"][i]["slot"]
+        slot = pc["observablesconfig"][i]["slot"]
         plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$")
         i += 1
-    plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(contents["values"]["system"]["physicsconfig"]["initialket"]))
+    plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(pc["initialket"]))
 
     plt.legend(loc='upper right')
     plt.ylim([-0.55, 0.55])
     p = filename.split("/")[-1]
     plt.savefig(f"{figdir}/plt-{p}.png")
+
+def interaction_strength(contents, figdir, filename):
+    metadata = contents["metadata"]
+    pc = contents['values']['system']['physicsconfig']
+    for xys in contents["xys"]:
+        xs = []
+        ys = []
+        for xy in xys:
+            xs.append(int(xy["x"]))
+            ys.append(xy["y"])
+    plt.scatter(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}\nbeta: {pc['tiltangle']}")
+    p = filename.split("/")[-1]
+    plt.title(metadata["simulation"])
+    plt.xlabel("Molecule number")
+    plt.ylabel(r"$2\pi \times \mathrm{kHz}$")
+    plt.legend()
+    plt.savefig(f"{figdir}/interaction-strength-{pc['geometry']}-plt-{p}.png")
+
 
 if __name__ == '__main__':
     paths = sys.argv[1:]
@@ -74,3 +95,5 @@ if __name__ == '__main__':
                 spread(contents, "figures", paths[0])
             case "decay-time":
                 decay(contents, "figures", paths[0])
+            case "interactions":
+                interaction_strength(contents, "figures", paths[0])
