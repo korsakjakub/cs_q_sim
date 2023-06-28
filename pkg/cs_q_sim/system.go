@@ -57,13 +57,12 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 			{iphi, 0.0, phi}, {-iphi, 0.0, phi}, {iphi, 0.0, -phi}, {-iphi, 0.0, -phi},
 			{phi, iphi, 0.0}, {-phi, iphi, 0.0}, {phi, -iphi, 0.0}, {-phi, -iphi, 0.0}}
 		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
-	} else if conf.Geometry == "icosahedron" {
-		phi := 0.5 + math.Sqrt(5.0)*0.5
-		a := math.Sqrt(phi*phi + 1.0)
-		aphi := a * phi
-		v := []point{{0.0, a, aphi}, {0.0, -a, aphi}, {0.0, a, -aphi}, {0.0, -a, -aphi},
-			{a, aphi, 0.0}, {-a, aphi, 0.0}, {a, -aphi, 0.0}, {-a, -aphi, 0.0},
-			{aphi, 0.0, a}, {-aphi, 0.0, a}, {aphi, 0.0, -a}, {-aphi, 0.0, -a}}
+	} else if conf.Geometry == "icosahedron" && j < 12 {
+		/*
+			vertices calculated with mathematica
+			https://www.wolframcloud.com/obj/76badea4-ada5-4dc5-a415-8d6ea89de353
+		*/
+		v := []point{{0.0, 0.0, -1.0}, {0.0, 0.0, 1.0}, {-0.894427, 0.0, -0.447214}, {0.894427, 0.0, 0.447214}, {0.723607, -0.525731, -0.447214}, {0.723607, 0.525731, -0.447214}, {-0.723607, -0.525731, 0.447214}, {-0.723607, 0.525731, 0.447214}, {-0.276393, -0.850651, -0.447214}, {-0.276393, 0.850651, -0.447214}, {0.276393, -0.850651, 0.447214}, {0.276393, 0.850651, 0.447214}}
 		return v[j].y*math.Sin(conf.TiltAngle) + v[j].z*math.Cos(conf.TiltAngle)
 	} else if conf.Geometry == "sphere" { // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
 		bc := float64(conf.BathCount)
