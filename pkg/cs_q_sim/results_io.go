@@ -35,6 +35,7 @@ type DiagonalizationResultsIO struct {
 }
 
 func (r *ResultsIO) Write(conf FilesConfig) {
+	r.Filename += ".yaml"
 	path := conf.OutputsDir
 	file, err := os.Create(path + r.Filename)
 	if err != nil {
@@ -59,6 +60,7 @@ func (r *ResultsIO) Write(conf FilesConfig) {
 }
 
 func Read(conf FilesConfig, filename string) ResultsIO {
+	filename += ".yaml"
 	file, err := os.Open(conf.OutputsDir + filename)
 	if err != nil {
 		panic(err)
@@ -77,6 +79,7 @@ func Read(conf FilesConfig, filename string) ResultsIO {
 }
 
 func LoadDiagonalizationSolutions(path string) Eigen {
+	path += ".yaml"
 	if _, err := os.Stat(path); err != nil {
 		panic(err)
 	}
@@ -100,6 +103,7 @@ func LoadDiagonalizationSolutions(path string) Eigen {
 }
 
 func SaveDiagonalizationSolutions(eigen Eigen, s System, path string) {
+	path += ".yaml"
 	file, err := os.Create(path)
 	if err != nil {
 		panic(err)

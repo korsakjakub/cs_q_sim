@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import sys
 import yaml
+import os
 
 def ket_to_arrows(ket: str) -> str:
     c_spin = ket[0].replace('u', r'$\Uparrow$').replace('d', r'$\Downarrow$')
@@ -18,6 +19,7 @@ def decay(contents, figdir, filenames):
             ys.append(xy["y"])
     plt.plot(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}")
     p = filename.split("/")[-1]
+    p = os.path.splitext(p)[0]
     plt.title(metadata["simulation"] + "\n" + r"$\tau(\beta) = A^{-1}(\beta) = \frac{1}{\underset{k}{\max}\,|C_k|-\underset{k}{\min}\,|C_k|}$")
     plt.xlabel(r"$\beta / \pi$")
     plt.ylabel(r"$2\pi \times \mathrm{kHz}$")
@@ -35,6 +37,7 @@ def spread(contents, figdir, filenames):
             ys.append(xy["y"])
     plt.plot(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}")
     p = filename.split("/")[-1]
+    p = os.path.splitext(p)[0]
     plt.title(metadata["simulation"] + "\n" + r"$A(\beta) = \underset{k}{\max}\,|C_k|-\underset{k}{\min}\,|C_k|$")
     plt.xlabel(r"$\beta / \pi$")
     plt.ylabel(r"$2\pi \times \mathrm{kHz}$")
@@ -59,6 +62,7 @@ def time_evolution(contents, figdir, filename):
     plt.legend(loc='upper right')
     plt.ylim([-0.55, 0.55])
     p = filename.split("/")[-1]
+    p = os.path.splitext(p)[0]
     plt.savefig(f"{figdir}/plt-{p}.png")
 
 def interaction_strength(contents, figdir, filename):
@@ -72,6 +76,7 @@ def interaction_strength(contents, figdir, filename):
             ys.append(xy["y"])
     plt.scatter(xs, ys, label=f"Geometry: {pc['geometry']}\nN: {pc['bathcount']}\nbeta: {pc['tiltangle']}")
     p = filename.split("/")[-1]
+    p = os.path.splitext(p)[0]
     plt.title(metadata["simulation"])
     plt.xlabel("Molecule number")
     plt.ylabel(r"$2\pi \times \mathrm{kHz}$")
