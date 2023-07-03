@@ -2,7 +2,7 @@ package simulations
 
 import (
 	"math"
-	
+
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/gonum/mat"
 )

@@ -17,7 +17,7 @@ func Evolve(initialVector *mat.VecDense, time float64, energies []float64, eigen
 	for k := range initialVector.RawVector().Data { // iterate over slots of a vector
 		for j := 0; j < eigenBasis.RowView(0).Len(); j++ { // sum over energies
 			basisVector := eigenBasis.ColView(j)
-			out[k] += cmplx.Exp(complex(energies[j], 0)*complex(0, time)) * complex(grammian.At(0, j)*basisVector.AtVec(k), 0.0)
+			out[k] += cmplx.Exp(complex(-energies[j], 0)*complex(0, time)) * complex(grammian.At(0, j)*basisVector.AtVec(k), 0.0)
 		}
 	}
 	return out

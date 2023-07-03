@@ -21,6 +21,7 @@ type PhysicsConfig struct {
 	InteractionCoefficients []float64          `mapstructure:"interactioncoefficients"`
 	BathMagneticField       float64            `mapstructure:"bathmagneticfield"`
 	CentralMagneticField    float64            `mapstructure:"centralmagneticfield"`
+	Model                   string             `mapstructure:"model"`
 	TimeRange               int                `mapstructure:"timerange"`
 	Dt                      float64            `mapstructure:"dt"`
 	InitialKet              string             `mapstructure:"initialket"`
