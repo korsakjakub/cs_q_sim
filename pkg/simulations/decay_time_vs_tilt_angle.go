@@ -1,8 +1,8 @@
 package simulations
 
 import (
-	"math"
 	"time"
+	"fmt"
 
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
 	"gonum.org/v1/plot/plotter"
@@ -14,8 +14,8 @@ func DecayTimeVsTiltAngle(conf cs.Config) {
 	if len(conf.Physics.TiltAngleRange) != 2 {
 		panic("TiltAngleRange should have length 2. (min, max)")
 	}
-	minTiltAngle := conf.Physics.TiltAngleRange[0] * math.Pi
-	maxTiltAngle := conf.Physics.TiltAngleRange[1] * math.Pi
+	minTiltAngle := conf.Physics.TiltAngleRange[0]
+	maxTiltAngle := conf.Physics.TiltAngleRange[1]
 
 	tiltAngle := minTiltAngle
 	var xys plotter.XYs
@@ -27,8 +27,9 @@ func DecayTimeVsTiltAngle(conf cs.Config) {
 		if spread < 1e-8 {
 			spread = 1e-8
 		}
-		decayTime := 1 / (spread * 1e-3)
-		xys = append(xys, plotter.XY{X: tiltAngle / math.Pi, Y: decayTime})
+		fmt.Println(spread)
+		decayTime := 1e-4 / (spread * 1e-3)
+		xys = append(xys, plotter.XY{X: tiltAngle, Y: decayTime})
 
 		tiltAngle += conf.Physics.Dt
 	}

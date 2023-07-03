@@ -22,11 +22,12 @@ def decay(contents, figdir, filenames):
     p = os.path.splitext(p)[0]
     plt.title(metadata["simulation"] + "\n" + r"$\tau(\beta) = A^{-1}(\beta) = \frac{1}{\underset{k}{\max}\,|C_k|-\underset{k}{\min}\,|C_k|}$")
     plt.xlabel(r"$\beta / \pi$")
-    plt.ylabel(r"$2\pi \times \mathrm{kHz}$")
+    plt.ylabel("sec")
+    plt.yscale('log')
     plt.legend()
     plt.savefig(f"{figdir}/decay-couplings-plt-{p}.png")
 
-def spread(contents, figdir, filenames):
+def spread(contents, figdir, filename):
     metadata = contents["metadata"]
     pc = contents['values']['system']['physicsconfig']
     for xys in contents["xys"]:
@@ -55,11 +56,13 @@ def time_evolution(contents, figdir, filename):
             xs.append(xy["x"])
             ys.append(xy["y"])
         slot = pc["observablesconfig"][i]["slot"]
-        plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$")
+        plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$" + f"\nbeta: {pc['tiltangle']}" + r"$\pi$" + f"\nGeometry: {pc['geometry']}")
         i += 1
     plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(pc["initialket"]))
 
     plt.legend(loc='upper right')
+    plt.xlabel("sec")
+    plt.ylabel(r"$\langle S_z \rangle$")
     plt.ylim([-0.55, 0.55])
     p = filename.split("/")[-1]
     p = os.path.splitext(p)[0]
@@ -102,3 +105,4 @@ if __name__ == '__main__':
                 decay(contents, "figures", paths[0])
             case "interactions":
                 interaction_strength(contents, "figures", paths[0])
+

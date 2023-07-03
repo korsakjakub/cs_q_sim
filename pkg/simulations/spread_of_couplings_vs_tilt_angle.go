@@ -1,7 +1,6 @@
 package simulations
 
 import (
-	"math"
 	"time"
 
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
@@ -14,8 +13,8 @@ func SpreadOfCouplingsVsTiltAngle(conf cs.Config) {
 	if len(conf.Physics.TiltAngleRange) != 2 {
 		panic("TiltAngleRange should have length 2. (min, max)")
 	}
-	minTiltAngle := conf.Physics.TiltAngleRange[0] * math.Pi
-	maxTiltAngle := conf.Physics.TiltAngleRange[1] * math.Pi
+	minTiltAngle := conf.Physics.TiltAngleRange[0]
+	maxTiltAngle := conf.Physics.TiltAngleRange[1]
 
 	tiltAngle := minTiltAngle
 	var xys plotter.XYs
@@ -27,7 +26,7 @@ func SpreadOfCouplingsVsTiltAngle(conf cs.Config) {
 		if spread < 1e-8 {
 			spread = 0.0
 		}
-		xys = append(xys, plotter.XY{X: tiltAngle / math.Pi, Y: spread * 1e-3})
+		xys = append(xys, plotter.XY{X: tiltAngle, Y: spread * 1e-3})
 
 		tiltAngle += conf.Physics.Dt
 	}

@@ -98,7 +98,7 @@ func (s *System) InteractionAt(j int) float64 {
 		// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
 		// Therefore we pick Bath[j-1] instead of Bath[j]
 		c := k * (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / math.Pow(math.Abs(s.Bath[j-1].Distance), 3) *
-			0.5 * (1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
+			(1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
 
 		// assign force value to bath state
 		s.Bath[j-1].InteractionStrength = c
@@ -121,6 +121,20 @@ func (s *System) hamiltonianHeisenbergTermAt(j int) *mat.SymDense {
 	h.Add(h, h2)
 	h.Scale(f, h)
 	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
+}
+
+func (s *System) hamiltonianHeisenbergXXXTerm(j int) *mat.SymDense {
+	h := s.hamiltonianHeisenbergTermAt(j)
+	spin := s.PhysicsConfig.Spin
+	dim := len(s.Bath) + 1 // bc is the BathCount and the total amount of objects in our system is BathCount + 1
+	sz := Sz(spin)
+	f := s.InteractionAt(j)
+	h2 := ManyBodyOperator(sz, 0, dim)
+	h2.Mul(h2, ManyBodyOperator(sz, j, dim))
+	h2.Scale(f, h2)
+	h2Sym := mat.NewSymDense(h2.RawMatrix().Cols, h2.RawMatrix().Data)
+	h.AddSym(h, h2Sym)
+	return h
 }
 
 // Given values of magnetic fields b0, and b, return the magnetic term of the hamiltonian
@@ -148,7 +162,11 @@ func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	h := mat.NewSymDense(dim, nil)
 
 	for j := 0; j <= bc; j += 1 {
-		h.AddSym(h, s.hamiltonianHeisenbergTermAt(j))
+		if s.PhysicsConfig.Model == "XXX" {
+			h.AddSym(h, s.hamiltonianHeisenbergXXXTerm(j))
+		} else {
+			h.AddSym(h, s.hamiltonianHeisenbergTermAt(j))
+		}
 	}
 	h.AddSym(h, s.hamiltonianMagneticTerm(b0, b))
 
