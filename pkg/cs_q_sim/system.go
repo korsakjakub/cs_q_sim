@@ -79,31 +79,31 @@ func PolarAngleCos(j int, conf PhysicsConfig) float64 {
 
 // InteractionAt returns the interaction strength between the j-th bath molecule and the central spin, given an index j
 func (s *System) InteractionAt(j int) float64 {
+	if j == 0 {
+		return 0.0
+	}
+
 	if len(s.PhysicsConfig.InteractionCoefficients) > 0 {
 		cj := s.PhysicsConfig.InteractionCoefficients[j]
 		s.Bath[j-1].InteractionStrength = cj
 		return cj
-	} else {
-		if j == 0 {
-			return 0.0
-		}
-
-		var k float64
-		if s.PhysicsConfig.Units == "atomic" {
-			k = 149.42785955012954
-		} else { // SI
-			k = 1 / (4 * math.Pi * e0)
-		}
-
-		// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
-		// Therefore we pick Bath[j-1] instead of Bath[j]
-		c := k * (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / math.Pow(math.Abs(s.Bath[j-1].Distance), 3) *
-			(1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
-
-		// assign force value to bath state
-		s.Bath[j-1].InteractionStrength = c
-		return c
 	}
+
+	var k float64
+	if s.PhysicsConfig.Units == "atomic" {
+		k = 149.42785955012954
+	} else { // SI
+		k = 1 / (4 * math.Pi * e0)
+	}
+
+	// Bath has indices 0:BathCount-1, and j has a range of 0:BathCount -> for j = 0 we mean the central spin which is not a part of the Bath.
+	// Therefore we pick Bath[j-1] instead of Bath[j]
+	c := k * (s.PhysicsConfig.BathDipoleMoment * s.PhysicsConfig.AtomDipoleMoment) / math.Pow(math.Abs(s.Bath[j-1].Distance), 3) *
+		(1.0 - 3.0*math.Pow(s.Bath[j-1].Angle, 2))
+
+	// assign force value to bath state
+	s.Bath[j-1].InteractionStrength = c
+	return c
 }
 
 // Given an index j, return the Heisenberg term (0, j - interaction) of the hamiltonian
@@ -131,7 +131,7 @@ func (s *System) hamiltonianHeisenbergXXXTerm(j int) *mat.SymDense {
 	f := s.InteractionAt(j)
 	h2 := ManyBodyOperator(sz, 0, dim)
 	h2.Mul(h2, ManyBodyOperator(sz, j, dim))
-	h2.Scale(f, h2)
+	h2.Scale(2.0*f, h2)
 	h2Sym := mat.NewSymDense(h2.RawMatrix().Cols, h2.RawMatrix().Data)
 	h.AddSym(h, h2Sym)
 	return h
@@ -154,7 +154,7 @@ func (s *System) hamiltonianMagneticTerm(b0, b float64) *mat.SymDense {
 	return mat.NewSymDense(h.RawMatrix().Cols, h.RawMatrix().Data)
 }
 
-// Hamiltonian returns the whole H_XX given values of magnetic fields b0, and b
+// Hamiltonian returns the whole Hamiltonian matrix given values of magnetic fields b0, and b
 func (s *System) Hamiltonian(b0, b float64) *mat.SymDense {
 	spinDim := int(2.0*s.PhysicsConfig.Spin + 1.0)
 	bc := len(s.Bath)

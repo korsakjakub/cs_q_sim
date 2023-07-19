@@ -56,7 +56,7 @@ def time_evolution(contents, figdir, filename):
             xs.append(xy["x"])
             ys.append(xy["y"])
         slot = pc["observablesconfig"][i]["slot"]
-        plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$" + f"\nbeta: {pc['tiltangle']}" + r"$\pi$" + f"\nGeometry: {pc['geometry']}")
+        plt.plot(xs, ys, label=r"$\langle S_z^{(" + f"{slot}" + r")}\rangle(t)$" + f"\nbeta: {pc['tiltangle']}" + r"$\pi$" + f"\nGeometry: {pc['geometry']}\nmodel: {pc['model']}")
         i += 1
     plt.title(metadata["simulation"] + "\n" + r"$\Psi(0) = $" + ket_to_arrows(pc["initialket"]))
 
@@ -90,19 +90,21 @@ def interaction_strength(contents, figdir, filename):
 if __name__ == '__main__':
     paths = sys.argv[1:]
     filename = paths[0]
-    if "outputs" in filename:
-        outdir = filename.split("/")[0]
-        filename = filename.split("/")[1]
+    outdir = os.path.dirname(filename)
+    filename = os.path.basename(filename)
     with open(f"{outdir}/{filename}") as res_file:
         contents = yaml.safe_load(res_file)
         s = contents["metadata"]["simulationid"]
+        figdir = contents["metadata"]["figuresdir"]
         match s:
             case "spin-evolution":
-                time_evolution(contents, "figures", paths[0])
+                time_evolution(contents, figdir, paths[0])
+            case "spin-evolution-selected-coeffs":
+                time_evolution(contents, figdir, paths[0])
             case "spread-of-couplings":
-                spread(contents, "figures", paths[0])
+                spread(contents, figdir, paths[0])
             case "decay-time":
-                decay(contents, "figures", paths[0])
+                decay(contents, figdir, paths[0])
             case "interactions":
-                interaction_strength(contents, "figures", paths[0])
+                interaction_strength(contents, figdir, paths[0])
 

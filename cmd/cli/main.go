@@ -113,7 +113,7 @@ func main() {
 		}
 		printHeader("interactions")
 		sim.Interactions(conf)
-	case "time-evolution-selected-coeffs":
+	case "spin-evolution-selected-coeffs":
 		if err := cs.Validate(conf.Physics, []string{
 			"Spin",
 			"InteractionCoefficients",
@@ -127,7 +127,7 @@ func main() {
 			panic(err)
 		}
 		printHeader("spin evolution for selected coefficients")
-		sim.SpinTimeEvolutionSelectedCoeffs(conf)
+		sim.SpinTimeEvolution(conf)
 	case "find-geometry-given-interactions":
 		s := []string{
 			"BathDipoleMoment",

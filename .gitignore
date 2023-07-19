@@ -1,6 +1,6 @@
 *.out
 .vscode/
-outputs/*.yaml
-figures/*.png
+outputs/*
+figures/*
 config/*.yaml
 config/*.yml
