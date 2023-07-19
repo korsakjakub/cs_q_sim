@@ -1,7 +1,7 @@
 files:
-  figdir: figures/
-  outputsdir: outputs/
+  figdir: figures/bortz-gaussian/
+  outputsdir: outputs/bortz-gaussian/
   results:
-    cpu: "Ryzen 5800x"
+    cpu: "i7 11xxg"
     ram: "32GB"
 

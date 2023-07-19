@@ -17,6 +17,7 @@ type Metadata struct {
 	Cpu            string `mapstructure:"cpu"`
 	Ram            string `mapstructure:"ram"`
 	CompletionTime string `mapstructure:"completiontime"`
+	FiguresDir     string `mapstructure:"figdir"`
 }
 
 type ResultsIO struct {

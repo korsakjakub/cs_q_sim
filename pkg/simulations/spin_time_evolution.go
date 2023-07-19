@@ -13,7 +13,6 @@ import (
 )
 
 func SpinTimeEvolution(conf cs.Config) {
-	var bath []cs.State
 	conf.Physics.BathCount = len(conf.Physics.InitialKet) - 1
 	downSpins := downSpins(conf.Physics.InitialKet)
 	timeRange := conf.Physics.TimeRange
@@ -21,12 +20,17 @@ func SpinTimeEvolution(conf cs.Config) {
 	start := time.Now()
 	startTime := start.Format(time.RFC3339)
 
-	if conf.Verbosity == "debug" {
+	var bath []cs.State
+	if len(conf.Physics.InteractionCoefficients) == 0 {
 		fmt.Println("Calculating initial states...")
+		for i := 0; i < conf.Physics.BathCount; i += 1 {
+			bath = append(bath, cs.State{Angle: cs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
+		}
+	} else {
+		fmt.Println("Using initial states from config...")
+		bath = make([]cs.State, conf.Physics.BathCount)
 	}
-	for i := 0; i < conf.Physics.BathCount; i += 1 {
-		bath = append(bath, cs.State{Angle: cs.PolarAngleCos(i, conf.Physics), Distance: conf.Physics.ConstantDistance})
-	}
+
 	s := &cs.System{
 		CentralSpin:   cs.State{Angle: 0.0, Distance: 0.0},
 		Bath:          bath,
@@ -115,6 +119,7 @@ func SpinTimeEvolution(conf cs.Config) {
 			Cpu:            conf.Files.ResultsConfig.Cpu,
 			Ram:            conf.Files.ResultsConfig.Ram,
 			CompletionTime: elapsedTime.String(),
+			FiguresDir:     conf.Files.FigDir,
 		},
 		Values: struct {
 			System cs.System "mapstructure:\"system\""

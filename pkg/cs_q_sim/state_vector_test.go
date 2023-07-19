@@ -1,6 +1,7 @@
 package cs_q_sim
 
 import (
+	"math"
 	"reflect"
 	"testing"
 
@@ -185,6 +186,42 @@ func TestGrammian(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Grammian(tt.args.v, tt.args.m); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Grammian() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUniformKetWithFixedM(t *testing.T) {
+	type args struct {
+		particlesCount int
+		downCount      int
+	}
+	tests := []struct {
+		name string
+		args args
+		want *mat.VecDense
+	}{
+		{
+			name: "n=2, downCount=1",
+			args: args{
+				particlesCount: 2,
+				downCount:      1,
+			},
+			want: mat.NewVecDense(2, []float64{1 / math.Sqrt2, 1 / math.Sqrt2}),
+		},
+		{
+			name: "n=2, downCount=0",
+			args: args{
+				particlesCount: 2,
+				downCount:      0,
+			},
+			want: mat.NewVecDense(2, []float64{0.0, 0.0}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := UniformKetWithFixedM(tt.args.particlesCount, tt.args.downCount); !mat.EqualApprox(got, tt.want, 1e-8) {
+				t.Errorf("UniformKetWithFixedM() = %v, want %v", got, tt.want)
 			}
 		})
 	}
