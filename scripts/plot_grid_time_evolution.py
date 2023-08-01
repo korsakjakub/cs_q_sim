@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from matplotlib import rc
 
 # Model XX
 paths = [
@@ -18,8 +19,10 @@ paths = [
     "outputs/cube/cube-3-2023-07-19T09:26:08+02:00.yaml"
     ]
 
+rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 11})
+rc('text', usetex=True)
 # Initialize a figure with 8 subplots
-fig, axes = plt.subplots(4, 3, figsize=(8, 8), sharex=True, sharey=True)
+fig, axes = plt.subplots(4, 3, figsize=(6.8, 6.8), sharex=True, sharey=True)
 plt.rc('font', size=10) 
 markings = ["(a)", "(a')", "(a'')", "(b)", "(b')", "(b'')", "(c)", "(c')", "(c'')", "(d)", "(d')", "(d'')"]
 
@@ -44,7 +47,7 @@ for i, file_path in enumerate(paths):
             xs.append(xy["x"])
             ys.append(xy["y"])
 
-    axes[row, col].text(0.02, 0.95, markings[i] + r", $\beta = $" + f"{pc['tiltangle']}" + r"$\pi$", transform=axes[row, col].transAxes, fontsize=10, fontweight='normal', va='top')
+    axes[row, col].text(0.02, 0.98, markings[i] + r" $\beta = $" + f" {pc['tiltangle']}" + r"$\pi$", transform=axes[row, col].transAxes, fontsize=11, va='top')
     axes[row, col].set_ylim(y_min, y_max)
     axes[row, col].set_xlim(x_min, x_max)
     if col == 0:
@@ -58,8 +61,11 @@ for i, file_path in enumerate(paths):
         axes[row, col].set_xlabel(r"$t\,[\mathrm{sec}]$")
     #axes[row, col].legend(loc="upper right")
 
+axes[0, 0].title.set_text("Ring")
+axes[0, 1].title.set_text("Icosahedron")
+axes[0, 2].title.set_text("Cube")
 # Adjust subplot spacing and layout
 fig.tight_layout()
 
 # Show the plot
-plt.savefig(f"figures/ring-vs-icosa-vs-cube.png", dpi=300)
+plt.savefig(f"figures/ring-vs-icosa-vs-cube.png", dpi=600)

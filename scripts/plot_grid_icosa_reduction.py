@@ -1,16 +1,19 @@
 import matplotlib.pyplot as plt
+from matplotlib import rc
 import numpy as np
 import yaml
 
 paths = [
     "outputs/outputs-icosa-reduction-08072023/2023-07-08T15:42:22+02:00.yaml",
-    "outputs/outputs-icosa-reduction-08072023/2023-07-19T10:02:00+02:00.yaml"
+    "outputs/outputs-icosa-reduction-08072023/bath-10-new-2023-07-22T22:21:29+02:00.yaml"
     ]
 
+rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 11})
+rc('text', usetex=True)
 # Initialize a figure with 8 subplots
-fig, axes = plt.subplots(1, 2, figsize=(8, 2), sharex=True)
-plt.rc('font', size=10) 
-markings = ["(a)" + r", $\beta = 0.3\pi$", "(b)"]
+fig, axes = plt.subplots(1, 2, figsize=(6.8, 1.7), sharex=True)
+#plt.rc('font', size=10) 
+markings = [r"(a) $\beta = 0.3\pi$", "(b)"]
 
 y_min, y_max = -0.5, 0.5
 x_min, x_max = 0.0, 5e-5
@@ -34,7 +37,7 @@ for i, file_path in enumerate(paths):
             xs.append(xy["x"])
             ys.append(xy["y"])
 
-    axes[i].text(0.02, 0.95, markings[i], transform=axes[i].transAxes, fontsize=10, fontweight='normal', va='top')
+    axes[i].text(0.02, 0.95, markings[i], transform=axes[i].transAxes, fontsize=11, va='top')
     axes[i].set_ylim(y_min, y_max)
     axes[i].set_xlim(x_min, x_max)
     if i == 0:
@@ -43,17 +46,16 @@ for i, file_path in enumerate(paths):
         axes[i].set_yticks([-0.5, 0, 0.5])
         axes[i].set_ylabel(r"$\langle S_Z^{(0)}\rangle(t)$")
     else:
-        line, = axes[i-1].plot(xs, ys, color="#666699", label=r"$N_b = $" + f"{prev_bc}")
-        prev_line, = axes[i-1].plot(xs, prev_ys, color="xkcd:orange", label=r"$N_b = $" + f"{pc['bathcount']}")
+        line, = axes[i-1].plot(xs, ys, color="#666699", label=r"$N_b = $" + f"{pc['bathcount']}")
+        prev_line, = axes[i-1].plot(xs, prev_ys, color="xkcd:orange", label=r"$N_b = $" + f"{prev_bc}")
         axes[i-1].legend(handles=[prev_line, line], loc="upper right")
         axes[i].set_ylabel(r"$|\Delta|(t)$")
-        axes[i].set_ylim([0, 0.5])
+        axes[i].set_ylim(-1e-4, 5e-2)
+        axes[i].set_yticks([0.0, 2e-2, 5e-2])
         axes[i].plot(xs, list(map(lambda a, b: abs(a-b), ys, prev_ys)), color="xkcd:orange")
         prev_ys = []
-        axes[i].set_xlabel(r"$t\,[\mathrm{sec}]$")
+    axes[i].set_xlabel(r"$t\,[\mathrm{sec}]$")
 
-# Adjust subplot spacing and layout
 fig.tight_layout()
 
-# Show the plot
-plt.savefig(f"figures/figures-icosa-reduction-08072023/bath-12-vs-bath-10-icosahedron.png", dpi=300)
+plt.savefig(f"figures/figures-icosa-reduction-08072023/bath-12-vs-bath-10-icosahedron.png", dpi=600)
