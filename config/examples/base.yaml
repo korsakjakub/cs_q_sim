@@ -1,7 +1,7 @@
 files:
-  figdir: figures/
-  outputsdir: outputs/
+  figdir: figures
+  outputsdir: outputs/interactions-vs-geometry/
   results:
-    cpu: "Ryzen 5800x"
+    cpu: "i7-11xxG"
     ram: "32GB"
 

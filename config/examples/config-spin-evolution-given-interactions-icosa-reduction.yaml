@@ -1,0 +1,24 @@
+simulation: spin-evolution-selected-coeffs
+physics:
+  spin: 0.5
+  interactioncoefficients: 
+    - 0.0
+    - 225306.90399751943
+    - 225306.90399751943
+    - -119608.06333035625
+    - 261720.73658078004
+    - 261720.73658078004
+    - -119608.06333035625
+    - -487028.29324547556
+    - 129974.9364921813
+    - 129974.9364921813
+    - -487028.29324547556
+  timerange: 500
+  bathmagneticfield: 20532.001e6
+  centralmagneticfield: 20532.020e6
+  dt: 6.283e-7
+  model: XX
+  initialket: duuuudddddd
+  observables:
+    - operator: Sz
+      slot: 0

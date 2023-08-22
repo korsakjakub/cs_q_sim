@@ -1,0 +1,7 @@
+simulation: interactions
+verbosity: debug
+physics:
+  geometry: cube
+  model: XX
+  tiltangle: 0.4
+  bathcount: 8

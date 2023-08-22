@@ -1,8 +1,7 @@
-simulation: spread-of-couplings
+simulation: spread-of-couplings-selected-coeffs
 verbosity: debug
 physics:
   units: atomic
-  bathcount: 20
+  bathcount: 12
   tiltanglerange: [0.0001, 0.5]
-  geometry: dodecahedron
   dt: 1e-3

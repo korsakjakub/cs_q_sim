@@ -1,13 +1,10 @@
-simulation: spin-evolution
+simulation: spin-evolution-selected-coeffs
 verbosity: debug
-files:
-  outputsdir: outputs/time-evolution-20230818/
 physics:
-  geometry: gauss
-  model: XX
+  spin: 0.5
   timerange: 500
-  tiltangle: 1.469
   dt: 6.283e-7
+  model: XX
   initialket: dudududududud
   observables:
     - operator: Sz
