@@ -58,7 +58,7 @@ values:
       tiltangle: 0
       tiltanglerange: []
       constantdistance: 1.5
-      geometry: ""
+      geometry: "gauss"
       interactioncoefficients:
       - 0
       - 284225.5096624722

@@ -46,15 +46,15 @@ for i, file_path in enumerate(paths):
         axes[i].set_yticks([-0.5, 0, 0.5])
         axes[i].set_ylabel(r"$\langle S_Z^{(0)}\rangle(t)$")
     else:
-        line, = axes[i-1].plot(xs, ys, color="#666699", label=r"$N_b = $" + f"{pc['bathcount']}")
         prev_line, = axes[i-1].plot(xs, prev_ys, color="xkcd:orange", label=r"$N_b = $" + f"{prev_bc}")
+        line, = axes[i-1].plot(xs, ys, color="#666699", label=r"$N_b = $" + f"{pc['bathcount']}", ls='dashed')
         axes[i-1].legend(handles=[prev_line, line], loc="upper right")
         axes[i].set_ylabel(r"$|\Delta|(t)$")
         axes[i].set_ylim(-1e-4, 5e-2)
         axes[i].set_yticks([0.0, 2e-2, 5e-2])
         axes[i].plot(xs, list(map(lambda a, b: abs(a-b), ys, prev_ys)), color="xkcd:orange")
         prev_ys = []
-    axes[i].set_xlabel(r"$t\,[\mathrm{sec}]$")
+    axes[i].set_xlabel(r"$t\,[\mathrm{seconds}]$")
 
 fig.tight_layout()
 

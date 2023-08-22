@@ -103,6 +103,8 @@ if __name__ == '__main__':
                 time_evolution(contents, figdir, paths[0])
             case "spread-of-couplings":
                 spread(contents, figdir, paths[0])
+            case "spread-of-couplings-selected-coeffs":
+                spread(contents, figdir, paths[0])
             case "decay-time":
                 decay(contents, figdir, paths[0])
             case "interactions":

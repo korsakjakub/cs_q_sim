@@ -77,6 +77,17 @@ func main() {
 			panic(err)
 		}
 		sim.SpreadOfCouplingsVsTiltAngle(conf)
+	case "spread-of-couplings-selected-coeffs":
+		if err := cs.Validate(conf.Physics, []string{
+			"Spin",
+			"InteractionCoefficients",
+			"TiltAngleRange",
+			"Dt",
+		}); err != nil {
+			panic(err)
+		}
+		printHeader("spread of couplings for selected coefficients")
+		sim.SpreadOfCouplingsVsTiltAngle(conf)
 	case "decay-time":
 		printHeader("decay time")
 		if err := cs.Validate(conf.Physics, []string{

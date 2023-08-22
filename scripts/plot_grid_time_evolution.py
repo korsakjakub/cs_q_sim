@@ -6,23 +6,27 @@ from matplotlib import rc
 # Model XX
 paths = [
     "outputs/outputs-08072023/ring-0-2023-07-08T12:36:17+02:00.yaml",
-    "outputs/outputs-08072023/ico-0-2023-07-08T12:48:23+02:00.yaml",
+    #"outputs/outputs-08072023/ico-0-2023-07-08T12:48:23+02:00.yaml",
+    "outputs/icosahedron/0-dududud-2023-08-06T12:05:19+02:00.yaml",
     "outputs/cube/cube-0-2023-07-19T09:23:55+02:00.yaml",
     "outputs/outputs-08072023/ring-1-2023-07-08T12:34:50+02:00.yaml",
-    "outputs/outputs-08072023/ico-1-2023-07-08T12:48:45+02:00.yaml",
+    # "outputs/outputs-08072023/ico-1-2023-07-08T12:48:45+02:00.yaml",
+    "outputs/icosahedron/1-dududud-2023-08-06T21:50:44+02:00.yaml",
     "outputs/cube/cube-1-2023-07-19T09:24:20+02:00.yaml",
     "outputs/outputs-08072023/ring-2-2023-07-08T12:35:16+02:00.yaml",
-    "outputs/outputs-08072023/ico-2-2023-07-08T12:48:38+02:00.yaml",
+    # "outputs/outputs-08072023/ico-2-2023-07-08T12:48:38+02:00.yaml",
+    "outputs/icosahedron/2-dududud-2023-08-06T21:51:19+02:00.yaml",
     "outputs/cube/cube-2-2023-07-19T09:25:49+02:00.yaml",
     "outputs/outputs-08072023/ring-3-2023-07-08T12:35:54+02:00.yaml",
-    "outputs/outputs-08072023/ico-3-2023-07-08T12:48:30+02:00.yaml",
+    # "outputs/outputs-08072023/ico-3-2023-07-08T12:48:30+02:00.yaml",
+    "outputs/icosahedron/3-dududud-2023-08-06T21:51:35+02:00.yaml",
     "outputs/cube/cube-3-2023-07-19T09:26:08+02:00.yaml"
     ]
 
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 11})
 rc('text', usetex=True)
 # Initialize a figure with 8 subplots
-fig, axes = plt.subplots(4, 3, figsize=(6.8, 6.8), sharex=True, sharey=True)
+fig, axes = plt.subplots(4, 3, figsize=(6.8, 5), sharex=True, sharey=True)
 plt.rc('font', size=10) 
 markings = ["(a)", "(a')", "(a'')", "(b)", "(b')", "(b'')", "(c)", "(c')", "(c'')", "(d)", "(d')", "(d'')"]
 

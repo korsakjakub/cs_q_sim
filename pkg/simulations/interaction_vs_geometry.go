@@ -1,6 +1,8 @@
 package simulations
 
 import (
+	"fmt"
+	"sort"
 	"time"
 
 	cs "github.com/korsakjakub/cs_q_sim/pkg/cs_q_sim"
@@ -25,11 +27,20 @@ func Interactions(conf cs.Config) {
 		PhysicsConfig: conf.Physics,
 	}
 
+	interactions := make([]float64, bc+1)
 	for j := 0; j <= bc; j += 1 {
-		s.InteractionAt(j)
+		interactions[j] = s.InteractionAt(j)
 	}
+
+	interactions = interactions[1:]
+
+	sort.Slice(interactions, func(i, j int) bool {
+		return interactions[i] > interactions[j]
+	})
+	fmt.Println(interactions)
+
 	for j := 0; j < bc; j += 1 {
-		xys = append(xys, plotter.XY{X: float64(j), Y: s.Bath[j].InteractionStrength * 1e-3})
+		xys = append(xys, plotter.XY{X: float64(j), Y: interactions[j] * 1e-3})
 	}
 
 	elapsed_time := time.Since(start)

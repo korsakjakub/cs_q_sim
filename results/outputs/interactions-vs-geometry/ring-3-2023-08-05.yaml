@@ -1,0 +1,97 @@
+filename: 2023-08-05T09:21:44+02:00.yaml
+metadata:
+  date: "2023-08-05T09:21:44+02:00"
+  simulation: Interaction strength
+  simulationid: interactions
+  cpu: i7-11xxG
+  ram: 32GB
+  completiontime: 24.924µs
+  figuresdir: ""
+values:
+  system:
+    centralspin:
+      angle: 0
+      distance: 0
+      interactionstrength: 0
+    bath:
+    - angle: 0.9510565162951535
+      distance: 1.5
+      interactionstrength: -487027.6561589672
+    - angle: 0.823639103546332
+      distance: 1.5
+      interactionstrength: -294214.3647036074
+    - angle: 0.4755282581475769
+      distance: 1.5
+      interactionstrength: 91412.21820711224
+    - angle: 5.823541592445453e-17
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    - angle: -0.47552825814757654
+      distance: 1.5
+      interactionstrength: 91412.21820711248
+    - angle: -0.823639103546332
+      distance: 1.5
+      interactionstrength: -294214.3647036074
+    - angle: -0.9510565162951535
+      distance: 1.5
+      interactionstrength: -487027.6561589672
+    - angle: -0.8236391035463321
+      distance: 1.5
+      interactionstrength: -294214.3647036077
+    - angle: -0.4755282581475772
+      distance: 1.5
+      interactionstrength: 91412.21820711196
+    - angle: -1.747062477733636e-16
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    - angle: 0.47552825814757677
+      distance: 1.5
+      interactionstrength: 91412.21820711234
+    - angle: 0.8236391035463316
+      distance: 1.5
+      interactionstrength: -294214.36470360705
+    physicsconfig:
+      bathdipolemoment: 1.77
+      atomdipolemoment: 3626.87
+      bathcount: 12
+      spin: 0.5
+      tiltangle: 0.4
+      tiltanglerange: []
+      constantdistance: 1.5
+      geometry: ring
+      interactioncoefficients: []
+      bathmagneticfield: 2.0532001e+10
+      centralmagneticfield: 2.053202e+10
+      model: XX
+      timerange: 0
+      dt: 0
+      initialket: ""
+      observablesconfig: []
+      magneticfieldrange: 0
+      units: atomic
+    downspins: 0
+xys:
+- - x: 0
+    "y": 284.2255096624722
+  - x: 1
+    "y": 284.2255096624722
+  - x: 2
+    "y": 91.41221820711249
+  - x: 3
+    "y": 91.41221820711235
+  - x: 4
+    "y": 91.41221820711223
+  - x: 5
+    "y": 91.41221820711196
+  - x: 6
+    "y": -294.21436470360703
+  - x: 7
+    "y": -294.21436470360743
+  - x: 8
+    "y": -294.21436470360743
+  - x: 9
+    "y": -294.2143647036077
+  - x: 10
+    "y": -487.0276561589672
+  - x: 11
+    "y": -487.0276561589672

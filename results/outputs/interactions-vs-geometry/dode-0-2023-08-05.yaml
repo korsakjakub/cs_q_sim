@@ -1,0 +1,137 @@
+filename: 2023-08-05T09:24:16+02:00.yaml
+metadata:
+  date: "2023-08-05T09:24:16+02:00"
+  simulation: Interaction strength
+  simulationid: interactions
+  cpu: i7-11xxG
+  ram: 32GB
+  completiontime: 37.377µs
+  figuresdir: ""
+values:
+  system:
+    centralspin:
+      angle: 0
+      distance: 0
+      interactionstrength: 0
+    bath:
+    - angle: 0.5773502691896257
+      distance: 1.5
+      interactionstrength: 0
+    - angle: 0.5773502691896257
+      distance: 1.5
+      interactionstrength: 0
+    - angle: 0.577350269189626
+      distance: 1.5
+      interactionstrength: -1.893322230078579e-10
+    - angle: 0.577350269189626
+      distance: 1.5
+      interactionstrength: -1.893322230078579e-10
+    - angle: -0.577350269189626
+      distance: 1.5
+      interactionstrength: -1.893322230078579e-10
+    - angle: -0.577350269189626
+      distance: 1.5
+      interactionstrength: -1.893322230078579e-10
+    - angle: -0.5773502691896257
+      distance: 1.5
+      interactionstrength: 0
+    - angle: -0.5773502691896257
+      distance: 1.5
+      interactionstrength: 0
+    - angle: 0.6180339887498946
+      distance: 1.5
+      interactionstrength: -41467.94300143568
+    - angle: 0.618033988749895
+      distance: 1.5
+      interactionstrength: -41467.943001436186
+    - angle: -0.618033988749895
+      distance: 1.5
+      interactionstrength: -41467.943001436186
+    - angle: -0.6180339887498946
+      distance: 1.5
+      interactionstrength: -41467.94300143568
+    - angle: 0.9341723589627159
+      distance: 1.5
+      interactionstrength: -459886.5351036419
+    - angle: 0.9341723589627159
+      distance: 1.5
+      interactionstrength: -459886.5351036419
+    - angle: -0.9341723589627159
+      distance: 1.5
+      interactionstrength: -459886.5351036419
+    - angle: -0.9341723589627159
+      distance: 1.5
+      interactionstrength: -459886.5351036419
+    - angle: -1.5137466921736578e-16
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    - angle: -1.5137466921736578e-16
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    - angle: 1.5137466921736578e-16
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    - angle: 1.5137466921736578e-16
+      distance: 1.5
+      interactionstrength: 284225.5096624722
+    physicsconfig:
+      bathdipolemoment: 1.77
+      atomdipolemoment: 3626.87
+      bathcount: 20
+      spin: 0.5
+      tiltangle: 0
+      tiltanglerange: []
+      constantdistance: 1.5
+      geometry: dodecahedron
+      interactioncoefficients: []
+      bathmagneticfield: 2.0532001e+10
+      centralmagneticfield: 2.053202e+10
+      model: XX
+      timerange: 0
+      dt: 0
+      initialket: ""
+      observablesconfig: []
+      magneticfieldrange: 0
+      units: atomic
+    downspins: 0
+xys:
+- - x: 0
+    "y": 284.2255096624722
+  - x: 1
+    "y": 284.2255096624722
+  - x: 2
+    "y": 284.2255096624722
+  - x: 3
+    "y": 284.2255096624722
+  - x: 4
+    "y": 0
+  - x: 5
+    "y": 0
+  - x: 6
+    "y": 0
+  - x: 7
+    "y": 0
+  - x: 8
+    "y": -1.893322230078579e-13
+  - x: 9
+    "y": -1.893322230078579e-13
+  - x: 10
+    "y": -1.893322230078579e-13
+  - x: 11
+    "y": -1.893322230078579e-13
+  - x: 12
+    "y": -41.46794300143568
+  - x: 13
+    "y": -41.46794300143568
+  - x: 14
+    "y": -41.46794300143619
+  - x: 15
+    "y": -41.46794300143619
+  - x: 16
+    "y": -459.8865351036419
+  - x: 17
+    "y": -459.8865351036419
+  - x: 18
+    "y": -459.8865351036419
+  - x: 19
+    "y": -459.8865351036419

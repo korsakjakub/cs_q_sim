@@ -1,7 +1,7 @@
 import numpy as np
 
 Nb = 12
-B = 1
+B = 1.469
 x1 = 284225.5096624722
 
 def k(j):
