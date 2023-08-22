@@ -1,14 +1,12 @@
 simulation: spin-evolution
 verbosity: debug
+files:
+  diagonalizationdir:
+    outputs/diag-2023-06-25T22:08:52+02:00
 physics:
-  units: atomic
-  bathdipolemoment: 1.77
-  atomdipolemoment: 3626.87
-  spin: 0.5
+  tiltangle: 0.03
   constantdistance: 1.5
-  geometry: icosahedron
-  bathmagneticfield: 10000
-  centralmagneticfield: 10100
+  geometry: ring
   timerange: 500
   dt: 1e-6
   initialket: duuuuuudddddd

@@ -1,0 +1,7 @@
+physics:
+  units: atomic
+  bathdipolemoment: 1.77
+  atomdipolemoment: 3626.87
+  spin: 0.5
+  bathmagneticfield: 20532.001e6
+  centralmagneticfield: 20532.020e6
